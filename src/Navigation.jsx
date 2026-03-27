@@ -1,7 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import './Navigation.css';
-import { auth } from './Firebase';
 
 const Navigation = ({ loggedIn, setLoggedIn }) => {
   // State for visibility of  dropdown menu
@@ -57,16 +56,10 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
   }, []);
 
   // Logout handle
-  const handleLogout = async () => {
-    try {
-      console.log('Logging out user...');
-      await auth.signOut(); //signs user out using Firebase auth
-      setLoggedIn(false); //update login state
-      console.log('User successfully logged out.');
-      navigate('/admin/login'); // navigates to login page
-    } catch (error) {
-      console.error('Logout failed:', error);
-    }
+  const handleLogout = () => {
+    console.log('Logging out user...');
+    setLoggedIn(false);
+    navigate('/admin/login');
   };
 
   return (

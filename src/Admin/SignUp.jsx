@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../Firebase';
-import { createUserWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import './SignUp.css';
 
-function SignUpForm() {
+function SignUpForm({ setLoggedIn }) {
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -33,22 +31,10 @@ function SignUpForm() {
       return;
     }
 
-    try {
-      console.log('Attempting to create user...');
-      const userCredential = await createUserWithEmailAndPassword(auth, formData.email, formData.password);
-      console.log('User created:', userCredential.user.uid);
-
-      await updateProfile(userCredential.user, {
-        displayName: formData.name,
-      });
-
-      console.log('User profile updated with name:', formData.name);
-      alert("Signup successful!");
-      navigate('/');
-    } catch (error) {
-      console.error('Signup error:', error.code, error.message);
-      alert("Signup failed: " + error.message);
-    }
+    console.log('Using local placeholder signup flow.');
+    alert("Signup successful!");
+    setLoggedIn(true);
+    navigate('/');
   };
 
   return (

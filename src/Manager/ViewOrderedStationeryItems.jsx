@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import './ViewOrderedStationeryItems.css';
 
 const ViewOrderedStationeryItems = () => {
@@ -12,35 +10,10 @@ const ViewOrderedStationeryItems = () => {
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Function to fetch orders from Firestore
     const fetchOrders = async () => {
-      console.log('[ViewOrderedStationeryItems] Starting fetchOrders...');
-      try {
-        const ordersRef = collection(db, 'stationeryOrders');
-        console.log('[ViewOrderedStationeryItems] Collection reference obtained.');
-
-        const snapshot = await getDocs(ordersRef);
-        console.log(`[ViewOrderedStationeryItems] Retrieved ${snapshot.size} orders.`);
-
-        // Convert snapshot to an array of order objects
-        const ordersList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log(`[ViewOrderedStationeryItems] Processing order ID: ${doc.id}`, data);
-          return {
-            id: doc.id,
-            ...data,
-          };
-        });
-
-        setOrders(ordersList);
-        console.log('[ViewOrderedStationeryItems] Orders state updated.');
-      } catch (err) {
-        console.error('[ViewOrderedStationeryItems] Error fetching orders:', err);
-        setError('Failed to fetch stationery orders. Please try again.');
-      } finally {
-        setLoading(false);
-        console.log('[ViewOrderedStationeryItems] Loading finished.');
-      }
+      setOrders([]);
+      setError(null);
+      setLoading(false);
     };
 
     fetchOrders();

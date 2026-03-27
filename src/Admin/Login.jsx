@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { auth } from '../Firebase';
-import { signInWithEmailAndPassword } from 'firebase/auth';
 import './Login.css';
 
 function Login({ setLoggedIn }) {
@@ -26,25 +24,12 @@ function Login({ setLoggedIn }) {
       return;
     }
 
-    try {
-      console.log('Sending credentials to Firebase...');
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-
-      console.log('Login successful:', {
-        uid: userCredential.user.uid,
-        email: userCredential.user.email,
-      });
-
-      alert(`Welcome back, ${email}!`);
-      setLoggedIn(true);
-      navigate('/');
-    } catch (error) {
-      console.error('Login failed:', error.code, error.message);
-      alert('Login failed: ' + error.message);
-    } finally {
-      console.log('Resetting form data after login attempt');
-      setFormData({ email: '', password: '' });
-    }
+    console.log('Using local placeholder login.');
+    alert(`Welcome back, ${email}!`);
+    setLoggedIn(true);
+    navigate('/');
+    console.log('Resetting form data after login attempt');
+    setFormData({ email: '', password: '' });
   };
 
   return (

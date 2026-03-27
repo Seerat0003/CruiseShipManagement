@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import './EditDeleteNewItem.css';
-import { db } from '../Firebase';
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
 
 const EditDeleteNewItem = ({ items = [], refreshItems }) => {
   const [editItemId, setEditItemId] = useState(null);
@@ -19,45 +17,19 @@ const EditDeleteNewItem = ({ items = [], refreshItems }) => {
   };
 
   const handleSave = async (id) => {
-    const collectionName = editForm.type === "catering" ? "cateringItems" : "stationeryItems";
-    const itemRef = doc(db, collectionName, id);
     console.log("Attempting to save item:", { id, ...editForm });
 
-    try {
-      await updateDoc(itemRef, {
-        name: editForm.name,
-        type: editForm.type,
-        price: parseFloat(editForm.price),
-        updatedAt: new Date()
-      });
-      console.log(`Item (${id}) updated successfully in ${collectionName}.`);
-      alert("Item updated successfully.");
-      refreshItems();
-      console.log("Items refreshed after update.");
-    } catch (error) {
-      console.error("Error updating item:", error);
-      alert("Failed to update item.");
-    }
+    alert("Item editing is not wired right now.");
+    refreshItems();
 
     setEditItemId(null);
     console.log("Exited edit mode.");
   };
 
   const handleDelete = async (id, type) => {
-    const collectionName = type === "catering" ? "cateringItems" : "stationeryItems";
-    const itemRef = doc(db, collectionName, id);
-    console.log(`Attempting to delete item ${id} from ${collectionName}`);
-
-    try {
-      await deleteDoc(itemRef);
-      console.log(`Item (${id}) deleted successfully from ${collectionName}`);
-      alert("Item deleted.");
-      refreshItems();
-      console.log("Items refreshed after deletion.");
-    } catch (error) {
-      console.error("Error deleting item:", error);
-      alert("Failed to delete item.");
-    }
+    console.log(`Attempting to delete item ${id} from ${type}`);
+    alert("Item deletion is not wired right now.");
+    refreshItems();
   };
 
   const handleCancel = () => {

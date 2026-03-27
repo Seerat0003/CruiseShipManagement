@@ -1,7 +1,5 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import { auth } from './Firebase';
-import { onAuthStateChanged } from 'firebase/auth';
 // Import page components
 import Home from './Home';
 import Login from './Admin/Login';
@@ -26,18 +24,6 @@ function App() {
   // State to check whether a user is logged in
   const [loggedIn, setLoggedIn] = useState(false);
 
-  // useEffect to listen for Firebase auth state changes
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      const isLoggedIn = !!user;
-      console.log('Auth state changed, user logged in:', isLoggedIn);
-      setLoggedIn(isLoggedIn);
-    });
-
-    // Cleanup subscription on component unmount
-    return unsubscribe;
-  }, []);
-
   return (
     <Router>
       {/* Navigation bar receives loggedIn and setLoggedIn for logout handling */}
@@ -47,7 +33,7 @@ function App() {
       <Routes>
         <Route path='/' element={<Home loggedIn={loggedIn} />} />
         <Route path="/admin/login" element={<Login setLoggedIn={setLoggedIn} />} />
-        <Route path='/admin/signup' element={<SignUp />} />
+        <Route path='/admin/signup' element={<SignUp setLoggedIn={setLoggedIn} />} />
 
         {/* Voyager routes */}
         <Route path="/voyager/catering" element={<OrderCaterItems />} />

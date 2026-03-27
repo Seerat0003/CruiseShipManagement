@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './BookBeautySalon.css';
 import { FaCut, FaSpa, FaPaintBrush, FaHotTub } from 'react-icons/fa';
-import { db } from '../Firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 // List of available salon services
 const salonItems = [
@@ -67,57 +65,12 @@ const BookBeautySalon = () => {
       return;
     }
 
-    try {
-      // Check each selected service for booking conflicts on selected date
-      for (const item of cart) {
-        const bookingQuery = query(
-          collection(db, 'beautyBookings'),
-          where('hallId', '==', item.id),
-          where('date', '==', date)
-        );
-
-        const querySnapshot = await getDocs(bookingQuery);
-        let conflict = false;
-
-        // Iterate existing bookings to detect time overlaps
-        querySnapshot.forEach((doc) => {
-          const booking = doc.data();
-          const existingStart = booking.startTime;
-          const existingEnd = booking.endTime;
-
-          // If new booking overlaps with existing booking
-          if (startTime < existingEnd && endTime > existingStart) {
-            alert(`"${item.name}" is already booked from ${existingStart} to ${existingEnd} on ${date}.`);
-            conflict = true;
-          }
-        });
-
-        if (conflict) return;
-      }
-
-      // Add all valid bookings to Firestore
-      for (const item of cart) {
-        await addDoc(collection(db, 'beautyBookings'), {
-          hallId: item.id,
-          hallName: item.name,
-          quantity: item.quantity,
-          date,
-          startTime,
-          endTime,
-          bookedAt: new Date().toISOString(),
-        });
-      }
-
-      // Success feedback and form reset
-      alert('Salon booked successfully!');
-      clearCart();
-      setDate('');
-      setStartTime('');
-      setEndTime('');
-    } catch (error) {
-      console.error('Error placing order:', error);
-      alert('Booking failed. Please try again.');
-    }
+    console.log('Booking submitted locally.', { cart, date, startTime, endTime });
+    alert('Booking confirmed locally. Persistence is not wired.');
+    clearCart();
+    setDate('');
+    setStartTime('');
+    setEndTime('');
   };
 
   return (

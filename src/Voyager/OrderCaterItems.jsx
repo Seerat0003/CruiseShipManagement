@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import './OrderCaterItems.css';
-import { db } from '../Firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 function OrderCaterItems() {
   // State to store the menu items grouped by category
@@ -13,40 +11,12 @@ function OrderCaterItems() {
   // Example: { itemId1: { id, name, price, quantity }, itemId2: {...}, ... }
   const [cart, setCart] = useState({});
 
-  // useEffect hook to fetch menu data from Firestore when the component mounts
+  // useEffect hook to initialize menu data when the component mounts
   useEffect(() => {
     // Async function to fetch the menu items
     const fetchMenu = async () => {
-      try {
-        console.log("Fetching menu items from Firestore...");
-        // Fetch all documents from the 'cateringItems' collection
-        const snapshot = await getDocs(collection(db, "cateringItems"));
-
-        // Temporary object to group items by category
-        const fetchedMenu = {};
-
-        // Iterate through each document in the snapshot
-        snapshot.forEach(doc => {
-          const item = doc.data();
-
-          // Initialize category array if it doesn't exist yet
-          if (!fetchedMenu[item.category]) {
-            fetchedMenu[item.category] = [];
-          }
-
-          // Add the item to its category group
-          // Include the document ID as 'id' for keying and cart operations
-          fetchedMenu[item.category].push({ ...item, id: doc.id });
-        });
-
-        // Update the menu state with grouped items
-        setMenu(fetchedMenu);
-        console.log("Menu fetched successfully:", fetchedMenu);
-      } catch (error) {
-        // Log error and notify user if fetching fails
-        console.error("Error fetching catering items:", error);
-        alert("Failed to load menu.");
-      }
+      console.log("Menu loading placeholder.");
+      setMenu({});
     };
 
     fetchMenu();
@@ -71,7 +41,7 @@ function OrderCaterItems() {
 
   /**
    * Increments the quantity of an item already in the cart.
-   * @param {string} id - The Firestore document ID of the item
+   * @param {string} id - The selected item ID
    */
   const increment = (id) => {
     console.log(`Incrementing quantity for item ID: ${id}`);
@@ -87,7 +57,7 @@ function OrderCaterItems() {
   /**
    * Decrements the quantity of an item in the cart.
    * If quantity reaches 0, the item is removed from the cart.
-   * @param {string} id - The Firestore document ID of the item
+   * @param {string} id - The selected item ID
    */
   const decrement = (id) => {
     console.log(`Decrementing quantity for item ID: ${id}`);
@@ -110,7 +80,7 @@ function OrderCaterItems() {
 
   /**
    * Removes an item from the cart regardless of quantity.
-   * @param {string} id - The Firestore document ID of the item to remove
+   * @param {string} id - The selected item ID to remove
    */
   const removeFromCart = (id) => {
     console.log(`Removing item ID ${id} from cart`);
@@ -137,7 +107,7 @@ function OrderCaterItems() {
   const totalAmount = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   /**
-   * Handles the submission of the order to Firestore.
+   * Handles the submission of the order.
    * Validates the cart before submitting.
    */
   const placeOrder = async () => {
@@ -147,24 +117,9 @@ function OrderCaterItems() {
       return;
     }
 
-    try {
-      console.log("Placing order with items:", orderItems);
-
-      // Add new document to 'cateringOrders' collection with order details
-      await addDoc(collection(db, "cateringOrders"), {
-        items: orderItems,
-        total: totalAmount,
-        timestamp: new Date() // Current date/time for order tracking
-      });
-
-      // Inform user of success and clear cart for new order
-      alert(`Order placed successfully! Total: $${totalAmount.toFixed(2)}`);
-      clearCart();
-    } catch (error) {
-      // Log and alert if order submission fails
-      console.error("Error submitting order:", error);
-      alert("Failed to place order. Please try again.");
-    }
+    console.log("Order submitted locally.", orderItems);
+    alert(`Order confirmed locally. Persistence is not wired. Total: $${totalAmount.toFixed(2)}`);
+    clearCart();
   };
 
   return (

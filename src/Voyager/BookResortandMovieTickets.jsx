@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './BookResortandMovieTickets.css';
 import { FaHotel, FaFilm } from 'react-icons/fa';
-import { db } from '../Firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 // Static data for resorts with basic info and icons
 const resortitems = [
@@ -47,39 +45,10 @@ function BookResortAndMovieTickets() {
         console.log('Missing input for available seats calculation, resetting to 0.');
         return;
       }
-      try {
-        // Query existing bookings for the selected movie and date
-        const bookingQuery = query(
-          collection(db, 'resortAndMovieBookings'),
-          where('hallId', '==', selectedMovie.id),
-          where('date', '==', date)
-        );
-        const querySnapshot = await getDocs(bookingQuery);
-
-        let seatsBooked = 0;
-        const startInput = timeToMinutes(startTime);
-        const endInput = timeToMinutes(endTime);
-
-        // Calculate seats booked for overlapping time periods
-        querySnapshot.forEach((doc) => {
-          const booking = doc.data();
-          const bookedStart = timeToMinutes(booking.startTime);
-          const bookedEnd = timeToMinutes(booking.endTime);
-
-          // Check for overlapping bookings
-          if (startInput < bookedEnd && endInput > bookedStart) {
-            seatsBooked += booking.quantity;
-          }
-        });
-
-        // Compute and set available seats left
-        const seatsLeft = selectedMovie.totalSeats - seatsBooked;
-        setAvailableSeats(seatsLeft);
-        console.log(`Available seats for ${selectedMovie.name} on ${date} between ${startTime} and ${endTime}: ${seatsLeft}`);
-      } catch (error) {
-        console.error('Error fetching bookings:', error);
-        setAvailableSeats(0);
-      }
+      const startInput = timeToMinutes(startTime);
+      const endInput = timeToMinutes(endTime);
+      const hasValidRange = startInput < endInput;
+      setAvailableSeats(hasValidRange ? selectedMovie.totalSeats : 0);
     }
 
     fetchAvailableSeats();
@@ -153,86 +122,28 @@ function BookResortAndMovieTickets() {
       return;
     }
 
-    try {
-      // Check for conflicting bookings for each resort in cart
-      for (const item of resortCart) {
-        const bookingQuery = query(
-          collection(db, 'resortAndMovieBookings'),
-          where('hallId', '==', item.id),
-          where('date', '==', date)
-        );
-        const querySnapshot = await getDocs(bookingQuery);
-
-        const startInput = timeToMinutes(startTime);
-        const endInput = timeToMinutes(endTime);
-
-        for (const doc of querySnapshot.docs) {
-          const booking = doc.data();
-          const bookedStart = timeToMinutes(booking.startTime);
-          const bookedEnd = timeToMinutes(booking.endTime);
-
-          // Detect overlap and alert if found
-          if (startInput < bookedEnd && endInput > bookedStart) {
-            alert(`"${item.name}" is already booked from ${booking.startTime} to ${booking.endTime} on ${date}.`);
-            console.warn(`Booking conflict detected for ${item.name} on ${date} from ${booking.startTime} to ${booking.endTime}.`);
-            return;
-          }
-        }
-      }
-
-      // For movie booking, verify enough seats are available
-      if (selectedMovie) {
-        if (movieQuantity > availableSeats) {
-          alert(`Only ${availableSeats} seats are available for "${selectedMovie.name}".`);
-          console.warn(`Booking failed: insufficient seats for ${selectedMovie.name}. Requested: ${movieQuantity}, Available: ${availableSeats}`);
-          return;
-        }
-      }
-
-      // Save resort bookings to Firestore
-      for (const item of resortCart) {
-        await addDoc(collection(db, 'resortAndMovieBookings'), {
-          hallId: item.id,
-          hallName: item.name,
-          quantity: item.quantity,
-          date,
-          startTime,
-          endTime,
-          bookedAt: new Date().toISOString(),
-        });
-        console.log(`Resort booking saved for ${item.name} on ${date}`);
-      }
-
-      // Save movie booking to Firestore if selected
-      if (selectedMovie) {
-        await addDoc(collection(db, 'resortAndMovieBookings'), {
-          hallId: selectedMovie.id,
-          hallName: selectedMovie.name,
-          quantity: movieQuantity,
-          date,
-          startTime,
-          endTime,
-          bookedAt: new Date().toISOString(),
-          movieShowing: selectedMovie.showing,
-        });
-        console.log(`Movie booking saved for ${selectedMovie.name} (${movieQuantity} tickets) on ${date}`);
-      }
-
-      // Notify user and reset form states on success
-      alert('Booking confirmed!');
-      console.info('Booking confirmed and data saved successfully.');
-
-      setResortCart([]);
-      setSelectedMovie(null);
-      setMovieQuantity(1);
-      setDate('');
-      setStartTime('');
-      setEndTime('');
-      setAvailableSeats(0);
-    } catch (error) {
-      console.error('Error placing order:', error);
-      alert('Booking failed. Please try again.');
+    if (selectedMovie && movieQuantity > availableSeats) {
+      alert(`Only ${availableSeats} seats are available for "${selectedMovie.name}".`);
+      return;
     }
+
+    console.log('Booking submitted locally.', {
+      resortCart,
+      selectedMovie,
+      movieQuantity,
+      date,
+      startTime,
+      endTime,
+    });
+
+    alert('Booking confirmed locally. Persistence is not wired.');
+    setResortCart([]);
+    setSelectedMovie(null);
+    setMovieQuantity(1);
+    setDate('');
+    setStartTime('');
+    setEndTime('');
+    setAvailableSeats(0);
   };
 
   return (

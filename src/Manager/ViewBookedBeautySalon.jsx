@@ -1,47 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import './ViewBookedBeautySalon.css';
 
 const ViewBookedBeautySalon = () => {
-  // State to hold the list of appointments fetched from Firestore
+  // State to hold the list of appointments
   const [appointments, setAppointments] = useState([]);
   // State to track loading status for user feedback
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Async function to fetch appointments from Firestore
     const fetchAppointments = async () => {
-      console.log('[ViewBookedBeautySalon] Starting to fetch appointments...');
-      try {
-        const salonRef = collection(db, 'beautyBookings');
-        console.log('[ViewBookedBeautySalon] Reference to "beautyBookings" collection obtained.');
-        
-        const snapshot = await getDocs(salonRef);
-        console.log(`[ViewBookedBeautySalon] Retrieved ${snapshot.size} documents from Firestore.`);
-
-        // Map each document snapshot to an object with id and data fields
-        const bookingsList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log(`[ViewBookedBeautySalon] Processing document ID: ${doc.id}`, data);
-          return {
-            id: doc.id,
-            ...data
-          };
-        });
-
-        // Update state with fetched data
-        setAppointments(bookingsList);
-        console.log('[ViewBookedBeautySalon] Appointments state updated.');
-      } catch (error) {
-        // Log and alert any errors that occur during fetch
-        console.error('[ViewBookedBeautySalon] Error fetching appointments:', error);
-        alert('Failed to fetch appointments. Please try again.');
-      } finally {
-        // Always set loading to false after fetch attempt
-        setLoading(false);
-        console.log('[ViewBookedBeautySalon] Loading state set to false.');
-      }
+      setAppointments([]);
+      setLoading(false);
     };
 
     // Call the fetch function when component mounts

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import './OrderStationeryItems.css';
-import { db } from '../Firebase';
-import { collection, getDocs, addDoc } from 'firebase/firestore';
 
 function OrderStationeryItems() {
-  // State to store all fetched items from Firestore
+  // State to store all loaded items
   const [, setItems] = useState([]);
 
   // State to store items grouped by category 
@@ -13,34 +11,12 @@ function OrderStationeryItems() {
   // State to hold the user's current cart with item ids as keys Each entry contains item, info, quantity
   const [cart, setCart] = useState({});
 
-  // Fetch stationery items from Firestore on component mount
+  // Initialize stationery items on component mount
   useEffect(() => {
     const fetchItems = async () => {
-      try {
-        console.log("Fetching stationery items from Firestore...");
-        const querySnapshot = await getDocs(collection(db, "stationeryItems"));
-        
-        // Map Firestore documents into usable JS objects
-        const fetchedItems = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-        console.log(`Fetched ${fetchedItems.length} items.`);
-
-        // Group items by their category for better UI grouping
-        const grouped = fetchedItems.reduce((acc, item) => {
-          if (!acc[item.category]) acc[item.category] = [];
-          acc[item.category].push(item);
-          return acc;
-        }, {});
-        console.log("Items grouped by category:", grouped);
-
-        // Update states
-        setItems(fetchedItems);
-        setCategorizedItems(grouped);
-      } catch (error) {
-        console.error("Error fetching stationery items:", error);
-      }
+      console.log("Stationery items loading placeholder.");
+      setItems([]);
+      setCategorizedItems({});
     };
 
     fetchItems();
@@ -105,7 +81,7 @@ function OrderStationeryItems() {
   const orderItems = Object.values(cart);
   const totalAmount = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Place order by saving current cart to Firestore
+  // Place order using placeholder behavior
   const placeOrder = async () => {
     if (orderItems.length === 0) {
       alert("Your cart is empty.");
@@ -113,20 +89,9 @@ function OrderStationeryItems() {
       return;
     }
 
-    try {
-      console.log("Placing order with items:", orderItems);
-      await addDoc(collection(db, "stationeryOrders"), { //add the data to the collection 
-        items: orderItems,
-        total: totalAmount,
-        timestamp: new Date()
-      });
-      alert(`Order placed! Total: $${totalAmount.toFixed(2)}`);
-      console.log("Order successfully placed.");
-      clearCart();
-    } catch (error) {
-      console.error("Failed to place order:", error);
-      alert("Failed to place order. Please try again.");
-    }
+    console.log("Stationery order submitted locally.", orderItems);
+    alert(`Order confirmed locally. Persistence is not wired. Total: $${totalAmount.toFixed(2)}`);
+    clearCart();
   };
 
   return (

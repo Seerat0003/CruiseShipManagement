@@ -1,6 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import './ViewOrderedCateringItems.css';
 
 const ViewOrderedCateringItems = () => {
@@ -16,35 +14,9 @@ const ViewOrderedCateringItems = () => {
   // useEffect to fetch data when the component mounts
   useEffect(() => {
     const fetchOrders = async () => {
-      console.log("Fetching catering orders from Firestore...");
-
-      try {
-        // Reference to the 'cateringOrders' collection
-        const ordersRef = collection(db, 'cateringOrders');
-
-        // Fetch all documents from the collection
-        const snapshot = await getDocs(ordersRef);
-
-        // Map the snapshot to an array of order objects
-        const ordersList = snapshot.docs.map(doc => {
-          const order = {
-            id: doc.id,
-            ...doc.data(),
-          };
-          console.log("Fetched order:", order);
-          return order;
-        });
-
-        // Set the fetched orders to state
-        setOrders(ordersList);
-        console.log("All catering orders loaded into state.");
-      } catch (err) {
-        console.error('Error fetching catering orders:', err);
-        setError('Failed to fetch catering orders. Please try again.');
-      } finally {
-        // Turn off the loading indicator regardless of success or error
-        setLoading(false);
-      }
+      setOrders([]);
+      setError(null);
+      setLoading(false);
     };
 
     // Start fetching orders when component is mounted
@@ -79,7 +51,7 @@ const ViewOrderedCateringItems = () => {
               <p>
                 <strong>Placed At:</strong>{" "}
                 {
-                  // Firestore Timestamps need to be converted to JS Date
+                  // Support either Date-like values or ISO strings
                   timestamp?.toDate
                     ? timestamp.toDate().toLocaleString()
                     : new Date(timestamp).toLocaleString()

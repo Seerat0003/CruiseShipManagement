@@ -1,7 +1,5 @@
 import React, { useState } from 'react';
 import './BookPartyHall.css';
-import { db } from '../Firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 // List of available halls
 const hallItems = [
@@ -90,61 +88,18 @@ const BookPartyHall = () => {
       return;
     }
 
-    try {
-      for (const item of cart) {
-        console.log(`Checking for conflicts for: ${item.name}`);
-
-        // Query for existing bookings for the same hall and date
-        const bookingQuery = query(
-          collection(db, 'bookings'),
-          where('hallId', '==', item.id),
-          where('date', '==', date)
-        );
-
-        const snapshot = await getDocs(bookingQuery);
-        let conflict = false;
-
-        snapshot.forEach((doc) => {
-          const booking = doc.data();
-          const existingStart = timeToMinutes(booking.startTime);
-          const existingEnd = timeToMinutes(booking.endTime);
-
-          // Check if time overlaps with existing booking
-          if (startInput < existingEnd && endInput > existingStart) {
-            console.warn(`Conflict detected: ${item.name} already booked from ${booking.startTime} to ${booking.endTime}`);
-            alert(`"${item.name}" is already booked from ${booking.startTime} to ${booking.endTime} on ${date}.`);
-            conflict = true;
-          }
-        });
-
-        if (conflict) return;
-      }
-
-      // Add each cart item to the bookings collection
-      for (const item of cart) {
-        console.log(`Placing booking for: ${item.name}`);
-        await addDoc(collection(db, 'bookings'), {
-          hallId: item.id,
-          hallName: item.name,
-          quantity: item.quantity,
-          date,
-          startTime,
-          endTime,
-          bookedAt: new Date().toISOString(),
-        });
-      }
-
-      // Success feedback and reset
-      alert('Party hall(s) booked successfully!');
-      console.log('Booking successful. Resetting form.');
-      clearCart();
-      setDate('');
-      setStartTime('');
-      setEndTime('');
-    } catch (error) {
-      console.error('Booking failed due to error:', error);
-      alert('An error occurred while booking. Please try again.');
-    }
+    console.log('Booking submitted locally.', {
+      cart,
+      date,
+      startTime,
+      endTime,
+      durationInMinutes: endInput - startInput,
+    });
+    alert('Booking confirmed locally. Persistence is not wired.');
+    clearCart();
+    setDate('');
+    setStartTime('');
+    setEndTime('');
   };
 
   return (

@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import './BookFitnessCenter.css';
 import { FaDumbbell, FaRunning, FaSpa, FaSwimmer } from 'react-icons/fa';
-import { db } from '../Firebase';
-import { collection, addDoc, getDocs, query, where } from 'firebase/firestore';
 
 // Fitness center services list
 const fitnessItems = [
@@ -89,60 +87,19 @@ const BookFitnessCentre = () => {
 
     setIsSubmitting(true); // Disable submit button
 
-    try {
-      // Conflict detection
-      for (const item of cart) {
-        console.log(`Checking for conflicts for: ${item.name}`);
-        const bookingQuery = query(
-          collection(db, 'fitnessBookings'),
-          where('hallId', '==', item.id),
-          where('date', '==', date)
-        );
-        const querySnapshot = await getDocs(bookingQuery);
-
-        for (const doc of querySnapshot.docs) {
-          const booking = doc.data();
-          const bookedStart = timeToMinutes(booking.startTime);
-          const bookedEnd = timeToMinutes(booking.endTime);
-
-          // If there's an overlap
-          if (startInput < bookedEnd && endInput > bookedStart) {
-            console.warn(`Conflict found: ${item.name} already booked from ${booking.startTime} to ${booking.endTime}`);
-            alert(`"${item.name}" is already booked from ${booking.startTime} to ${booking.endTime} on ${date}.`);
-            setIsSubmitting(false);
-            return;
-          }
-        }
-      }
-
-      // Save bookings to Firestore
-      console.log('No conflicts. Saving booking...');
-      const bookingTime = new Date().toISOString();
-      for (const item of cart) {
-        const bookingData = {
-          hallId: item.id,
-          hallName: item.name,
-          quantity: item.quantity,
-          date,
-          startTime,
-          endTime,
-          bookedAt: bookingTime,
-        };
-        await addDoc(collection(db, 'fitnessBookings'), bookingData);
-        console.log('Booking saved:', bookingData);
-      }
-
-      alert('Fitness Centre booking confirmed!');
-      clearCart();
-      setDate('');
-      setStartTime('');
-      setEndTime('');
-    } catch (error) {
-      console.error('Error placing booking:', error);
-      alert('Booking failed. Please try again.');
-    } finally {
-      setIsSubmitting(false); // Re-enable button
-    }
+    console.log('Booking submitted locally.', {
+      cart,
+      date,
+      startTime,
+      endTime,
+      durationInMinutes: endInput - startInput,
+    });
+    alert('Booking confirmed locally. Persistence is not wired.');
+    clearCart();
+    setDate('');
+    setStartTime('');
+    setEndTime('');
+    setIsSubmitting(false);
   };
 
   return (

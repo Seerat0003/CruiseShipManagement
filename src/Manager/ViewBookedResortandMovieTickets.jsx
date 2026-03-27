@@ -1,44 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { db } from '../Firebase';
-import { collection, getDocs } from 'firebase/firestore';
 import './ViewBookedResortandMovieTickets.css';
 
 const ViewBookedResortAndMovieTickets = () => {
-  // State to store bookings fetched from Firestore
+  // State to store bookings
   const [bookings, setBookings] = useState([]);
   // State to manage loading indicator
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Async function to fetch resort and movie bookings from Firestore
     const fetchBookings = async () => {
-      console.log('[ViewBookedResortAndMovieTickets] Fetching bookings...');
-      try {
-        const bookingsRef = collection(db, 'resortAndMovieBookings');
-        console.log('[ViewBookedResortAndMovieTickets] Reference to collection obtained.');
-
-        const snapshot = await getDocs(bookingsRef);
-        console.log(`[ViewBookedResortAndMovieTickets] Retrieved ${snapshot.size} documents.`);
-
-        // Map Firestore docs into a usable list with IDs and data
-        const bookingsList = snapshot.docs.map(doc => {
-          const data = doc.data();
-          console.log(`[ViewBookedResortAndMovieTickets] Document ID ${doc.id} processed.`, data);
-          return {
-            id: doc.id,
-            ...data,
-          };
-        });
-
-        setBookings(bookingsList); // Set bookings state with fetched data
-        console.log('[ViewBookedResortAndMovieTickets] Bookings state updated.');
-      } catch (error) {
-        console.error('[ViewBookedResortAndMovieTickets] Error fetching bookings:', error);
-        alert('Failed to fetch bookings. Please try again.');
-      } finally {
-        setLoading(false); // Always stop the loading indicator
-        console.log('[ViewBookedResortAndMovieTickets] Loading complete.');
-      }
+      setBookings([]);
+      setLoading(false);
     };
 
     fetchBookings(); // Trigger fetch when component mounts

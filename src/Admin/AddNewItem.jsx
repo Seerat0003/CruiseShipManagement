@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import './AddNewItem.css';
-import { db } from '../Firebase';
-import { collection, addDoc } from 'firebase/firestore';
 
 //defining categories options for catering and stationery
 const categories = {
@@ -37,7 +35,7 @@ const AddNewItem = ({ onItemAdded }) => {
     setItem((prev) => ({ ...prev, [name]: value }));
   };
 
-  //handling form submission to add the item to firestore
+  // Local placeholder submit handler.
   const handleSubmit = async (e) => {
     e.preventDefault(); //revent from reload behavior
     console.log("Form submitted with:", item);
@@ -49,39 +47,18 @@ const AddNewItem = ({ onItemAdded }) => {
       return;
     }
 
-    //new tiem object for firebase database
-    const newItem = {
-      ...item,
-      price: parseFloat(item.price), //price to nuber
-      createdAt: new Date()
-    };
+    console.log("Add item submitted locally.", item);
+    alert("Add-item persistence is not wired right now.");
 
-    //collection based on category name
-    const collectionName = item.type === "catering" ? "cateringItems" : "stationeryItems";
-    console.log(`Adding item to ${collectionName} collection...`);
+    setItem({
+      name: "",
+      price: "",
+      category: categories.catering[0],
+      type: "catering"
+    });
 
-    try {
-      //add item to the firestore specific
-      await addDoc(collection(db, collectionName), newItem);
-      console.log("Item successfully added:", newItem);
-      alert("Item added successfully!");
-
-      //reset the item to default value
-      setItem({
-        name: "",
-        price: "",
-        category: categories["catering"][0],
-        type: "catering"
-      });
-
-      //refresh the item list
-      if (onItemAdded) {
-        console.log("Calling onItemAdded callback...");
-        onItemAdded();
-      }
-    } catch (error) { //handle and display errors
-      console.error("Error adding item:", error);
-      alert("Failed to add item. Please try again.");
+    if (onItemAdded) {
+      onItemAdded();
     }
   };
 

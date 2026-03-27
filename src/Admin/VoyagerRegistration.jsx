@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { collection, addDoc, Timestamp } from "firebase/firestore";
-import { db } from "../Firebase";
 import './VoyagerRegistration.css';
 import { useNavigate } from "react-router-dom";
 
@@ -26,22 +24,10 @@ const VoyagerRegistration = () => {
     console.log("Submitting voyager registration with data:", formData);
 
     try {
-      const docRef = await addDoc(collection(db, "voyagerRegistrations"), {
-        ...formData,
-        createdAt: Timestamp.now(),
-      });
-
-      console.log("Voyager registration successful, Document ID:", docRef.id);
-      alert(`Voyager '${formData.username}' registered successfully!`);
-
+      console.log("Registration submitted locally.", formData);
+      alert(`Voyager '${formData.username}' registered locally only. Persistence is not wired.`);
       setFormData({ username: "", email: "", phone: "" });
-      console.log("Form data reset after successful registration.");
-
       navigate("/");
-      console.log("Navigated to home page after registration.");
-    } catch (error) {
-      console.error("Error registering voyager:", error.message);
-      alert("Registration failed. Please try again.");
     } finally {
       setLoading(false);
       console.log("Registration process finished.");
