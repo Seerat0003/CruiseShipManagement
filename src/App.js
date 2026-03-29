@@ -11,7 +11,9 @@ import BookResortAndMovieTickets from './Voyager/BookResortandMovieTickets';
 import BookPartyHall from './Voyager/BookPartyHall';
 import BookFitnessCentre from './Voyager/BookFitnessCentre';
 import BookBeautySalon from './Voyager/BookBeautySalon';
+import VoyagerDashboard from './Voyager/VoyagerDashboard';
 import Admin from './Admin/Admin';
+import AdminDashboard from './Admin/AdminDashboard';
 import VoyagerRegistration from './Admin/VoyagerRegistration';
 import ViewBookedPartyHalls from './Manager/ViewBookedPartyHall';
 import ViewBookedBeautySalon from './Manager/ViewBookedBeautySalon';
@@ -36,6 +38,7 @@ function App() {
         <Route path='/admin/signup' element={<SignUp setLoggedIn={setLoggedIn} />} />
 
         {/* Voyager routes */}
+        <Route path="/voyager/dashboard" element={<VoyagerDashboard />} />
         <Route path="/voyager/catering" element={<OrderCaterItems />} />
         <Route path="/voyager/stationery" element={<OrderStationeryItems />} />
         <Route path="/voyager/resort" element={<BookResortAndMovieTickets />} />
@@ -44,6 +47,7 @@ function App() {
         <Route path="/voyager/beauty" element={<BookBeautySalon />} />
 
         {/* Admin routes */}
+        <Route path='/admin/dashboard' element={<AdminDashboard />} />
         <Route path='/admin/manage' element={<Admin />} />
         <Route path='/admin/voyager' element={<VoyagerRegistration />} />
 

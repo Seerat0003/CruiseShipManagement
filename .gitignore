@@ -27,3 +27,5 @@ yarn-error.log*
 =======
 .env
 >>>>>>> 09df642b738d47cacd228d8dcd1b85f6158c9e5a
+node_modules/
+backend/node_modules/
