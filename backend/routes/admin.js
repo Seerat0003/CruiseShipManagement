@@ -183,4 +183,58 @@ router.put("/bookings/:id", async (req, res) => {
   }
 });
 
+// View registered voyagers
+router.get("/users", async (req, res) => {
+  try {
+    const users = await User.findAll({ where: { role: 'voyager' } });
+    res.json(users);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Create new active trip (cruise)
+router.post("/cruises", async (req, res) => {
+  try {
+    const { name, route, start_date, duration_days, total_seats, price, image_url } = req.body;
+    const cruise = await Cruise.create({ 
+      name, 
+      route, 
+      start_date, 
+      duration_days, 
+      total_seats, 
+      available_seats: total_seats, 
+      price, 
+      image_url 
+    });
+    res.status(201).json({ message: "Cruise created", cruise });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// View Facility & Location booking stats
+router.get("/facility-stats", async (req, res) => {
+  try {
+    const services = await Service.findAll();
+    const bookings = await Booking.findAll();
+    
+    const stats = services.map(srv => {
+      const srvBookings = bookings.filter(b => b.service_id === srv.id);
+      return {
+        id: srv.id,
+        name: srv.name,
+        category: srv.category,
+        total_bookings: srvBookings.length,
+        confirmed: srvBookings.filter(b => b.status === 'Confirmed').length,
+        pending: srvBookings.filter(b => b.status === 'Pending').length
+      };
+    });
+    
+    res.json(stats);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 module.exports = router;
