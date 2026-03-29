@@ -1,0 +1,50 @@
+/* Global Form/Table aesthetics for other pages */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 2rem 0;
+  background: rgba(13, 34, 53, 0.4);
+  backdrop-filter: blur(16px);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+}
+
+th, td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+th {
+  background: rgba(255, 255, 255, 0.05);
+  font-family: var(--font-heading);
+  color: var(--secondary-color);
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.85rem;
+  letter-spacing: 1px;
+}
+
+td {
+  color: rgba(255,255,255,0.9);
+}
+
+tr:hover td {
+  background: rgba(247, 214, 165, 0.03);
+}
+
+/* Page containers inside routes */
+.page-container {
+  padding: 100px 5% 50px 5%;
+  min-height: 100vh;
+  animation: fadeInData 0.6s ease forwards;
+}
+
+.page-title {
+  color: var(--secondary-color);
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+  padding-bottom: 1rem;
+}

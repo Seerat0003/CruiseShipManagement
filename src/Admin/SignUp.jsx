@@ -10,6 +10,9 @@ function SignUpForm({ setLoggedIn }) {
     confirmPassword: '',
   });
 
+  const [errorMsg, setErrorMsg] = useState('');
+  const [successMsg, setSuccessMsg] = useState('');
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -23,23 +26,48 @@ function SignUpForm({ setLoggedIn }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted with data:', formData);
+    setErrorMsg('');
+    setSuccessMsg('');
 
     if (formData.password !== formData.confirmPassword) {
-      console.warn('Password mismatch');
-      alert("Passwords do not match");
+      setErrorMsg("Passwords do not match");
       return;
     }
 
-    console.log('Using local placeholder signup flow.');
-    alert("Signup successful!");
-    setLoggedIn(true);
-    navigate('/');
+    try {
+      const res = await fetch("http://localhost:5001/api/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          name: formData.name, 
+          email: formData.email, 
+          password: formData.password,
+          role: "voyager" // default signup assigns voyager role
+        })
+      });
+      const data = await res.json();
+
+      if (res.ok) {
+        setSuccessMsg("Registration successful! Redirecting to login...");
+        setTimeout(() => {
+          navigate('/admin/login');
+        }, 2000);
+      } else {
+        setErrorMsg(data.message || data.error || "Registration failed. Please verify credentials.");
+      }
+    } catch (err) {
+      console.error(err);
+      setErrorMsg("Network error. The Backend Server is not reachable.");
+    }
   };
 
   return (
     <div className="signup-container">
-      <h2 className="signup-form-title">Sign Up</h2>
+      <h2 className="signup-form-title">Create Account</h2>
+      
+      {errorMsg && <div style={{padding: '12px', background: 'rgba(255, 80, 80, 0.1)', border: '1px solid #ff5050', color: '#ff5050', borderRadius: '8px', marginBottom: '1.5rem', textAlign: 'center', width: '100%', maxWidth: '350px', margin: '0 auto 1.5rem auto'}}>{errorMsg}</div>}
+      {successMsg && <div style={{padding: '12px', background: 'rgba(81, 207, 102, 0.1)', border: '1px solid #51cf66', color: '#51cf66', borderRadius: '8px', marginBottom: '1.5rem', textAlign: 'center', width: '100%', maxWidth: '350px', margin: '0 auto 1.5rem auto'}}>{successMsg}</div>}
+
       <form className="signup-form" onSubmit={handleSubmit}>
         <input
           type="text"
