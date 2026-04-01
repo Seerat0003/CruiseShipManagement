@@ -1,7 +1,11 @@
 const path = require("path");
 const { Sequelize } = require("sequelize");
+<<<<<<< Updated upstream
 
 require("dotenv").config({ path: path.resolve(__dirname, "..", ".env") });
+=======
+require("dotenv").config({ path: "./.env" });
+>>>>>>> Stashed changes
 
 const sequelize = new Sequelize(
   process.env.DB_NAME,
