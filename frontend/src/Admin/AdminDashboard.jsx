@@ -1,143 +1,138 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useMutation, useQuery } from '@apollo/client/react';
 import './AdminDashboard.css';
+import {
+  ADMIN_DASHBOARD_QUERY,
+  CREATE_CRUISE_MUTATION,
+  UPDATE_BOOKING_STATUS_MUTATION,
+} from '../graphql/operations';
+
+const emptyStats = {
+  users: 0,
+  cruises: 0,
+  services: 0,
+  bookings: 0,
+  totalSeats: 0,
+  bookedSeats: 0,
+  availableSeats: 0,
+};
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return 'N/A';
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? 'N/A' : parsed.toLocaleString();
+};
 
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
-  const [stats, setStats] = useState({
-    users: 0, cruises: 0, services: 0, bookings: 0,
-    totalSeats: 0, bookedSeats: 0, availableSeats: 0
-  });
   const [onlineCount, setOnlineCount] = useState(0);
+  const [newTrip, setNewTrip] = useState({
+    name: '',
+    route: '',
+    start_date: '',
+    duration_days: '',
+    total_seats: '',
+    price: '',
+    image_url: '',
+  });
 
-  const [bookings, setBookings] = useState([]);
-  const [users, setUsers] = useState([]);
-  const [facilityStats, setFacilityStats] = useState([]);
-  const [cruises, setCruises] = useState([]);
-  
-  // Trip creation form state
-  const [newTrip, setNewTrip] = useState({ name: '', route: '', start_date: '', duration_days: '', total_seats: '', price: '', image_url: '' });
+  const { data, loading, error, refetch } = useQuery(ADMIN_DASHBOARD_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const [updateBookingStatus] = useMutation(UPDATE_BOOKING_STATUS_MUTATION);
+  const [createCruise] = useMutation(CREATE_CRUISE_MUTATION);
 
   useEffect(() => {
-        const fetchStats = async () => {
-      try {
-        const token = localStorage.getItem("token");
-        console.log("DEBUG: Calling /api/admin/stats (initial)");
-        const res = await fetch("http://localhost:5001/api/admin/stats", {
-          headers: { "Authorization": `Bearer ${token}` }
-        });
-        const data = await res.json();
-        console.log("DEBUG: Stats response data:", data);
-        if (res.ok) setStats(data);
-      } catch (err) {
-        console.log("DEBUG: Stats fetch failed (initial):", err);
-        console.error("Stats error:", err);
-      }
+    const handlePresence = (event) => {
+      setOnlineCount(event.detail);
     };
 
-    fetchStats();
-
-    // Socket presence update
-    const handlePresence = (e) => {
-      setOnlineCount(e.detail);
+    const handleRefresh = () => {
+      refetch();
     };
 
     window.addEventListener('ONLINE_COUNT_CHANGE', handlePresence);
-    return () => window.removeEventListener('ONLINE_COUNT_CHANGE', handlePresence);
-  }, []);
+    window.addEventListener('REFRESH_BOOKINGS', handleRefresh);
 
-  const fetchDashboardData = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const headers = {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`
-      };
-
-      console.log("DEBUG: Starting fetchDashboardData parallel requests");
-      const requests = [
-        fetch("http://localhost:5001/api/admin/bookings", { headers }),
-        fetch("http://localhost:5001/api/admin/users", { headers }),
-        fetch("http://localhost:5001/api/admin/facility-stats", { headers }),
-        fetch("http://localhost:5001/api/public/cruises", { headers }),
-        fetch("http://localhost:5001/api/admin/stats", { headers })
-      ];
-
-      const [resBookings, resUsers, resFacility, resCruises, resStats] = await Promise.all(requests);
-      console.log("DEBUG: Parallel requests completed", {
-        bookings: resBookings.status,
-        users: resUsers.status,
-        facility: resFacility.status,
-        cruises: resCruises.status,
-        stats: resStats.status
-      });
-      
-      if (resBookings.status === 401 || resBookings.status === 403) {
-        alert("Admin Access Denied. Please Sign In as Admin.");
-        return;
-      }
-
-      setBookings(await resBookings.json());
-      setUsers(await resUsers.json());
-      setFacilityStats(await resFacility.json());
-      setCruises(await resCruises.json());
-      setStats(await resStats.json());
-      console.log("DEBUG: Dashboard state updated with fresh data");
-
-      
-    } catch (err) {
-      console.log("DEBUG: Dashbord fetch failed:", err);
-      console.error("Dashboard error:", err);
-    }
-  };
+    return () => {
+      window.removeEventListener('ONLINE_COUNT_CHANGE', handlePresence);
+      window.removeEventListener('REFRESH_BOOKINGS', handleRefresh);
+    };
+  }, [refetch]);
 
   const handleUpdateStatus = async (id, status) => {
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:5001/api/admin/bookings/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({ status })
+      await updateBookingStatus({
+        variables: { id, status },
       });
-      if (res.ok) fetchDashboardData();
-    } catch (err) {
-      console.error("Failed to update status");
+      refetch();
+    } catch (mutationError) {
+      console.error(mutationError);
+      alert('Failed to update status');
     }
   };
 
-  const handleCreateTrip = async (e) => {
-    e.preventDefault();
+  const handleCreateTrip = async (event) => {
+    event.preventDefault();
+
     try {
-      const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:5001/api/admin/cruises", {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify(newTrip)
+      await createCruise({
+        variables: {
+          name: newTrip.name,
+          route: newTrip.route,
+          start_date: newTrip.start_date,
+          duration_days: Number.parseInt(newTrip.duration_days, 10),
+          total_seats: Number.parseInt(newTrip.total_seats, 10),
+          price: Number.parseFloat(newTrip.price),
+          image_url: newTrip.image_url || null,
+        },
       });
-      if (res.ok) {
-        alert("Trip successfully created!");
-        setNewTrip({ name: '', route: '', start_date: '', duration_days: '', total_seats: '', price: '', image_url: '' });
-        fetchDashboardData();
-      }
-    } catch (err) {
-      console.error("Failed to create cruise trip");
+
+      alert('Trip successfully created!');
+      setNewTrip({
+        name: '',
+        route: '',
+        start_date: '',
+        duration_days: '',
+        total_seats: '',
+        price: '',
+        image_url: '',
+      });
+      refetch();
+    } catch (mutationError) {
+      console.error(mutationError);
+      alert('Failed to create cruise trip');
     }
   };
 
-  useEffect(() => {
-    fetchDashboardData();
-  }, []);
+  const bookings = data?.bookings ?? [];
+  const users = data?.voyagers ?? [];
+  const facilityStats = data?.facilityStats ?? [];
+  const cruises = data?.cruises ?? [];
+  const stats = data?.adminStats ?? emptyStats;
+
+  if (loading && !data) {
+    return <div className="page-container hero-bg"><p style={{ color: '#fff', padding: '2rem' }}>Loading dashboard...</p></div>;
+  }
+
+  if (error) {
+    return <div className="page-container hero-bg"><p style={{ color: '#fff', padding: '2rem' }}>{error.message}</p></div>;
+  }
 
   return (
     <div className="page-container hero-bg">
       <div className="admin-header">
         <h2 className="page-title">Fleet Command Center</h2>
-        <button className="refresh-btn" onClick={fetchDashboardData}>Refresh Metrics</button>
+        <button className="refresh-btn" onClick={() => refetch()}>Refresh Metrics</button>
       </div>
 
       <div className="admin-tabs">
-        {['Overview', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers'].map(tab => (
-          <button 
-            key={tab} 
+        {['Overview', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers'].map((tab) => (
+          <button
+            key={tab}
             className={`admin-tab-btn ${activeTab === tab ? 'active' : ''}`}
             onClick={() => setActiveTab(tab)}
           >
@@ -148,27 +143,24 @@ const AdminDashboard = () => {
 
       {activeTab === 'Overview' && (
         <>
-          {stats && (
-            <div className="dashboard-grid">
-              <div className="stat-card" style={{ borderColor: '#51cf66' }}>
-                <div className="stat-val" style={{ color: '#51cf66' }}>{onlineCount}</div>
-                <div className="stat-lbl">Online Users (Live)</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-val">{stats.users}</div>
-                <div className="stat-lbl">Registered Voyagers</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-val">{stats.cruises}</div>
-                <div className="stat-lbl">Active Trips</div>
-              </div>
-              <div className="stat-card">
-                <div className="stat-val">{stats.bookings}</div>
-                <div className="stat-lbl">Total Reservations</div>
-              </div>
+          <div className="dashboard-grid">
+            <div className="stat-card" style={{ borderColor: '#51cf66' }}>
+              <div className="stat-val" style={{ color: '#51cf66' }}>{onlineCount}</div>
+              <div className="stat-lbl">Online Users (Live)</div>
             </div>
-          )}
-
+            <div className="stat-card">
+              <div className="stat-val">{stats.users}</div>
+              <div className="stat-lbl">Registered Voyagers</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val">{stats.cruises}</div>
+              <div className="stat-lbl">Active Trips</div>
+            </div>
+            <div className="stat-card">
+              <div className="stat-val">{stats.bookings}</div>
+              <div className="stat-lbl">Total Reservations</div>
+            </div>
+          </div>
 
           <h3 className="page-title" style={{ fontSize: '1.8rem', border: 'none', marginBottom: '1rem' }}>Global Live Reservations</h3>
           <table>
@@ -185,20 +177,20 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {bookings.length > 0 ? (
-                bookings.map((b) => (
-                  <tr key={b.id}>
-                    <td>#{b.id}</td>
-                    <td>{b.Cruise ? "Cruise Trip" : b.Service ? "Facility" : "Other"}</td>
-                    <td>{b.Service?.name || b.Cruise?.name || "Unknown"}</td>
-                    <td>{b.User ? b.User.name : "System User"}</td>
-                    <td>{new Date(b.start_time).toLocaleString()}</td>
-                    <td><span style={{color: b.status === 'Confirmed' ? '#51cf66' : '#fcc419'}}>{b.status}</span></td>
+                bookings.map((booking) => (
+                  <tr key={booking.id}>
+                    <td>#{booking.id}</td>
+                    <td>{booking.cruise ? 'Cruise Trip' : booking.service ? 'Facility' : 'Other'}</td>
+                    <td>{booking.service?.name || booking.cruise?.name || 'Unknown'}</td>
+                    <td>{booking.user?.name || 'System User'}</td>
+                    <td>{formatDateTime(booking.start_time)}</td>
+                    <td><span style={{ color: booking.status === 'Confirmed' ? '#51cf66' : '#fcc419' }}>{booking.status}</span></td>
                     <td>
-                      {b.status === 'Pending' && (
-                        <button 
-                          className="btn-luxury" 
+                      {booking.status === 'Pending' && (
+                        <button
+                          className="btn-luxury"
                           style={{ padding: '6px 12px', fontSize: '0.8rem' }}
-                          onClick={() => handleUpdateStatus(b.id, 'Confirmed')}
+                          onClick={() => handleUpdateStatus(booking.id, 'Confirmed')}
                         >
                           Approve
                         </button>
@@ -208,7 +200,7 @@ const AdminDashboard = () => {
                 ))
               ) : (
                 <tr>
-                  <td colSpan="7" style={{ textAlign: "center", padding: "2rem" }}>No reservations found.</td>
+                  <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>No reservations found.</td>
                 </tr>
               )}
             </tbody>
@@ -220,38 +212,37 @@ const AdminDashboard = () => {
         <>
           <h3 className="page-title" style={{ fontSize: '1.8rem', border: 'none', marginBottom: '1.5rem' }}>Location Capacity & Metrics</h3>
           <div className="facility-grid">
-            {facilityStats.map(srv => {
-              // Creating a simulated mock capacity for beautiful UI representation
-              const maxCapacity = srv.category === 'Dining' ? 120 : srv.category === 'Party' ? 300 : srv.category === 'Spa' ? 20 : 100;
-              const fillPercentage = Math.min(((srv.confirmed + srv.pending) / maxCapacity) * 100, 100);
+            {facilityStats.map((service) => {
+              const maxCapacity = service.category === 'Dining' ? 120 : service.category === 'Party' ? 300 : service.category === 'Spa' ? 20 : 100;
+              const fillPercentage = Math.min(((service.confirmed + service.pending) / maxCapacity) * 100, 100);
               const isFull = fillPercentage >= 100;
 
               return (
-                <div className="facility-card" key={srv.id}>
+                <div className="facility-card" key={service.id}>
                   <div className="facility-card-header">
-                    <span className="facility-title">{srv.name}</span>
-                    <span className="facility-cat">{srv.category}</span>
+                    <span className="facility-title">{service.name}</span>
+                    <span className="facility-cat">{service.category}</span>
                   </div>
-                  
+
                   <div className="facility-details">
                     <span>Total Booked</span>
-                    <span>{srv.total_bookings}</span>
+                    <span>{service.total_bookings}</span>
                   </div>
                   <div className="facility-details">
                     <span>Confirmed Entries</span>
-                    <span style={{color: '#51cf66'}}>{srv.confirmed}</span>
+                    <span style={{ color: '#51cf66' }}>{service.confirmed}</span>
                   </div>
                   <div className="facility-details">
                     <span>Pending Approval</span>
-                    <span style={{color: '#fcc419'}}>{srv.pending}</span>
+                    <span style={{ color: '#fcc419' }}>{service.pending}</span>
                   </div>
-                  <div className="facility-details" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)'}}>
+                  <div className="facility-details" style={{ marginTop: '10px', paddingTop: '10px', borderTop: '1px solid rgba(255,255,255,0.05)' }}>
                     <span>Remaining Capacity</span>
-                    <span style={{color: isFull ? '#ff6b6b' : '#fff'}}>{Math.max(maxCapacity - (srv.confirmed + srv.pending), 0)} spaces</span>
+                    <span style={{ color: isFull ? '#ff6b6b' : '#fff' }}>{Math.max(maxCapacity - (service.confirmed + service.pending), 0)} spaces</span>
                   </div>
 
                   <div className="progress-bar">
-                    <div className="progress-fill" style={{ width: `${fillPercentage}%`, background: isFull ? '#ff6b6b' : 'var(--secondary-color)' }}></div>
+                    <div className="progress-fill" style={{ width: `${fillPercentage}%`, background: isFull ? '#ff6b6b' : 'var(--secondary-color)' }} />
                   </div>
                 </div>
               );
@@ -275,18 +266,18 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {users.length > 0 ? (
-                users.map(u => (
-                  <tr key={u.id}>
-                    <td>V-${u.id * 832}</td>
-                    <td>{u.name}</td>
-                    <td>{u.email}</td>
-                    <td style={{ textTransform: 'uppercase' }}>{u.role}</td>
-                    <td>{new Date(u.createdAt).toLocaleDateString()}</td>
+                users.map((user) => (
+                  <tr key={user.id}>
+                    <td>V-{user.id * 832}</td>
+                    <td>{user.name}</td>
+                    <td>{user.email}</td>
+                    <td style={{ textTransform: 'uppercase' }}>{user.role}</td>
+                    <td>{user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'N/A'}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="5" style={{ textAlign: "center", padding: "2rem" }}>No voyagers registered yet.</td>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No voyagers registered yet.</td>
                 </tr>
               )}
             </tbody>
@@ -300,17 +291,17 @@ const AdminDashboard = () => {
             <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#f7d6a5' }}>Launch New Cruise Trip</h3>
             <form onSubmit={handleCreateTrip}>
               <div className="form-row">
-                <input type="text" placeholder="Cruise Name (e.g. Sapphire Seas Tour)" value={newTrip.name} onChange={e => setNewTrip({...newTrip, name: e.target.value})} required />
-                <input type="text" placeholder="Route (e.g. Miami -> Bahamas)" value={newTrip.route} onChange={e => setNewTrip({...newTrip, route: e.target.value})} required />
+                <input type="text" placeholder="Cruise Name (e.g. Sapphire Seas Tour)" value={newTrip.name} onChange={(event) => setNewTrip({ ...newTrip, name: event.target.value })} required />
+                <input type="text" placeholder="Route (e.g. Miami -> Bahamas)" value={newTrip.route} onChange={(event) => setNewTrip({ ...newTrip, route: event.target.value })} required />
               </div>
               <div className="form-row">
-                <input type="date" value={newTrip.start_date} onChange={e => setNewTrip({...newTrip, start_date: e.target.value})} required title="Start Date"/>
-                <input type="number" placeholder="Duration (Days)" value={newTrip.duration_days} onChange={e => setNewTrip({...newTrip, duration_days: e.target.value})} required />
+                <input type="date" value={newTrip.start_date} onChange={(event) => setNewTrip({ ...newTrip, start_date: event.target.value })} required title="Start Date" />
+                <input type="number" placeholder="Duration (Days)" value={newTrip.duration_days} onChange={(event) => setNewTrip({ ...newTrip, duration_days: event.target.value })} required />
               </div>
               <div className="form-row">
-                <input type="number" placeholder="Total Seats" value={newTrip.total_seats} onChange={e => setNewTrip({...newTrip, total_seats: e.target.value})} required />
-                <input type="number" placeholder="Base Price ($)" value={newTrip.price} onChange={e => setNewTrip({...newTrip, price: e.target.value})} required />
-                <input type="text" placeholder="Image Name (e.g. cruise1.png)" value={newTrip.image_url} onChange={e => setNewTrip({...newTrip, image_url: e.target.value})} />
+                <input type="number" placeholder="Total Seats" value={newTrip.total_seats} onChange={(event) => setNewTrip({ ...newTrip, total_seats: event.target.value })} required />
+                <input type="number" placeholder="Base Price ($)" value={newTrip.price} onChange={(event) => setNewTrip({ ...newTrip, price: event.target.value })} required />
+                <input type="text" placeholder="Image Name (e.g. cruise1.png)" value={newTrip.image_url} onChange={(event) => setNewTrip({ ...newTrip, image_url: event.target.value })} />
               </div>
               <button type="submit" className="create-btn">Deploy Cruise</button>
             </form>
@@ -330,28 +321,27 @@ const AdminDashboard = () => {
             </thead>
             <tbody>
               {cruises.length > 0 ? (
-                cruises.map(c => (
-                  <tr key={c.id}>
-                    <td>{c.name}</td>
-                    <td>{c.route}</td>
-                    <td>{new Date(c.start_date).toLocaleDateString()}</td>
-                    <td>{c.duration_days} Days</td>
+                cruises.map((cruise) => (
+                  <tr key={cruise.id}>
+                    <td>{cruise.name}</td>
+                    <td>{cruise.route}</td>
+                    <td>{new Date(cruise.start_date).toLocaleDateString()}</td>
+                    <td>{cruise.duration_days} Days</td>
                     <td>
-                      <span style={{ color: '#51cf66' }}>{c.available_seats} Available</span> / {c.total_seats}
+                      <span style={{ color: '#51cf66' }}>{cruise.available_seats} Available</span> / {cruise.total_seats}
                     </td>
-                    <td>${c.price}</td>
+                    <td>${cruise.price}</td>
                   </tr>
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" style={{ textAlign: "center", padding: "2rem" }}>No active trips deployed.</td>
+                  <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No active trips deployed.</td>
                 </tr>
               )}
             </tbody>
           </table>
         </>
       )}
-
     </div>
   );
 };

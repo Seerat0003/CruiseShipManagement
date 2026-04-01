@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
 import './SignUp.css';
+import { REGISTER_MUTATION } from '../graphql/operations';
 
 function SignUpForm({ setLoggedIn }) {
   const [formData, setFormData] = useState({
@@ -12,6 +14,7 @@ function SignUpForm({ setLoggedIn }) {
 
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [registerMutation] = useMutation(REGISTER_MUTATION);
 
   const navigate = useNavigate();
 
@@ -35,29 +38,27 @@ function SignUpForm({ setLoggedIn }) {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/register", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
+      const { data } = await registerMutation({
+        variables: {
           name: formData.name, 
           email: formData.email, 
           password: formData.password,
-          role: "voyager" // default signup assigns voyager role
-        })
+          role: "voyager",
+        },
       });
-      const data = await res.json();
 
-      if (res.ok) {
-        setSuccessMsg("Registration successful! Redirecting to login...");
+      if (data?.register?.user) {
+        setLoggedIn(false);
+        setSuccessMsg(data.register.message || "Registration successful! Redirecting to login...");
         setTimeout(() => {
           navigate('/admin/login');
         }, 2000);
       } else {
-        setErrorMsg(data.message || data.error || "Registration failed. Please verify credentials.");
+        setErrorMsg("Registration failed. Please verify credentials.");
       }
     } catch (err) {
       console.error(err);
-      setErrorMsg("Network error. The Backend Server is not reachable.");
+      setErrorMsg(err.message || "Network error. The Backend Server is not reachable.");
     }
   };
 

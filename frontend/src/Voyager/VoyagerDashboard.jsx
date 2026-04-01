@@ -1,54 +1,58 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
+import { useQuery } from '@apollo/client/react';
 import './VoyagerDashboard.css';
 import '../Home.css'; // to reuse the luxury-card styles
 import { useNavigate } from 'react-router-dom';
 import medImg from '../assets/med.png';
 import caribImg from '../assets/caribbean.png';
 import alaskaImg from '../assets/alaska.png';
+import { VOYAGER_DASHBOARD_QUERY } from '../graphql/operations';
 
 const VoyagerDashboard = () => {
-  const [cruises, setCruises] = useState([]);
-  const [services, setServices] = useState([]);
-  const [myBookings, setMyBookings] = useState([]);
   const navigate = useNavigate();
+  const { data, loading, error, refetch } = useQuery(VOYAGER_DASHBOARD_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
 
   useEffect(() => {
-    // Fetch public cruises, services, AND personal user bookings
-    const fetchData = async () => {
-      try {
-        const cruiseRes = await fetch('http://localhost:5001/api/public/cruises');
-        if (cruiseRes.ok) setCruises(await cruiseRes.json());
-        
-        const serviceRes = await fetch('http://localhost:5001/api/public/services');
-        if (serviceRes.ok) setServices(await serviceRes.json());
-
-        // Fetch securely with token
-        const token = localStorage.getItem('token');
-        if (token) {
-          const bookingRes = await fetch('http://localhost:5001/api/voyager/bookings', {
-            headers: { 'Authorization': `Bearer ${token}` }
-          });
-          if (bookingRes.ok) {
-            setMyBookings(await bookingRes.json());
-          }
-        }
-      } catch (err) {
-        console.error("Failed to fetch dashboard data", err);
-      }
+    const handleRefresh = () => {
+      refetch();
     };
-    fetchData();
-  }, []);
 
-  const handleBookClick = (category) => {
-    if(category === "Spa" || category === "Beauty") navigate('/voyager/beauty');
-    else if(category === "Gym") navigate('/voyager/fitness');
-    else if(category === "Dining" || category === "Party") navigate('/voyager/party');
-    else if(category === "Entertainment") navigate('/voyager/resort');
-    else navigate('/voyager/party');
+    window.addEventListener('REFRESH_USER_BOOKINGS', handleRefresh);
+    return () => window.removeEventListener('REFRESH_USER_BOOKINGS', handleRefresh);
+  }, [refetch]);
+
+  const getBookingRoute = (category) => {
+    if (category === "Spa" || category === "Beauty") return '/voyager/beauty';
+    if (category === "Gym") return '/voyager/fitness';
+    if (category === "Dining" || category === "Party") return '/voyager/party';
+    if (category === "Entertainment") return '/voyager/resort';
+    return '/voyager/party';
+  };
+
+  const handleBookClick = (service) => {
+    navigate(getBookingRoute(service.category), {
+      state: {
+        selectedServiceId: service.id,
+        selectedServiceName: service.name,
+      },
+    });
   };
 
   const userStr = localStorage.getItem('user');
   const user = userStr ? JSON.parse(userStr) : { name: "Guest" };
+  const cruises = data?.cruises ?? [];
+  const services = data?.services ?? [];
+  const myBookings = data?.me?.bookings ?? [];
+
+  if (loading && !data) {
+    return <div className="voyager-dashboard"><p style={{ color: '#fff', padding: '2rem' }}>Loading dashboard...</p></div>;
+  }
+
+  if (error) {
+    return <div className="voyager-dashboard"><p style={{ color: '#fff', padding: '2rem' }}>{error.message}</p></div>;
+  }
 
   return (
     <div className="voyager-dashboard">
@@ -139,7 +143,7 @@ const VoyagerDashboard = () => {
               </div>
               <div className="card-footer">
                 <span className="price">${parseFloat(service.price).toLocaleString()} <span className="price-small">/ session</span></span>
-                <button className="btn-luxury" onClick={() => handleBookClick(service.category)}>Reserve Slot</button>
+                <button className="btn-luxury" onClick={() => handleBookClick(service)}>Reserve Slot</button>
               </div>
             </div>
           ))}

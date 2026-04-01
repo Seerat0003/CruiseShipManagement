@@ -28,10 +28,12 @@ import SupportChat from './SupportChat';
 function App() {
   // State to check whether a user is logged in
   const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
+  const userStr = localStorage.getItem('user');
+  const currentUser = userStr ? JSON.parse(userStr) : null;
 
 
   return (
-    <SocketProvider>
+    <SocketProvider user={currentUser}>
       <Router>
         {/* Navigation bar receives loggedIn and setLoggedIn for logout handling */}
         <Navigation loggedIn={loggedIn} setLoggedIn={setLoggedIn} />

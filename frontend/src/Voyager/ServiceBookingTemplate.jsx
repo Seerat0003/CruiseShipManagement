@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useQuery, useMutation } from '@apollo/client/react';
+import { toast } from 'react-toastify';
+
 import './ServiceBookingTemplate.css';
 import '../Home.css';
 import facilitiesImg from '../assets/facilities.png';
+import { CREATE_BOOKING_MUTATION, SERVICE_BOOKING_DATA_QUERY } from '../graphql/operations';
 
 // Time slot constants (Pill shaped buttons)
 const TIME_SLOTS = [
@@ -12,6 +16,11 @@ const TIME_SLOTS = [
 ];
 
 const ServiceBookingTemplate = ({ title, categoryFilter }) => {
+  const { data, loading, error, refetch } = useQuery(SERVICE_BOOKING_DATA_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const [createBooking] = useMutation(CREATE_BOOKING_MUTATION);
+  
   const [services, setServices] = useState([]);
   const [allBookings, setAllBookings] = useState([]);
   
@@ -20,30 +29,26 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
   
+  const location = useLocation();
   const navigate = useNavigate();
+  const focusedServiceId = location.state?.selectedServiceId ?? null;
+  const focusedServiceName = location.state?.selectedServiceName ?? '';
 
   useEffect(() => {
-    const fetchData = async () => {
-      // 1. Fetch Services
-      try {
-        const servRes = await fetch('http://localhost:5001/api/public/services');
-        if (servRes.ok) {
-          const allServs = await servRes.json();
-          setServices(allServs.filter(s => categoryFilter.includes(s.category)));
-        }
-      } catch (err) { console.error("Service fetch failed"); }
+    if (data) {
+      const matchingServices = data.services.filter((service) => categoryFilter.includes(service.category));
+      setServices(matchingServices);
+      setAllBookings(data.bookings);
 
-      // 2. Fetch Bookings
-      try {
-        const bookRes = await fetch('http://localhost:5001/api/public/bookings');
-        if (bookRes.ok) {
-          const allBooks = await bookRes.json();
-          setAllBookings(allBooks);
-        }
-      } catch (err) { console.error("Bookings fetch failed"); }
-    };
-    fetchData();
-  }, [categoryFilter]);
+      if (focusedServiceId && matchingServices.some((service) => String(service.id) === String(focusedServiceId))) {
+        setSelectedServiceId(String(focusedServiceId));
+      }
+    }
+  }, [data, categoryFilter, focusedServiceId]);
+
+  const displayedServices = focusedServiceId
+    ? services.filter((service) => String(service.id) === String(focusedServiceId))
+    : services;
 
   // Count how many bookings exist for a specific slot on the selected Date and Service
   const getBookingsCount = (serviceId, timeStr) => {
@@ -61,11 +66,12 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
   const handleConfirmReservation = async () => {
     const token = localStorage.getItem('token');
     if (!token) {
-      alert("Please sign in first to complete your reservation.");
+      toast.info('Please sign in first to complete your reservation.');
       return navigate('/admin/login');
     }
     if (!date || !selectedServiceId || !selectedTime) {
-      return alert("Please select a Date, Venue, and Timing to book.");
+      toast.info('Please select a Date, Venue, and Timing to book.');
+      return;
     }
     
     // Calculate start/end objects
@@ -73,35 +79,41 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
     let endTimeObj = new Date(startTimeObj.getTime() + 3 * 60 * 60 * 1000);
 
     try {
-      const res = await fetch('http://localhost:5001/api/voyager/bookings', {
-        method: "POST",
-        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
-        body: JSON.stringify({
+      const { data: mutationData } = await createBooking({
+        variables: {
           service_id: selectedServiceId,
           start_time: startTimeObj.toISOString(),
           end_time: endTimeObj.toISOString()
-        })
+        }
       });
       
-      if (res.ok) {
-        alert(`Reservation Confirmed for ${startTimeObj.toLocaleTimeString()}! Syncing Database...`);
+      if (mutationData) {
+        refetch(); // Reload data
         navigate('/voyager/dashboard');
-      } else {
-        alert("Booking failure. That time slot may currently be locked.");
       }
-    } catch(err) {
-      alert("Encountered server processing delay submitting API network request.");
+    } catch (err) {
+      console.error("Booking error:", err);
+      const errorMessage =
+        err?.message?.replace(/^GraphQL error:\s*/i, '') ||
+        err?.graphQLErrors?.[0]?.message ||
+        'Booking failed. Please try again.';
+      toast.error(errorMessage);
     }
   };
 
   const todayStr = new Date().toISOString().split('T')[0];
+
+  if (loading) return <div className="loading">Loading maritime experiences...</div>;
+  if (error) return <div className="error">Error loading data: {error.message}</div>;
 
   return (
     <div className="booking-page-container">
       <div className="booking-header">
         <h1><span>Select</span> {title}</h1>
         <p className="subtitle" style={{ color: 'rgba(255,255,255,0.7)', marginTop: '1rem', maxWidth: '600px', margin: '1rem auto' }}>
-          Reserve your exclusive maritime experience directly onto your internal itinerary.
+          {focusedServiceName
+            ? `Choose a date and time for ${focusedServiceName}, then confirm your reservation.`
+            : 'Reserve your exclusive maritime experience directly onto your internal itinerary.'}
         </p>
       </div>
 
@@ -133,7 +145,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
         
         {/* 2. WIDE VENUE CARDS WITH INLINE SLOTS */}
         <div>
-          {services.length > 0 ? services.map(service => {
+          {displayedServices.length > 0 ? displayedServices.map(service => {
             let deckLocation = ['Party', 'Dining', 'Entertainment'].includes(service.category) ? 'Deck 7, Aft' : 'Deck 14, Forward';
             let sqFt = ['Spa', 'Beauty'].includes(service.category) ? '3,500 sq ft' : '12,000 sq ft';
 
@@ -179,7 +191,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
                               className={`slot-pill ${isCurrentlySelected ? 'selected' : ''}`}
                               disabled={unavailable}
                               onClick={() => {
-                                setSelectedServiceId(service.id);
+                                setSelectedServiceId(String(service.id));
                                 setSelectedTime(slot.time);
                               }}
                             >

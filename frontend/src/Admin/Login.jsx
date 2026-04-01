@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { useMutation } from '@apollo/client/react';
 import './Login.css';
+import { LOGIN_MUTATION } from '../graphql/operations';
 
 function Login({ setLoggedIn }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
+  const [loginMutation] = useMutation(LOGIN_MUTATION);
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -26,31 +29,31 @@ function Login({ setLoggedIn }) {
     }
 
     try {
-      const res = await fetch("http://localhost:5001/api/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password })
+      const { data } = await loginMutation({
+        variables: { email, password },
       });
-      const data = await res.json();
-      
-      if (res.ok) {
-        localStorage.setItem("token", data.token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        setSuccessMsg(`Welcome back, ${data.user.name}! Authenticating...`);
+
+      const payload = data?.login;
+      if (payload?.token && payload?.user) {
+        localStorage.setItem("token", payload.token);
+        localStorage.setItem("user", JSON.stringify(payload.user));
+        setSuccessMsg(`Welcome back, ${payload.user.name}! Authenticating...`);
         setLoggedIn(true);
         setTimeout(() => {
-          if (data.user.role === 'admin') {
+          if (payload.user.role === 'admin') {
             navigate('/admin/dashboard');
+          } else if (payload.user.role === 'manager') {
+            navigate('/manager/viewparty');
           } else {
             navigate('/voyager/dashboard');
           }
         }, 1500);
       } else {
-        setErrorMsg(data.message || "Invalid credentials provided.");
+        setErrorMsg('Login failed. Please try again.');
       }
     } catch (err) {
       console.error(err);
-      setErrorMsg("Network server error. Please verify backend is running.");
+      setErrorMsg(err.message || "Network server error. Please verify backend is running.");
     }
   };
 
