@@ -86,9 +86,12 @@ router.delete("/services/:id", async (req, res) => {
 
 // View all bookings
 router.get("/bookings", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/bookings called");
   try {
     // Include user and service references in bookings
     const bookings = await Booking.findAll({ include: [User, Service, Cruise] });
+    console.log(`DEBUG: Found ${bookings.length} bookings`);
+    res.json(bookings);
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -96,11 +99,13 @@ router.get("/bookings", async (req, res) => {
 });
 
 router.get("/stats", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/stats called");
   try {
     const userCount = await User.count();
     const cruiseCount = await Cruise.count();
     const servicesCount = await Service.count();
     const bookingCount = await Booking.count();
+    console.log(`DEBUG: Stats - Users: ${userCount}, Cruises: ${cruiseCount}, Services: ${servicesCount}, Bookings: ${bookingCount}`);
     
     // Total seats
     const allCruises = await Cruise.findAll();
@@ -194,8 +199,10 @@ router.put("/bookings/:id", async (req, res) => {
 
 // View registered voyagers
 router.get("/users", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/users called");
   try {
     const users = await User.findAll({ where: { role: 'voyager' } });
+    console.log(`DEBUG: Found ${users.length} voyagers`);
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -224,9 +231,11 @@ router.post("/cruises", async (req, res) => {
 
 // View Facility & Location booking stats
 router.get("/facility-stats", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/facility-stats called");
   try {
     const services = await Service.findAll();
     const bookings = await Booking.findAll();
+    console.log(`DEBUG: Processing stats for ${services.length} services and ${bookings.length} total bookings`);
     
     const stats = services.map(srv => {
       const srvBookings = bookings.filter(b => b.service_id === srv.id);

@@ -18,15 +18,18 @@ const AdminDashboard = () => {
   const [newTrip, setNewTrip] = useState({ name: '', route: '', start_date: '', duration_days: '', total_seats: '', price: '', image_url: '' });
 
   useEffect(() => {
-    const fetchStats = async () => {
+        const fetchStats = async () => {
       try {
         const token = localStorage.getItem("token");
+        console.log("DEBUG: Calling /api/admin/stats (initial)");
         const res = await fetch("http://localhost:5001/api/admin/stats", {
           headers: { "Authorization": `Bearer ${token}` }
         });
         const data = await res.json();
+        console.log("DEBUG: Stats response data:", data);
         if (res.ok) setStats(data);
       } catch (err) {
+        console.log("DEBUG: Stats fetch failed (initial):", err);
         console.error("Stats error:", err);
       }
     };
@@ -50,7 +53,7 @@ const AdminDashboard = () => {
         "Authorization": `Bearer ${token}`
       };
 
-      // Ensure parallel fast loading
+      console.log("DEBUG: Starting fetchDashboardData parallel requests");
       const requests = [
         fetch("http://localhost:5001/api/admin/bookings", { headers }),
         fetch("http://localhost:5001/api/admin/users", { headers }),
@@ -60,6 +63,13 @@ const AdminDashboard = () => {
       ];
 
       const [resBookings, resUsers, resFacility, resCruises, resStats] = await Promise.all(requests);
+      console.log("DEBUG: Parallel requests completed", {
+        bookings: resBookings.status,
+        users: resUsers.status,
+        facility: resFacility.status,
+        cruises: resCruises.status,
+        stats: resStats.status
+      });
       
       if (resBookings.status === 401 || resBookings.status === 403) {
         alert("Admin Access Denied. Please Sign In as Admin.");
@@ -71,10 +81,11 @@ const AdminDashboard = () => {
       setFacilityStats(await resFacility.json());
       setCruises(await resCruises.json());
       setStats(await resStats.json());
-
+      console.log("DEBUG: Dashboard state updated with fresh data");
 
       
     } catch (err) {
+      console.log("DEBUG: Dashbord fetch failed:", err);
       console.error("Dashboard error:", err);
     }
   };
