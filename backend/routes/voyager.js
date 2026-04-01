@@ -40,11 +40,19 @@ router.post("/bookings", async (req, res) => {
       status: "Pending", // Admin must approve
     });
 
+    const { getIO } = require("../socket");
+    const io = getIO();
+    io.to("manager-room").emit("new_booking", {
+      message: "A new booking has been requested!",
+      booking,
+    });
+
     res.status(201).json({ message: "Booking requested", booking });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Get voyager's own bookings
 router.get("/bookings", async (req, res) => {
