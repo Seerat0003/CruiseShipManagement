@@ -1,29 +1,61 @@
-# 🚢 Cruise Ship Management System
+# Cruise Ship Management System
 
-A web-based Cruise Ship Management System built with React, designed to handle operations like ship booking, crew management, scheduling, and more — with a focus on security and modular design.
+This project is now split into two clear app folders:
 
----
+- `frontend/` contains the React app
+- `backend/` contains the Express and PostgreSQL API
 
-## 🚀 Features
+## Project Structure
 
-- Role-based access control (Admin, Staff, Voyager)
-- Responsive UI built with modern React practices
+```text
+Cruise-Ship-Management/
+├── frontend/
+│   ├── package.json
+│   ├── public/
+│   └── src/
+├── backend/
+│   ├── package.json
+│   ├── config/
+│   ├── models/
+│   └── routes/
+└── package.json
+```
 
----
+## Frontend
 
-## ⚙️ Tech Stack
-
-- **Frontend**: React, JavaScript
-- **Backend/Database**: Not configured
-- **Other**: Git & GitHub
-
----
-
-## 🛠️ Getting Started
-
-### Install dependencies and run the app
+Run the React app directly:
 
 ```bash
+cd frontend
 npm install
 npm start
+```
+
+Or from the repo root:
+
+```bash
+npm start
+```
+
+## Backend
+
+Run the API server:
+
+```bash
+cd backend
+npm install
+npm start
+```
+
+The backend requires a working PostgreSQL database and a valid `backend/.env` file.
+
+## Root Helper Scripts
+
+From the repo root, you can use:
+
+```bash
+npm start
+npm run build
+npm test
+npm run backend:start
 ```

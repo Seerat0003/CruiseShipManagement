@@ -131,12 +131,21 @@ router.put("/bookings/:id", async (req, res) => {
     const booking = await Booking.findByPk(req.params.id, {
         include: [User, Service]
     });
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
     booking.status = req.body.status;
     await booking.save();
 
-    // DISPATCH AUTOMATIC NOTIFICATION EMAIL ON APPROVAL
+    // --- REAL-TIME SOCKET NOTIFICATION ---
+    try {
+      const { getIO } = require("../socket");
+      const io = getIO();
+      io.to(`user-room-${booking.user_id}`).emit("booking_status_update", {
+        message: `Your booking for ${booking.Service?.name || 'Service'} has been ${booking.status}!`,
+        status: booking.status
+      });
+    } catch (err) {
+      console.error("Socket emit error on booking update:", err);
+    }
+
     if (booking.status === "Confirmed" && booking.User) {
         nodemailer.createTestAccount((err, account) => {
             if (err) return console.error('Failed to create a testing Mail account', err);

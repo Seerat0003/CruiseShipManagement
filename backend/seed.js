@@ -27,8 +27,14 @@ async function seed() {
       { name: "Grand Deck Party Hall", category: "Party", price: 500 },
       { name: "Oceanview Fine Dining", category: "Dining", price: 90 },
       { name: "Onboard Movie Theater", category: "Entertainment", price: 20 },
-      { name: "Premium Beauty Salon", category: "Beauty", price: 80 }
+      { name: "Premium Beauty Salon", category: "Beauty", price: 80 },
+      { name: "Elite Gift Boutique", category: "Gifts", price: 100 },
+      { name: "Cruise Stationery Set", category: "Stationery", price: 25 },
+      { name: "Luxury Brand Retail", category: "Retail", price: 300 },
+      { name: "In-Cabin Catering Service", category: "Catering", price: 50 }
     ]);
+
+
     console.log("✅ Services seeded!");
   } else {
     console.log("💆 Services already exist, skipping.");
