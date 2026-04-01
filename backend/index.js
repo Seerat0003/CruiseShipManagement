@@ -1,16 +1,15 @@
 const express = require("express");
 const cors = require("cors");
 const http = require("http");
+const { ApolloServer } = require("@apollo/server");
+const { expressMiddleware } = require("@as-integrations/express5");
+const jwt = require("jsonwebtoken");
 const sequelize = require("./config/db");
-const { User } = require("./models");
 const { initSocket } = require("./socket");
 
-// Import routes
-const authRoutes = require("./routes/auth");
-const adminRoutes = require("./routes/admin");
-const managerRoutes = require("./routes/manager");
-const voyagerRoutes = require("./routes/voyager");
-const publicRoutes = require("./routes/public");
+// Import GraphQL
+const typeDefs = require("./graphql/typeDefs");
+const resolvers = require("./graphql/resolvers");
 
 const app = express();
 const server = http.createServer(app);
@@ -18,37 +17,60 @@ const server = http.createServer(app);
 app.use(cors());
 app.use(express.json());
 
-// Register routes
-app.use("/api", authRoutes);
-app.use("/api/public", publicRoutes);
-app.use("/api/admin", adminRoutes);
-app.use("/api/manager", managerRoutes);
-app.use("/api/voyager", voyagerRoutes);
-
-
-app.get("/", (req, res) => {
-  res.send("API running with Sockets");
+// Initialize Apollo Server
+const apolloServer = new ApolloServer({
+  typeDefs,
+  resolvers,
 });
 
-// Initialize Socket.io
-initSocket(server);
+const startServer = async () => {
+  await apolloServer.start();
 
-sequelize
-  .authenticate()
-  .then(async () => {
-    console.log("✅ Database connected");
+  app.use(
+    "/graphql",
+    cors(),
+    express.json(),
+    expressMiddleware(apolloServer, {
+      context: async ({ req }) => {
+        const token = req.headers.authorization?.replace("Bearer ", "") || "";
+        let user = null;
+        if (token) {
+          try {
+            user = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
+          } catch (err) {
+            console.error("GraphQL Auth dynamic error:", err.message);
+          }
+        }
+        return { user };
+      },
+    })
+  );
 
-    // Sync all models (create tables if they don't exist)
-    await sequelize.sync({ alter: true });
-
-    const PORT = process.env.PORT || 5001;
-    server.listen(PORT, () => {
-      console.log(`🚀 Server running on port ${PORT} with Sockets enabled`);
-    });
-  })
-  .catch((err) => {
-    console.error("❌ Failed to start backend. Check your PostgreSQL server and backend/.env settings.");
-    console.error("❌ DB error:", err);
-    process.exit(1);
+  app.get("/", (req, res) => {
+    res.send("GraphQL API running with Socket.io");
   });
 
+  // Initialize Socket.io
+  initSocket(server);
+
+  sequelize
+    .authenticate()
+    .then(async () => {
+      console.log("✅ Database connected");
+
+      // Sync all models
+      await sequelize.sync({ alter: true });
+
+      const PORT = process.env.PORT || 5001;
+      server.listen(PORT, () => {
+        console.log(`🚀 Server running on port ${PORT} with Sockets and GraphQL enabled`);
+      });
+    })
+    .catch((err) => {
+      console.error("❌ Failed to start backend. Check your database settings.");
+      console.error("❌ DB error:", err);
+      process.exit(1);
+    });
+};
+
+startServer();

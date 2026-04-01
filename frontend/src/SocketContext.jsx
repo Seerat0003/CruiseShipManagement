@@ -7,20 +7,18 @@ const SocketContext = createContext();
 
 export const useSocket = () => useContext(SocketContext);
 
-export const SocketProvider = ({ children }) => {
+export const SocketProvider = ({ children, user }) => {
   const [socket, setSocket] = useState(null);
+  const userId = user?.id;
+  const userRole = user?.role;
 
   useEffect(() => {
-    // Get user info from localStorage
-    const savedUser = localStorage.getItem("user");
-    const user = savedUser ? JSON.parse(savedUser) : null;
-
     if (user) {
       const newSocket = io("http://localhost:5001", {
         query: {
-          role: user.role,
-          userId: user.id
-        }
+          role: userRole,
+          userId,
+        },
       });
 
       newSocket.on("connect", () => {
@@ -39,6 +37,17 @@ export const SocketProvider = ({ children }) => {
       });
 
       // Status update for Voyagers (Approved/Rejected)
+      newSocket.on("booking_requested", (data) => {
+        toast.info(
+          <div>
+            <strong>🗓️ Reservation Requested</strong>
+            <p style={{ margin: 0, fontSize: '0.85rem' }}>{data.message}</p>
+          </div>,
+          { position: "top-right", autoClose: 5000 }
+        );
+        window.dispatchEvent(new CustomEvent('REFRESH_USER_BOOKINGS'));
+      });
+
       newSocket.on("booking_status_update", (data) => {
         toast.success(
           <div>
@@ -57,7 +66,7 @@ export const SocketProvider = ({ children }) => {
 
       // New booking alert for Managers
       newSocket.on("new_booking", (data) => {
-        if (user.role === 'manager' || user.role === 'admin') {
+        if (userRole === 'manager' || userRole === 'admin') {
           toast.success(
             <div>
               <strong>🔔 New Booking!</strong>
@@ -75,17 +84,21 @@ export const SocketProvider = ({ children }) => {
         window.dispatchEvent(new CustomEvent('NEW_CHAT_MESSAGE', { detail: data }));
         
         // Show a small toast if the chat is closed
-        if (data.senderId !== user.id) {
+        if (data.senderId !== userId) {
            toast.info(`New message from ${data.senderName}`, { position: "bottom-right", autoClose: 3000 });
         }
       });
 
       setSocket(newSocket);
-
-
-      return () => newSocket.close();
+      return () => {
+        newSocket.close();
+        setSocket(null);
+      };
     }
-  }, []);
+
+    setSocket(null);
+    return undefined;
+  }, [user, userId, userRole]);
 
   return (
     <SocketContext.Provider value={socket}>

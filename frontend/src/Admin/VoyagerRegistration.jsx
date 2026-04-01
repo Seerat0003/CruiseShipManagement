@@ -1,36 +1,63 @@
 import React, { useState } from "react";
+import { useMutation } from '@apollo/client/react';
+import { toast } from 'react-toastify';
 import './VoyagerRegistration.css';
 import { useNavigate } from "react-router-dom";
+import { REGISTER_MUTATION } from "../graphql/operations";
 
 const VoyagerRegistration = () => {
+  const [registerVoyager] = useMutation(REGISTER_MUTATION);
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     phone: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    console.log(`Input changed - ${name}:`, value);
-    setFormData(prev => ({ ...prev, [name]: value }));
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match.");
+      return;
+    }
+
     setLoading(true);
-    console.log("Submitting voyager registration with data:", formData);
 
     try {
-      console.log("Registration submitted locally.", formData);
-      alert(`Voyager '${formData.username}' registered locally only. Persistence is not wired.`);
-      setFormData({ username: "", email: "", phone: "" });
-      navigate("/");
+      await registerVoyager({
+        variables: {
+          name: formData.username,
+          email: formData.email,
+          phone: formData.phone,
+          password: formData.password,
+          role: "voyager",
+        },
+      });
+
+      toast.success("Voyager saved to the database.");
+      setFormData({
+        username: "",
+        email: "",
+        phone: "",
+        password: "",
+        confirmPassword: "",
+      });
+      navigate("/admin/dashboard");
+    } catch (error) {
+      console.error(error);
+      toast.error(error.message || "Failed to register voyager.");
     } finally {
       setLoading(false);
-      console.log("Registration process finished.");
     }
   };
 
@@ -74,6 +101,32 @@ const VoyagerRegistration = () => {
             required
             pattern="^\d{10}$"
             title="Enter a 10-digit phone number"
+            className="voyager-input"
+            disabled={loading}
+          />
+        </div>
+
+        <div className="voyager-field">
+          <label className="voyager-label">Password</label><br />
+          <input
+            type="password"
+            name="password"
+            value={formData.password}
+            onChange={handleChange}
+            required
+            className="voyager-input"
+            disabled={loading}
+          />
+        </div>
+
+        <div className="voyager-field">
+          <label className="voyager-label">Confirm Password</label><br />
+          <input
+            type="password"
+            name="confirmPassword"
+            value={formData.confirmPassword}
+            onChange={handleChange}
+            required
             className="voyager-input"
             disabled={loading}
           />

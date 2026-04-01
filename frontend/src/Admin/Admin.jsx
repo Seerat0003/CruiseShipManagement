@@ -1,39 +1,38 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
+import { useQuery } from '@apollo/client/react';
 import AddNewItem from "./AddNewItem";
 import EditDeleteNewItem from "./EditDeleteNewItem";
 import "./Admin.css";
+import { INVENTORY_PRODUCTS_QUERY } from "../graphql/operations";
+import { getItemTypeFromCategory } from "./inventoryConfig";
 
 const Admin = () => {
-  const [items, setItems] = useState([]); //state to store items
+  const { data, loading, error, refetch } = useQuery(INVENTORY_PRODUCTS_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
 
-  // Placeholder until persistence is reworked.
-  const fetchItems = async () => {
-    setItems([]);
-  };
-
-  //fetchItems when the component mounts
-  useEffect(() => {
-    console.log("Admin component mounted. Initiating fetchItems...");
-    fetchItems();
-  }, []);
+  const items = (data?.products ?? []).map((product) => ({
+    id: product.id,
+    name: product.name,
+    category: product.category,
+    price: product.price,
+    stock: product.stock,
+    type: getItemTypeFromCategory(product.category),
+  }));
 
   return (
     <div className="admin-handle">
       <h2 className="admin-title">Admin Panel</h2>
 
-      {/* Component for adding a new item */}
-      {/* onItemAdded refresh after new item is added */}
-      <AddNewItem onItemAdded={() => {
-        console.log("New item added. Refreshing item list...");
-        fetchItems();
-      }} />
+      <AddNewItem onItemAdded={refetch} />
 
-      {/* Component for editing and deleting items */}
-      {/* refreshItems to fetch items on edit/delete */}
-      <EditDeleteNewItem items={items} refreshItems={() => {
-        console.log("Refresh requested from child component. Re-fetching items...");
-        fetchItems();
-      }} />
+      {loading && !data ? (
+        <p style={{ color: '#fff' }}>Loading inventory...</p>
+      ) : error ? (
+        <p style={{ color: '#fff' }}>{error.message}</p>
+      ) : (
+        <EditDeleteNewItem items={items} refreshItems={refetch} />
+      )}
     </div>
   );
 };
