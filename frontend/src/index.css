@@ -14,6 +14,8 @@
   --glass-blur: blur(16px);
   --font-heading: 'Outfit', sans-serif;
   --font-body: 'Inter', sans-serif;
+  --main-nav-height: 76px;
+  --secondary-nav-height: 58px;
 }
 
 body {
@@ -25,6 +27,11 @@ body {
   color: var(--text-light);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  --app-nav-offset: var(--main-nav-height);
+}
+
+body.has-secondary-nav {
+  --app-nav-offset: calc(var(--main-nav-height) + var(--secondary-nav-height));
 }
 
 *, *::before, *::after {
@@ -87,4 +94,11 @@ html, body, #root {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
+}
+
+@media (max-width: 900px) {
+  body {
+    --main-nav-height: 120px;
+    --secondary-nav-height: 56px;
+  }
 }

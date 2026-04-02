@@ -15,6 +15,26 @@ const TIME_SLOTS = [
   { id: '12to3am', label: '12:00 AM - 3:00 AM', time: '00:00' }
 ];
 
+const getLocalDateString = (value = new Date()) => {
+  const dateObj = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(dateObj.getTime())) {
+    return '';
+  }
+
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
+const isPastDate = (value, minDate) => {
+  if (!value || !minDate) {
+    return false;
+  }
+
+  return value < minDate;
+};
+
 const ServiceBookingTemplate = ({ title, categoryFilter }) => {
   const { data, loading, error, refetch } = useQuery(SERVICE_BOOKING_DATA_QUERY, {
     fetchPolicy: 'cache-and-network',
@@ -73,6 +93,11 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       toast.info('Please select a Date, Venue, and Timing to book.');
       return;
     }
+
+    if (isPastDate(date, todayStr)) {
+      toast.error('Please choose today or a future date. Past dates are not allowed.');
+      return;
+    }
     
     // Calculate start/end objects
     let startTimeObj = new Date(`${date}T${selectedTime}:00`);
@@ -101,7 +126,17 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
     }
   };
 
-  const todayStr = new Date().toISOString().split('T')[0];
+  const todayStr = getLocalDateString();
+
+  const openNativeDatePicker = (event) => {
+    if (typeof event?.target?.showPicker === 'function') {
+      try {
+        event.target.showPicker();
+      } catch (error) {
+        // Ignore browsers that reject scripted picker opening.
+      }
+    }
+  };
 
   if (loading) return <div className="loading">Loading maritime experiences...</div>;
   if (error) return <div className="error">Error loading data: {error.message}</div>;
@@ -124,7 +159,10 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
           type="date" 
           value={date} 
           onChange={e => { setDate(e.target.value); setSelectedTime(''); }} 
+          onClick={openNativeDatePicker}
+          onFocus={openNativeDatePicker}
           min={todayStr}
+          className="booking-date-input"
           style={{
             padding: '12px 24px',
             background: 'rgba(0,0,0,0.4)',

@@ -1,9 +1,13 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FaShoppingCart } from 'react-icons/fa';
 import './Navigation.css';
+import ProfileMenu from './components/ProfileMenu';
+import { useCart } from './cart/CartContext';
 
 const Navigation = ({ loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
+  const { totalItems } = useCart();
 
   // Parse user for roles
   const userStr = localStorage.getItem('user');
@@ -17,6 +21,18 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
     navigate('/');
   };
 
+  useEffect(() => {
+    document.body.classList.add('has-main-nav');
+    document.body.classList.toggle('has-secondary-nav', loggedIn);
+
+    return () => {
+      document.body.classList.remove('has-main-nav');
+      document.body.classList.remove('has-secondary-nav');
+    };
+  }, [loggedIn]);
+
+  const firstName = user?.name?.split(' ')[0] || 'Voyager';
+
   return (
     <>
       <nav className="navbar">
@@ -27,7 +43,7 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
         </div>
 
         <div className="nav-links">
-          <Link to="/" className="nav-link" style={{ marginRight: '1rem' }}>Home</Link>
+          <Link to="/" className="nav-link">Home</Link>
           
           {!loggedIn ? (
             <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
@@ -35,10 +51,15 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
               <Link to="/admin/signup" className="nav-link" style={{ padding: "8px 0" }}>Join</Link>
             </div>
           ) : (
-            <>
-              <span className="nav-link" style={{ color: '#f7d6a5' }}>Welcome, {user?.name.split(' ')[0]}</span>
-              <span className="nav-link logout-link" onClick={handleLogout} style={{ cursor: 'pointer', marginLeft: '1rem' }}>Logout</span>
-            </>
+            <div className="nav-user-tools">
+              {!isAdmin && (
+                <Link to="/voyager/cart" className="cart-icon-btn" aria-label="Open cart">
+                  <FaShoppingCart size={19} />
+                  {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+                </Link>
+              )}
+              <ProfileMenu firstName={firstName} onLogout={handleLogout} showOrderHistory={!isAdmin} />
+            </div>
           )}
         </div>
       </nav>
@@ -56,11 +77,12 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
             ) : (
                <>
                   <Link to="/voyager/dashboard" className="sec-nav-link">My Dashboard</Link>
+                <Link to="/voyager/catering" className="sec-nav-link">Shop Catering</Link>
+                <Link to="/voyager/stationery" className="sec-nav-link">Shop Stationery</Link>
                   <Link to="/voyager/party" className="sec-nav-link">Book Party Hall</Link>
                   <Link to="/voyager/resort" className="sec-nav-link">Book Resort/Movie</Link>
                   <Link to="/voyager/fitness" className="sec-nav-link">Book Fitness Center</Link>
                   <Link to="/voyager/beauty" className="sec-nav-link">Book Beauty Salon</Link>
-                  <Link to="/voyager/catering" className="sec-nav-link">Order Catering</Link>
                </>
             )}
           </div>

@@ -187,6 +187,86 @@ export const INVENTORY_PRODUCTS_QUERY = gql`
   }
 `;
 
+export const PRODUCT_CATALOG_QUERY = gql`
+  query ProductCatalog($category: String) {
+    products(category: $category) {
+      id
+      name
+      category
+      price
+      stock
+    }
+  }
+`;
+
+export const PLACE_ORDER_MUTATION = gql`
+  mutation PlaceOrder($items: [OrderItemInput!]!) {
+    placeOrder(items: $items) {
+      id
+      total
+      created_at
+      items {
+        id
+        product_id
+        quantity
+        product {
+          id
+          name
+          category
+          price
+        }
+      }
+    }
+  }
+`;
+
+export const MY_ORDERS_QUERY = gql`
+  query MyOrders {
+    myOrders {
+      id
+      total
+      created_at
+      items {
+        id
+        product_id
+        quantity
+        product {
+          id
+          name
+          category
+          price
+        }
+      }
+    }
+  }
+`;
+
+export const ADMIN_ORDERS_QUERY = gql`
+  query AdminOrders {
+    orders {
+      id
+      total
+      created_at
+      user {
+        id
+        name
+        email
+      }
+      items {
+        id
+        product_id
+        quantity
+        product {
+          id
+          name
+          category
+          price
+        }
+      }
+    }
+  }
+`;
+
 export const CREATE_PRODUCT_MUTATION = gql`
   mutation CreateProduct($name: String!, $category: String!, $price: Float!, $stock: Int!) {
     createProduct(name: $name, category: $category, price: $price, stock: $stock) {

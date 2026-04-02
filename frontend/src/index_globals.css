@@ -36,7 +36,7 @@ tr:hover td {
 
 /* Page containers inside routes */
 .page-container {
-  padding: 160px 5% 50px 5%;
+  padding: calc(var(--app-nav-offset) + 1.8rem) 5% 50px 5%;
   min-height: 100vh;
   animation: fadeInData 0.6s ease forwards;
 }

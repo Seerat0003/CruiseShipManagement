@@ -1,8 +1,14 @@
 import React from 'react';
-import ServiceBookingTemplate from './ServiceBookingTemplate';
+import ProductCatalogPage from './ProductCatalogPage';
 
 const OrderStationeryItems = () => {
-   return <ServiceBookingTemplate title="Boutiques & Retail" categoryFilter={['Gifts', 'Stationery', 'Retail']} />;
+   return (
+      <ProductCatalogPage
+         title="Stationery & Boutique"
+         subtitle="Browse writing and retail essentials available for your voyage."
+         categories={['Gifts', 'Stationery', 'Retail']}
+      />
+   );
 };
 
 export default OrderStationeryItems;

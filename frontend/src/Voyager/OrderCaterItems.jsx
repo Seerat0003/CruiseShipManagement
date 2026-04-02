@@ -1,8 +1,14 @@
 import React from 'react';
-import ServiceBookingTemplate from './ServiceBookingTemplate';
+import ProductCatalogPage from './ProductCatalogPage';
 
 const OrderCaterItems = () => {
-   return <ServiceBookingTemplate title="In-Cabin Catering Options" categoryFilter={['Dining', 'Catering', 'Food']} />;
+   return (
+      <ProductCatalogPage
+         title="In-Cabin Catering"
+         subtitle="Choose real onboard products with live pricing and stock visibility."
+         categories={['Dining', 'Catering', 'Food']}
+      />
+   );
 };
 
 export default OrderCaterItems;
