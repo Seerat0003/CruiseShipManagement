@@ -1,8 +1,9 @@
 .navbar {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
+  min-height: 76px;
   padding: 1.2rem 4rem;
   display: flex;
   justify-content: space-between;
@@ -31,7 +32,13 @@
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 2.5rem;
+  gap: 1.6rem;
+}
+
+.nav-user-tools {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
 }
 
 .nav-dropdown {
@@ -54,18 +61,40 @@
   color: var(--secondary-color);
 }
 
-.logout-link {
-  color: #ff6b6b;
-  border: 1px solid rgba(255, 107, 107, 0.3);
-  padding: 8px 18px;
-  border-radius: 50px;
-  transition: all 0.3s ease;
+.cart-icon-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: var(--secondary-color);
+  background: rgba(255, 255, 255, 0.03);
+  transition: all 0.24s ease;
 }
 
-.logout-link:hover {
-  background: rgba(255, 107, 107, 0.1);
-  color: #ff4757;
-  border-color: #ff4757;
+.cart-icon-btn:hover {
+  border-color: rgba(247, 214, 165, 0.65);
+  background: rgba(247, 214, 165, 0.08);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: #ff6b6b;
+  color: #fff;
+  font-size: 0.72rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 4px;
+  font-weight: 700;
 }
 
 /* Dropdown Menu styling */
@@ -130,10 +159,11 @@
 
 /* Secondary Tab Bar */
 .secondary-navbar {
-  position: absolute;
+  position: fixed;
   top: 76px; /* Sits right beneath main navbar */
   left: 0;
   width: 100%;
+  min-height: 58px;
   background: rgba(7, 16, 26, 0.6);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -150,11 +180,17 @@
 
 .sec-nav-container {
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
-  gap: 3rem;
+  gap: 2.1rem;
   padding: 0.8rem 2rem;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.sec-nav-container::-webkit-scrollbar {
+  display: none;
 }
 
 .sec-nav-link {
@@ -192,18 +228,21 @@
   .navbar {
     padding: 1rem 2rem;
     flex-wrap: wrap;
+    min-height: 112px;
   }
   .nav-links {
     margin-top: 1rem;
     width: 100%;
     justify-content: center;
-    gap: 1.5rem;
-    flex-wrap: wrap;
+    gap: 1rem;
+    flex-wrap: nowrap;
   }
   .secondary-navbar {
     top: 120px;
+    min-height: 56px;
   }
   .sec-nav-container {
-    gap: 1.5rem;
+    gap: 1.2rem;
+    padding: 0.75rem 1rem;
   }
 }

@@ -1,0 +1,36 @@
+.catalog-page {
+  min-height: 100vh;
+  background: var(--bg-dark);
+  padding: calc(var(--app-nav-offset) + 2rem) 5% 4rem;
+}
+
+.catalog-header {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.catalog-header h1 {
+  color: var(--secondary-color);
+  margin: 0;
+  font-size: 2.3rem;
+}
+
+.catalog-header p {
+  color: rgba(255, 255, 255, 0.78);
+  margin: 0;
+  max-width: 660px;
+  line-height: 1.6;
+}
+
+.catalog-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.3rem;
+}
+
+.catalog-message {
+  color: rgba(255, 255, 255, 0.8);
+}

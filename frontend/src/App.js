@@ -21,6 +21,10 @@ import ViewBookedResortAndMovieTickets from './Manager/ViewBookedResortandMovieT
 import ViewBookedFitnessCentre from './Manager/ViewBookedFitnessCentre';
 import ViewOrderedCateringItems from './Manager/ViewOrderedCateringItems';
 import ViewOrderedStationeryItems from './Manager/ViewOrderedStationeryItems';
+import CartPage from './cart/CartPage';
+import CheckoutPage from './Voyager/CheckoutPage';
+import OrderHistoryPage from './Voyager/OrderHistoryPage';
+import { CartProvider } from './cart/CartContext';
 
 import { SocketProvider } from './SocketContext';
 import SupportChat from './SupportChat';
@@ -34,43 +38,48 @@ function App() {
 
   return (
     <SocketProvider user={currentUser}>
-      <Router>
-        {/* Navigation bar receives loggedIn and setLoggedIn for logout handling */}
-        <Navigation loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
+      <CartProvider>
+        <Router>
+          {/* Navigation bar receives loggedIn and setLoggedIn for logout handling */}
+          <Navigation loggedIn={loggedIn} setLoggedIn={setLoggedIn} />
 
-        {/* Support Chat Bubble appears globally for authenticated users */}
-        <SupportChat />
+          {/* Support Chat Bubble appears globally for authenticated users */}
+          <SupportChat />
 
-        {/* All routes  */}
+          {/* All routes  */}
 
-        <Routes>
-          <Route path='/' element={<Home loggedIn={loggedIn} />} />
-          <Route path="/admin/login" element={<Login setLoggedIn={setLoggedIn} />} />
-          <Route path='/admin/signup' element={<SignUp setLoggedIn={setLoggedIn} />} />
+          <Routes>
+            <Route path='/' element={<Home loggedIn={loggedIn} />} />
+            <Route path="/admin/login" element={<Login setLoggedIn={setLoggedIn} />} />
+            <Route path='/admin/signup' element={<SignUp setLoggedIn={setLoggedIn} />} />
 
-          {/* Voyager routes */}
-          <Route path="/voyager/dashboard" element={<VoyagerDashboard />} />
-          <Route path="/voyager/catering" element={<OrderCaterItems />} />
-          <Route path="/voyager/stationery" element={<OrderStationeryItems />} />
-          <Route path="/voyager/resort" element={<BookResortAndMovieTickets />} />
-          <Route path="/voyager/party" element={<BookPartyHall />} />
-          <Route path="/voyager/fitness" element={<BookFitnessCentre />} />
-          <Route path="/voyager/beauty" element={<BookBeautySalon />} />
+            {/* Voyager routes */}
+            <Route path="/voyager/dashboard" element={<VoyagerDashboard />} />
+            <Route path="/voyager/catering" element={<OrderCaterItems />} />
+            <Route path="/voyager/stationery" element={<OrderStationeryItems />} />
+            <Route path="/voyager/cart" element={<CartPage />} />
+            <Route path="/voyager/checkout" element={<CheckoutPage />} />
+            <Route path="/voyager/orders" element={<OrderHistoryPage />} />
+            <Route path="/voyager/resort" element={<BookResortAndMovieTickets />} />
+            <Route path="/voyager/party" element={<BookPartyHall />} />
+            <Route path="/voyager/fitness" element={<BookFitnessCentre />} />
+            <Route path="/voyager/beauty" element={<BookBeautySalon />} />
 
-          {/* Admin routes */}
-          <Route path='/admin/dashboard' element={<AdminDashboard />} />
-          <Route path='/admin/manage' element={<Admin />} />
-          <Route path='/admin/voyager' element={<VoyagerRegistration />} />
+            {/* Admin routes */}
+            <Route path='/admin/dashboard' element={<AdminDashboard />} />
+            <Route path='/admin/manage' element={<Admin />} />
+            <Route path='/admin/voyager' element={<VoyagerRegistration />} />
 
-          {/* Manager routes */}
-          <Route path='/manager/viewparty' element={<ViewBookedPartyHalls />} />
-          <Route path='/manager/viewsalon' element={<ViewBookedBeautySalon />} />
-          <Route path='/manager/viewresort' element={<ViewBookedResortAndMovieTickets />} />
-          <Route path='/manager/viewfitness' element={<ViewBookedFitnessCentre />} />
-          <Route path='/manager/viewcatering' element={<ViewOrderedCateringItems />} />
-          <Route path='/manager/viewstationery' element={<ViewOrderedStationeryItems />} />
-        </Routes>
-      </Router>
+            {/* Manager routes */}
+            <Route path='/manager/viewparty' element={<ViewBookedPartyHalls />} />
+            <Route path='/manager/viewsalon' element={<ViewBookedBeautySalon />} />
+            <Route path='/manager/viewresort' element={<ViewBookedResortAndMovieTickets />} />
+            <Route path='/manager/viewfitness' element={<ViewBookedFitnessCentre />} />
+            <Route path='/manager/viewcatering' element={<ViewOrderedCateringItems />} />
+            <Route path='/manager/viewstationery' element={<ViewOrderedStationeryItems />} />
+          </Routes>
+        </Router>
+      </CartProvider>
     </SocketProvider>
   );
 }

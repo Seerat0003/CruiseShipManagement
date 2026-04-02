@@ -1,7 +1,7 @@
 .admin-handle {
   width: 100vw;               /* Full width */
   min-height: 100vh;          /* Full height */
-  padding: 2rem;
+  padding: calc(var(--app-nav-offset) + 1.2rem) 2rem 2rem;
   background-color: #f9fafb;  /* Light background */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
@@ -141,7 +141,7 @@
 
 @media (max-width: 600px) {
   .admin-handle {
-    padding: 1rem;
+    padding: calc(var(--app-nav-offset) + 1rem) 1rem 1rem;
   }
 
   .admin-handle form {

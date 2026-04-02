@@ -1,7 +1,7 @@
 .voyager-dashboard {
   background: var(--bg-dark);
   min-height: 100vh;
-  padding-top: 80px; /* offset for fixed navbar */
+  padding-top: var(--app-nav-offset);
 }
 
 .dashboard-hero {

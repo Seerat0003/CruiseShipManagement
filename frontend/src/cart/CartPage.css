@@ -1,0 +1,129 @@
+.cart-page {
+  min-height: 100vh;
+  background: var(--bg-dark);
+  padding: calc(var(--app-nav-offset) + 2rem) 5% 4rem;
+}
+
+.cart-header h1 {
+  color: var(--secondary-color);
+  margin: 0 0 0.5rem;
+}
+
+.cart-header p {
+  color: rgba(255, 255, 255, 0.75);
+  margin: 0 0 1.5rem;
+}
+
+.cart-empty {
+  background: rgba(13, 34, 53, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 2rem;
+}
+
+.cart-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto auto;
+  gap: 1rem;
+  align-items: center;
+  background: rgba(13, 34, 53, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1rem;
+}
+
+.cart-item h3 {
+  margin: 0 0 0.25rem;
+  color: #fff;
+}
+
+.cart-item p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.68);
+}
+
+.cart-item span {
+  color: var(--secondary-color);
+  font-size: 0.9rem;
+}
+
+.cart-controls {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+.cart-controls button {
+  border: 0;
+  background: transparent;
+  color: #fff;
+  width: 34px;
+  height: 34px;
+  cursor: pointer;
+}
+
+.cart-controls span {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  color: #fff;
+}
+
+.cart-line-total {
+  color: #fff;
+  font-weight: 700;
+  min-width: 110px;
+  text-align: right;
+}
+
+.cart-remove {
+  border: 1px solid rgba(255, 110, 110, 0.5);
+  color: #ff9a9a;
+  background: transparent;
+  border-radius: 999px;
+  padding: 0.45rem 0.8rem;
+  cursor: pointer;
+}
+
+.cart-footer {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.cart-summary {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.15rem;
+}
+
+.cart-summary span {
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.cart-summary strong {
+  color: var(--secondary-color);
+  font-size: 1.4rem;
+}
+
+@media (max-width: 860px) {
+  .cart-item {
+    grid-template-columns: 1fr;
+  }
+
+  .cart-line-total {
+    text-align: left;
+  }
+}

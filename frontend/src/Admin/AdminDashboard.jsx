@@ -3,6 +3,7 @@ import { useMutation, useQuery } from '@apollo/client/react';
 import './AdminDashboard.css';
 import {
   ADMIN_DASHBOARD_QUERY,
+  ADMIN_ORDERS_QUERY,
   CREATE_CRUISE_MUTATION,
   UPDATE_BOOKING_STATUS_MUTATION,
 } from '../graphql/operations';
@@ -26,6 +27,18 @@ const formatDateTime = (value) => {
   return Number.isNaN(parsed.getTime()) ? 'N/A' : parsed.toLocaleString();
 };
 
+const getLocalDateString = (value = new Date()) => {
+  const dateObj = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(dateObj.getTime())) {
+    return '';
+  }
+
+  const year = dateObj.getFullYear();
+  const month = String(dateObj.getMonth() + 1).padStart(2, '0');
+  const day = String(dateObj.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+};
+
 const AdminDashboard = () => {
   const [activeTab, setActiveTab] = useState('Overview');
   const [onlineCount, setOnlineCount] = useState(0);
@@ -40,6 +53,9 @@ const AdminDashboard = () => {
   });
 
   const { data, loading, error, refetch } = useQuery(ADMIN_DASHBOARD_QUERY, {
+    fetchPolicy: 'cache-and-network',
+  });
+  const { data: ordersData } = useQuery(ADMIN_ORDERS_QUERY, {
     fetchPolicy: 'cache-and-network',
   });
   const [updateBookingStatus] = useMutation(UPDATE_BOOKING_STATUS_MUTATION);
@@ -113,6 +129,8 @@ const AdminDashboard = () => {
   const facilityStats = data?.facilityStats ?? [];
   const cruises = data?.cruises ?? [];
   const stats = data?.adminStats ?? emptyStats;
+  const productOrders = ordersData?.orders ?? [];
+  const todayStr = getLocalDateString();
 
   if (loading && !data) {
     return <div className="page-container hero-bg"><p style={{ color: '#fff', padding: '2rem' }}>Loading dashboard...</p></div>;
@@ -130,7 +148,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="admin-tabs">
-        {['Overview', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers'].map((tab) => (
+        {['Overview', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers', 'Product Orders'].map((tab) => (
           <button
             key={tab}
             className={`admin-tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -295,7 +313,7 @@ const AdminDashboard = () => {
                 <input type="text" placeholder="Route (e.g. Miami -> Bahamas)" value={newTrip.route} onChange={(event) => setNewTrip({ ...newTrip, route: event.target.value })} required />
               </div>
               <div className="form-row">
-                <input type="date" value={newTrip.start_date} onChange={(event) => setNewTrip({ ...newTrip, start_date: event.target.value })} required title="Start Date" />
+                <input type="date" min={todayStr} value={newTrip.start_date} onChange={(event) => setNewTrip({ ...newTrip, start_date: event.target.value })} required title="Start Date" />
                 <input type="number" placeholder="Duration (Days)" value={newTrip.duration_days} onChange={(event) => setNewTrip({ ...newTrip, duration_days: event.target.value })} required />
               </div>
               <div className="form-row">
@@ -336,6 +354,40 @@ const AdminDashboard = () => {
               ) : (
                 <tr>
                   <td colSpan="6" style={{ textAlign: 'center', padding: '2rem' }}>No active trips deployed.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {activeTab === 'Product Orders' && (
+        <>
+          <h3 className="page-title" style={{ fontSize: '1.8rem', border: 'none', marginBottom: '1rem' }}>Product Order Ledger</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>Order #</th>
+                <th>Voyager</th>
+                <th>Timestamp</th>
+                <th>Items</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              {productOrders.length > 0 ? (
+                productOrders.map((order) => (
+                  <tr key={order.id}>
+                    <td>#{order.id}</td>
+                    <td>{order.user?.name || order.user?.email || 'Voyager'}</td>
+                    <td>{formatDateTime(order.created_at)}</td>
+                    <td>{order.items.map((item) => `${item.product?.name} x${item.quantity}`).join(', ')}</td>
+                    <td>${Number.parseFloat(order.total || 0).toLocaleString()}</td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '2rem' }}>No product orders found.</td>
                 </tr>
               )}
             </tbody>

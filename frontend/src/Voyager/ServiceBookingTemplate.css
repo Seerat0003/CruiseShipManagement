@@ -1,5 +1,5 @@
 .booking-page-container {
-  padding: 160px 5% 5rem 5%;
+  padding: calc(var(--app-nav-offset) + 1.8rem) 5% 5rem 5%;
   background: var(--bg-dark);
   min-height: 100vh;
 }
@@ -65,6 +65,15 @@
 .booking-controls input[type="time"]::-webkit-calendar-picker-indicator {
   filter: invert(1);
   cursor: pointer;
+}
+
+.booking-date-input {
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.booking-date-input:focus {
+  border-color: var(--secondary-color) !important;
+  box-shadow: 0 0 0 2px rgba(247, 214, 165, 0.2), 0 10px 30px rgba(0,0,0,0.5) !important;
 }
 
 /* Wide Venue Cards */

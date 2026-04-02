@@ -1,5 +1,5 @@
 .view-catering-container {
-  padding: 2rem;
+  padding: calc(var(--app-nav-offset) + 1.2rem) 2rem 2rem;
   background-color: #f0f8ff; /* light blue background */
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   max-width: 100%;
