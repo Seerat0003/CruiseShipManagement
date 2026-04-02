@@ -5,13 +5,16 @@ import { PRODUCT_CATALOG_QUERY } from '../graphql/operations';
 import ProductCard from './ProductCard';
 import './ProductCatalogPage.css';
 
+const normalizeCategory = (value = '') => String(value).trim().toLowerCase();
+
 const ProductCatalogPage = ({ title, subtitle, categories }) => {
   const { data, loading, error } = useQuery(PRODUCT_CATALOG_QUERY, {
     fetchPolicy: 'cache-and-network',
   });
 
   const allProducts = data?.products ?? [];
-  const products = allProducts.filter((product) => categories.includes(product.category));
+  const normalizedCategories = new Set(categories.map(normalizeCategory));
+  const products = allProducts.filter((product) => normalizedCategories.has(normalizeCategory(product.category)));
 
   return (
     <div className="catalog-page">

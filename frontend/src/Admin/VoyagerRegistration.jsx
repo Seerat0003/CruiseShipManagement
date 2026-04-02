@@ -62,12 +62,15 @@ const VoyagerRegistration = () => {
   };
 
   return (
-    <div className="voyager-container">
-      <h2 className="voyager-title">Voyager Registration</h2>
-      <form onSubmit={handleSubmit} className="voyager-form">
-        <div className="voyager-field">
-          <label className="voyager-label">Username</label><br />
+    <div className="voyager-container voyager-page-shell">
+      <div className="voyager-card">
+        <h2 className="voyager-title">Voyager Registration</h2>
+        <p className="voyager-subtitle">Create a new voyager profile for cruise access and reservations.</p>
+        <form onSubmit={handleSubmit} className="voyager-form">
+          <div className="voyager-field">
+            <label className="voyager-label" htmlFor="voyager-username">Username</label>
           <input
+            id="voyager-username"
             name="username"
             value={formData.username}
             onChange={handleChange}
@@ -76,11 +79,12 @@ const VoyagerRegistration = () => {
             autoFocus
             disabled={loading}
           />
-        </div>
+          </div>
 
-        <div className="voyager-field">
-          <label className="voyager-label">Email</label><br />
+          <div className="voyager-field">
+            <label className="voyager-label" htmlFor="voyager-email">Email</label>
           <input
+            id="voyager-email"
             type="email"
             name="email"
             value={formData.email}
@@ -89,11 +93,12 @@ const VoyagerRegistration = () => {
             className="voyager-input"
             disabled={loading}
           />
-        </div>
+          </div>
 
-        <div className="voyager-field">
-          <label className="voyager-label">Phone</label><br />
+          <div className="voyager-field">
+            <label className="voyager-label" htmlFor="voyager-phone">Phone</label>
           <input
+            id="voyager-phone"
             type="tel"
             name="phone"
             value={formData.phone}
@@ -104,11 +109,12 @@ const VoyagerRegistration = () => {
             className="voyager-input"
             disabled={loading}
           />
-        </div>
+          </div>
 
-        <div className="voyager-field">
-          <label className="voyager-label">Password</label><br />
+          <div className="voyager-field">
+            <label className="voyager-label" htmlFor="voyager-password">Password</label>
           <input
+            id="voyager-password"
             type="password"
             name="password"
             value={formData.password}
@@ -117,11 +123,12 @@ const VoyagerRegistration = () => {
             className="voyager-input"
             disabled={loading}
           />
-        </div>
+          </div>
 
-        <div className="voyager-field">
-          <label className="voyager-label">Confirm Password</label><br />
+          <div className="voyager-field">
+            <label className="voyager-label" htmlFor="voyager-confirm-password">Confirm Password</label>
           <input
+            id="voyager-confirm-password"
             type="password"
             name="confirmPassword"
             value={formData.confirmPassword}
@@ -130,12 +137,13 @@ const VoyagerRegistration = () => {
             className="voyager-input"
             disabled={loading}
           />
-        </div>
+          </div>
 
-        <button type="submit" className="voyager-button" disabled={loading}>
-          {loading ? "Registering..." : "Register Voyager"}
-        </button>
-      </form>
+          <button type="submit" className="voyager-button" disabled={loading}>
+            {loading ? "Registering..." : "Register Voyager"}
+          </button>
+        </form>
+      </div>
     </div>
   );
 };

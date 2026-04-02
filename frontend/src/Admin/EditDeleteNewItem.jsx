@@ -72,151 +72,167 @@ const EditDeleteNewItem = ({ items = [], refreshItems }) => {
     setEditItemId(null);
   };
 
+  const getStockStatus = (stockValue) => {
+    const numericStock = Number.parseInt(stockValue, 10);
+    if (numericStock <= 0) return 'out';
+    if (numericStock < 10) return 'low';
+    return 'healthy';
+  };
+
   return (
     <div className="edit-delete-container">
       <h2 className="edit-delete-title">Edit / Delete Items</h2>
-      <table className="edit-delete-table">
-        <thead>
-          <tr className="edit-delete-header-row">
-            <th className="edit-delete-header-cell">Name</th>
-            <th className="edit-delete-header-cell">Type</th>
-            <th className="edit-delete-header-cell">Category</th>
-            <th className="edit-delete-header-cell">Price</th>
-            <th className="edit-delete-header-cell">Stock</th>
-            <th className="edit-delete-header-cell">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {items.length === 0 ? (
-            <tr>
-              <td colSpan="6" className="edit-delete-empty-row">
-                No items to display.
-              </td>
+      <div className="edit-delete-table-wrap">
+        <table className="edit-delete-table">
+          <thead>
+            <tr className="edit-delete-header-row">
+              <th className="edit-delete-header-cell">Name</th>
+              <th className="edit-delete-header-cell">Type</th>
+              <th className="edit-delete-header-cell">Category</th>
+              <th className="edit-delete-header-cell">Price</th>
+              <th className="edit-delete-header-cell">Stock</th>
+              <th className="edit-delete-header-cell">Actions</th>
             </tr>
-          ) : (
-            items.map((item) => (
-              <tr key={item.id} className="edit-delete-data-row">
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <input
-                      name="name"
-                      value={editForm.name}
-                      onChange={handleEditChange}
-                      className="edit-delete-input"
-                    />
-                  ) : (
-                    item.name
-                  )}
-                </td>
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <select
-                      name="type"
-                      value={editForm.type}
-                      onChange={(event) => {
-                        const newType = event.target.value;
-                        setEditForm((prev) => ({
-                          ...prev,
-                          type: newType,
-                          category: categoryGroups[newType][0],
-                        }));
-                      }}
-                      className="edit-delete-select"
-                    >
-                      <option value="catering">Catering</option>
-                      <option value="stationery">Stationery</option>
-                    </select>
-                  ) : (
-                    item.type
-                  )}
-                </td>
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <select
-                      name="category"
-                      value={editForm.category}
-                      onChange={handleEditChange}
-                      className="edit-delete-select"
-                    >
-                      {categoryGroups[editForm.type].map((category) => (
-                        <option key={category} value={category}>{category}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    item.category
-                  )}
-                </td>
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <input
-                      name="price"
-                      type="number"
-                      min="0"
-                      step="0.01"
-                      value={editForm.price}
-                      onChange={handleEditChange}
-                      className="edit-delete-input"
-                    />
-                  ) : (
-                    `$${item.price}`
-                  )}
-                </td>
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <input
-                      name="stock"
-                      type="number"
-                      min="0"
-                      value={editForm.stock}
-                      onChange={handleEditChange}
-                      className="edit-delete-input"
-                    />
-                  ) : (
-                    item.stock
-                  )}
-                </td>
-                <td className="edit-delete-cell">
-                  {editItemId === item.id ? (
-                    <>
-                      <button
-                        onClick={() => handleSave(item.id)}
-                        className="edit-delete-btn save"
-                        disabled={isSaving}
-                      >
-                        Save
-                      </button>
-                      <button
-                        onClick={handleCancel}
-                        className="edit-delete-btn cancel"
-                        disabled={isSaving}
-                      >
-                        Cancel
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <button
-                        onClick={() => handleEditClick(item)}
-                        className="edit-delete-btn edit"
-                        disabled={isDeleting}
-                      >
-                        Edit
-                      </button>
-                      <button
-                        onClick={() => handleDelete(item.id)}
-                        className="edit-delete-btn delete"
-                        disabled={isDeleting}
-                      >
-                        Delete
-                      </button>
-                    </>
-                  )}
+          </thead>
+          <tbody>
+            {items.length === 0 ? (
+              <tr>
+                <td colSpan="6" className="edit-delete-empty-row">
+                  <div className="edit-delete-empty-state">No products available yet.</div>
                 </td>
               </tr>
-            ))
-          )}
-        </tbody>
-      </table>
+            ) : (
+              items.map((item) => {
+                const stockStatus = getStockStatus(item.stock);
+                return (
+                  <tr key={item.id} className="edit-delete-data-row">
+                    <td className="edit-delete-cell">
+                      {editItemId === item.id ? (
+                        <input
+                          name="name"
+                          value={editForm.name}
+                          onChange={handleEditChange}
+                          className="edit-delete-input"
+                        />
+                      ) : (
+                        item.name
+                      )}
+                    </td>
+                    <td className="edit-delete-cell">
+                      {editItemId === item.id ? (
+                        <select
+                          name="type"
+                          value={editForm.type}
+                          onChange={(event) => {
+                            const newType = event.target.value;
+                            setEditForm((prev) => ({
+                              ...prev,
+                              type: newType,
+                              category: categoryGroups[newType][0],
+                            }));
+                          }}
+                          className="edit-delete-select"
+                        >
+                          <option value="catering">Catering</option>
+                          <option value="stationery">Stationery</option>
+                        </select>
+                      ) : (
+                        <span className="edit-delete-pill">{item.type}</span>
+                      )}
+                    </td>
+                    <td className="edit-delete-cell">
+                      {editItemId === item.id ? (
+                        <select
+                          name="category"
+                          value={editForm.category}
+                          onChange={handleEditChange}
+                          className="edit-delete-select"
+                        >
+                          {categoryGroups[editForm.type].map((category) => (
+                            <option key={category} value={category}>{category}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        item.category
+                      )}
+                    </td>
+                    <td className="edit-delete-cell">
+                      {editItemId === item.id ? (
+                        <input
+                          name="price"
+                          type="number"
+                          min="0"
+                          step="0.01"
+                          value={editForm.price}
+                          onChange={handleEditChange}
+                          className="edit-delete-input"
+                        />
+                      ) : (
+                        `$${item.price}`
+                      )}
+                    </td>
+                    <td className="edit-delete-cell">
+                      {editItemId === item.id ? (
+                        <input
+                          name="stock"
+                          type="number"
+                          min="0"
+                          value={editForm.stock}
+                          onChange={handleEditChange}
+                          className="edit-delete-input"
+                        />
+                      ) : (
+                        <span className={`stock-badge stock-${stockStatus}`}>
+                          {item.stock}
+                        </span>
+                      )}
+                    </td>
+                    <td className="edit-delete-cell">
+                      <div className="edit-delete-actions">
+                        {editItemId === item.id ? (
+                          <>
+                            <button
+                              onClick={() => handleSave(item.id)}
+                              className="edit-delete-btn save"
+                              disabled={isSaving}
+                            >
+                              Save
+                            </button>
+                            <button
+                              onClick={handleCancel}
+                              className="edit-delete-btn cancel"
+                              disabled={isSaving}
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => handleEditClick(item)}
+                              className="edit-delete-btn edit"
+                              disabled={isDeleting}
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => handleDelete(item.id)}
+                              className="edit-delete-btn delete"
+                              disabled={isDeleting}
+                            >
+                              Delete
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 };

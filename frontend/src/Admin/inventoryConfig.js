@@ -1,5 +1,8 @@
 export const categoryGroups = {
   catering: [
+    'Dining',
+    'Catering',
+    'Food',
     'Starter',
     'Friday Special',
     'Dinner',
@@ -8,6 +11,9 @@ export const categoryGroups = {
     'Japanese',
   ],
   stationery: [
+    'Gifts',
+    'Stationery',
+    'Retail',
     'Writing Tools',
     'Notes & Pads',
     'Measuring Tools',
@@ -16,7 +22,9 @@ export const categoryGroups = {
 };
 
 export const getItemTypeFromCategory = (category = '') => {
-  if (categoryGroups.catering.includes(category)) {
+  const normalizedCategory = String(category).trim();
+
+  if (categoryGroups.catering.includes(normalizedCategory)) {
     return 'catering';
   }
 
