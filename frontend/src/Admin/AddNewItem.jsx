@@ -60,69 +60,92 @@ const AddNewItem = ({ onItemAdded }) => {
     <form onSubmit={handleSubmit} className="add-item-form">
       <h2 className="form-title">Add New Item</h2>
 
-      <select
-        name="type"
-        value={item.type}
-        onChange={(event) => {
-          const newType = event.target.value;
-          setItem((prev) => ({
-            ...prev,
-            type: newType,
-            category: categoryGroups[newType][0],
-          }));
-        }}
-        className="form-select"
-      >
-        <option value="catering">Catering</option>
-        <option value="stationery">Stationery</option>
-      </select>
+      <div className="form-grid">
+        <div className="form-field">
+          <label className="form-label" htmlFor="item-type">Product Type</label>
+          <select
+            id="item-type"
+            name="type"
+            value={item.type}
+            onChange={(event) => {
+              const newType = event.target.value;
+              setItem((prev) => ({
+                ...prev,
+                type: newType,
+                category: categoryGroups[newType][0],
+              }));
+            }}
+            className="form-select"
+            disabled={loading}
+          >
+            <option value="catering">Catering</option>
+            <option value="stationery">Stationery</option>
+          </select>
+        </div>
 
-      <input
-        name="name"
-        placeholder="Item Name"
-        value={item.name}
-        onChange={handleChange}
-        className="form-input"
-        required
-        disabled={loading}
-      />
+        <div className="form-field">
+          <label className="form-label" htmlFor="item-category">Category</label>
+          <select
+            id="item-category"
+            name="category"
+            value={item.category}
+            onChange={handleChange}
+            className="form-select"
+            disabled={loading}
+          >
+            {categoryGroups[item.type].map((category) => (
+              <option key={category} value={category}>{category}</option>
+            ))}
+          </select>
+        </div>
 
-      <input
-        name="price"
-        type="number"
-        min="0"
-        step="0.01"
-        placeholder="Price"
-        value={item.price}
-        onChange={handleChange}
-        className="form-input"
-        required
-        disabled={loading}
-      />
+        <div className="form-field form-field-wide">
+          <label className="form-label" htmlFor="item-name">Product Name</label>
+          <input
+            id="item-name"
+            name="name"
+            placeholder="Item Name"
+            value={item.name}
+            onChange={handleChange}
+            className="form-input"
+            required
+            disabled={loading}
+          />
+        </div>
 
-      <input
-        name="stock"
-        type="number"
-        min="0"
-        placeholder="Stock"
-        value={item.stock}
-        onChange={handleChange}
-        className="form-input"
-        required
-        disabled={loading}
-      />
+        <div className="form-field">
+          <label className="form-label" htmlFor="item-price">Price (USD)</label>
+          <input
+            id="item-price"
+            name="price"
+            type="number"
+            min="0"
+            step="0.01"
+            placeholder="Price"
+            value={item.price}
+            onChange={handleChange}
+            className="form-input"
+            required
+            disabled={loading}
+          />
+        </div>
 
-      <select
-        name="category"
-        value={item.category}
-        onChange={handleChange}
-        className="form-select"
-        disabled={loading}
-      >
-        {categoryGroups[item.type].map((category) => (
-          <option key={category} value={category}>{category}</option>
-        ))}
-      </select>
+        <div className="form-field">
+          <label className="form-label" htmlFor="item-stock">Stock Units</label>
+          <input
+            id="item-stock"
+            name="stock"
+            type="number"
+            min="0"
+            placeholder="Stock"
+            value={item.stock}
+            onChange={handleChange}
+            className="form-input"
+            required
+            disabled={loading}
+          />
+        </div>
+      </div>
 
       <button type="submit" className="form-button" disabled={loading}>
         {loading ? "Saving..." : "Add Item"}

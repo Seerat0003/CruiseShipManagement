@@ -1,89 +1,136 @@
-.voyager-container {
-  padding: 2rem;
-  max-width: 400px;
-  margin: 2rem auto;
-  background-color: #e6f0ff; /* light blue background */
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 85, 255, 0.2);
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+.voyager-container.voyager-page-shell {
+  min-height: 100vh;
+  padding: calc(var(--app-nav-offset) + 1.5rem) 1.2rem 2rem;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  background:
+    radial-gradient(circle at 8% 12%, rgba(247, 214, 165, 0.16), transparent 35%),
+    radial-gradient(circle at 92% 14%, rgba(220, 179, 116, 0.12), transparent 35%),
+    linear-gradient(160deg, #081828 0%, #0d2235 48%, #0a1b2c 100%);
+}
+
+.voyager-card {
+  width: min(560px, 100%);
+  padding: 1.6rem;
+  border-radius: 16px;
+  border: 1px solid rgba(247, 214, 165, 0.26);
+  background: rgba(13, 34, 53, 0.6);
+  backdrop-filter: blur(12px);
+  box-shadow: 0 20px 36px rgba(0, 0, 0, 0.28);
 }
 
 .voyager-title {
-  color: #004aad; /* deep blue */
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-weight: 700;
+  margin: 0;
+  color: var(--secondary-color);
+  font-family: var(--font-heading);
+  font-size: clamp(1.55rem, 2vw, 2rem);
+  letter-spacing: 0.02em;
+}
+
+.voyager-subtitle {
+  margin: 0.65rem 0 1.2rem;
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.95rem;
+  line-height: 1.55;
 }
 
 .voyager-form {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.95rem 1rem;
 }
 
 .voyager-field {
-  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.voyager-field:nth-child(1),
+.voyager-field:nth-child(2),
+.voyager-field:nth-child(3),
+.voyager-field:nth-child(4),
+.voyager-field:nth-child(5) {
+  grid-column: 1 / -1;
 }
 
 .voyager-label {
-  font-weight: 600;
-  color: #003a8c; /* darker blue */
-  margin-bottom: 0.25rem;
-  display: block;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .voyager-input {
   width: 100%;
-  padding: 0.5rem 0.75rem;
-  font-size: 1rem;
-  border: 2px solid #3390ff; /* medium blue border */
-  border-radius: 5px;
-  transition: border-color 0.3s ease;
+  padding: 0.72rem 0.82rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  font-size: 0.96rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
 }
 
 .voyager-input:focus {
   outline: none;
-  border-color: #0050cc; /* focus blue */
-  box-shadow: 0 0 5px #3390ff;
-  background-color: #f0f8ff;
+  border-color: rgba(247, 214, 165, 0.75);
+  box-shadow: 0 0 0 2px rgba(247, 214, 165, 0.25);
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .voyager-input:disabled {
-  background-color: #c7d9ff;
-  border-color: #a0bfff;
+  opacity: 0.65;
   cursor: not-allowed;
 }
 
 .voyager-button {
-  background-color: #0070f3; /* bright blue */
-  color: white;
-  font-weight: 600;
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 6px;
+  grid-column: 1 / -1;
+  margin-top: 0.4rem;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 10px;
+  background: linear-gradient(120deg, var(--secondary-color) 0%, #dcb374 100%);
+  color: var(--primary-color);
+  font-weight: 700;
+  font-size: 0.98rem;
   cursor: pointer;
-  font-size: 1rem;
-  transition: background-color 0.3s ease;
+  transition: transform 0.2s ease, filter 0.2s ease;
 }
 
 .voyager-button:hover:not(:disabled) {
-  background-color: #005ecb;
+  transform: translateY(-1px);
+  filter: brightness(1.03);
 }
 
 .voyager-button:disabled {
-  background-color: #aac8ff;
+  opacity: 0.7;
   cursor: not-allowed;
+  transform: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 480px) {
-  .voyager-container {
+@media (max-width: 700px) {
+  .voyager-container.voyager-page-shell {
+    padding: calc(var(--app-nav-offset) + 1.1rem) 0.9rem 1.4rem;
+  }
+
+  .voyager-card {
     padding: 1rem;
-    margin: 1rem;
   }
-  .voyager-title {
-    font-size: 1.5rem;
+
+  .voyager-form {
+    grid-template-columns: 1fr;
+    gap: 0.82rem;
   }
-  .voyager-input, .voyager-button {
-    font-size: 0.9rem;
+
+  .voyager-field:nth-child(1),
+  .voyager-field:nth-child(2),
+  .voyager-field:nth-child(3),
+  .voyager-field:nth-child(4),
+  .voyager-field:nth-child(5) {
+    grid-column: auto;
   }
 }

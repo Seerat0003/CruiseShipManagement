@@ -21,18 +21,27 @@ const Admin = () => {
   }));
 
   return (
-    <div className="admin-handle">
-      <h2 className="admin-title">Admin Panel</h2>
+    <div className="admin-handle inventory-page-shell">
+      <div className="inventory-page-header">
+        <h2 className="admin-title">Manage Inventory</h2>
+        <p className="inventory-page-subtitle">
+          Curate catering and stationery products for voyagers with real-time stock visibility.
+        </p>
+      </div>
 
-      <AddNewItem onItemAdded={refetch} />
+      <section className="inventory-section inventory-section-form">
+        <AddNewItem onItemAdded={refetch} />
+      </section>
 
-      {loading && !data ? (
-        <p style={{ color: '#fff' }}>Loading inventory...</p>
-      ) : error ? (
-        <p style={{ color: '#fff' }}>{error.message}</p>
-      ) : (
-        <EditDeleteNewItem items={items} refreshItems={refetch} />
-      )}
+      <section className="inventory-section inventory-section-table">
+        {loading && !data ? (
+          <div className="inventory-feedback-card">Loading inventory...</div>
+        ) : error ? (
+          <div className="inventory-feedback-card inventory-feedback-error">{error.message}</div>
+        ) : (
+          <EditDeleteNewItem items={items} refreshItems={refetch} />
+        )}
+      </section>
     </div>
   );
 };
