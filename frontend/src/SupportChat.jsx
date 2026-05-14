@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useSocket } from './SocketContext';
 import { BsChatDotsFill, BsXCircleFill, BsSendFill } from 'react-icons/bs';
 import './SupportChat.css';
+import { getStoredUser } from './auth/storage';
 
 const SupportChat = () => {
     const socket = useSocket();
@@ -11,8 +12,7 @@ const SupportChat = () => {
     const scrollRef = useRef();
 
     // Get current user info
-    const savedUser = localStorage.getItem("user");
-    const user = savedUser ? JSON.parse(savedUser) : null;
+    const user = getStoredUser();
 
     useEffect(() => {
         if (!socket) return;

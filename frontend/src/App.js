@@ -24,16 +24,17 @@ import ViewOrderedStationeryItems from './Manager/ViewOrderedStationeryItems';
 import CartPage from './cart/CartPage';
 import CheckoutPage from './Voyager/CheckoutPage';
 import OrderHistoryPage from './Voyager/OrderHistoryPage';
+import CruiseBookingPage from './Voyager/CruiseBookingPage';
 import { CartProvider } from './cart/CartContext';
-
 import { SocketProvider } from './SocketContext';
 import SupportChat from './SupportChat';
+import ProtectedRoute from './auth/ProtectedRoute';
+import { getStoredUser, hasAuthSession } from './auth/storage';
 
 function App() {
   // State to check whether a user is logged in
-  const [loggedIn, setLoggedIn] = useState(!!localStorage.getItem("token"));
-  const userStr = localStorage.getItem('user');
-  const currentUser = userStr ? JSON.parse(userStr) : null;
+  const [loggedIn, setLoggedIn] = useState(hasAuthSession());
+  const currentUser = getStoredUser();
 
 
   return (
@@ -53,30 +54,34 @@ function App() {
             <Route path="/admin/login" element={<Login setLoggedIn={setLoggedIn} />} />
             <Route path='/admin/signup' element={<SignUp setLoggedIn={setLoggedIn} />} />
 
-            {/* Voyager routes */}
-            <Route path="/voyager/dashboard" element={<VoyagerDashboard />} />
-            <Route path="/voyager/catering" element={<OrderCaterItems />} />
-            <Route path="/voyager/stationery" element={<OrderStationeryItems />} />
-            <Route path="/voyager/cart" element={<CartPage />} />
-            <Route path="/voyager/checkout" element={<CheckoutPage />} />
-            <Route path="/voyager/orders" element={<OrderHistoryPage />} />
-            <Route path="/voyager/resort" element={<BookResortAndMovieTickets />} />
-            <Route path="/voyager/party" element={<BookPartyHall />} />
-            <Route path="/voyager/fitness" element={<BookFitnessCentre />} />
-            <Route path="/voyager/beauty" element={<BookBeautySalon />} />
+            <Route element={<ProtectedRoute allowRoles={['voyager']} />}>
+              <Route path="/voyager/dashboard" element={<VoyagerDashboard />} />
+              <Route path="/voyager/catering" element={<OrderCaterItems />} />
+              <Route path="/voyager/stationery" element={<OrderStationeryItems />} />
+              <Route path="/voyager/cart" element={<CartPage />} />
+              <Route path="/voyager/checkout" element={<CheckoutPage />} />
+              <Route path="/voyager/orders" element={<OrderHistoryPage />} />
+              <Route path="/voyager/cruises" element={<CruiseBookingPage />} />
+              <Route path="/voyager/resort" element={<BookResortAndMovieTickets />} />
+              <Route path="/voyager/party" element={<BookPartyHall />} />
+              <Route path="/voyager/fitness" element={<BookFitnessCentre />} />
+              <Route path="/voyager/beauty" element={<BookBeautySalon />} />
+            </Route>
 
-            {/* Admin routes */}
-            <Route path='/admin/dashboard' element={<AdminDashboard />} />
-            <Route path='/admin/manage' element={<Admin />} />
-            <Route path='/admin/voyager' element={<VoyagerRegistration />} />
+            <Route element={<ProtectedRoute allowRoles={['admin']} />}>
+              <Route path='/admin/dashboard' element={<AdminDashboard />} />
+              <Route path='/admin/manage' element={<Admin />} />
+              <Route path='/admin/voyager' element={<VoyagerRegistration />} />
+            </Route>
 
-            {/* Manager routes */}
-            <Route path='/manager/viewparty' element={<ViewBookedPartyHalls />} />
-            <Route path='/manager/viewsalon' element={<ViewBookedBeautySalon />} />
-            <Route path='/manager/viewresort' element={<ViewBookedResortAndMovieTickets />} />
-            <Route path='/manager/viewfitness' element={<ViewBookedFitnessCentre />} />
-            <Route path='/manager/viewcatering' element={<ViewOrderedCateringItems />} />
-            <Route path='/manager/viewstationery' element={<ViewOrderedStationeryItems />} />
+            <Route element={<ProtectedRoute allowRoles={['admin', 'manager']} />}>
+              <Route path='/manager/viewparty' element={<ViewBookedPartyHalls />} />
+              <Route path='/manager/viewsalon' element={<ViewBookedBeautySalon />} />
+              <Route path='/manager/viewresort' element={<ViewBookedResortAndMovieTickets />} />
+              <Route path='/manager/viewfitness' element={<ViewBookedFitnessCentre />} />
+              <Route path='/manager/viewcatering' element={<ViewOrderedCateringItems />} />
+              <Route path='/manager/viewstationery' element={<ViewOrderedStationeryItems />} />
+            </Route>
           </Routes>
         </Router>
       </CartProvider>

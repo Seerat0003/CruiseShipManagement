@@ -23,9 +23,9 @@ const initSocket = (server) => {
       count: onlineUsers.size
     });
 
-    if (role === "manager") {
+    if (role === "manager" || role === "admin") {
       socket.join("manager-room");
-      console.log(`👨‍💼 Manager joined room: ${socket.id}`);
+      console.log(`👨‍💼 Staff joined room: ${socket.id}`);
     } else if (role === "voyager" && userId) {
       socket.join(`user-room-${userId}`);
       console.log(`🚢 Voyager ${userId} joined room: ${socket.id}`);

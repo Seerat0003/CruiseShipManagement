@@ -40,7 +40,6 @@ const VoyagerRegistration = () => {
           email: formData.email,
           phone: formData.phone,
           password: formData.password,
-          role: "voyager",
         },
       });
 

@@ -16,8 +16,8 @@ export const LOGIN_MUTATION = gql`
 `;
 
 export const REGISTER_MUTATION = gql`
-  mutation Register($name: String!, $email: String!, $password: String!, $phone: String, $role: String) {
-    register(name: $name, email: $email, password: $password, phone: $phone, role: $role) {
+  mutation Register($name: String!, $email: String!, $password: String!, $phone: String) {
+    register(name: $name, email: $email, password: $password, phone: $phone) {
       message
       user {
         id
@@ -69,8 +69,7 @@ export const SERVICE_BOOKING_DATA_QUERY = gql`
       price
       capacity
     }
-    bookings {
-      id
+    bookingOccupancy {
       service_id
       start_time
       status
@@ -79,11 +78,27 @@ export const SERVICE_BOOKING_DATA_QUERY = gql`
 `;
 
 export const CREATE_BOOKING_MUTATION = gql`
-  mutation CreateBooking($service_id: ID!, $start_time: String!, $end_time: String!) {
-    createBooking(service_id: $service_id, start_time: $start_time, end_time: $end_time) {
+  mutation CreateBooking($service_id: ID, $cruise_id: ID, $start_time: String!, $end_time: String!) {
+    createBooking(service_id: $service_id, cruise_id: $cruise_id, start_time: $start_time, end_time: $end_time) {
       id
       start_time
       status
+    }
+  }
+`;
+
+export const CRUISE_BOOKING_QUERY = gql`
+  query CruiseBookingData {
+    cruises {
+      id
+      name
+      route
+      start_date
+      duration_days
+      total_seats
+      available_seats
+      price
+      image_url
     }
   }
 `;

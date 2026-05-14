@@ -64,6 +64,12 @@ const typeDefs = gql`
     cruise: Cruise
   }
 
+  type BookingOccupancy {
+    service_id: ID!
+    start_time: String
+    status: String
+  }
+
   type Order {
     id: ID!
     user_id: ID!
@@ -125,6 +131,7 @@ const typeDefs = gql`
     productsByCategory(category: String!): [Product]
 
     bookings(category: String, mine: Boolean): [Booking]
+    bookingOccupancy(category: String): [BookingOccupancy]
     booking(id: ID!): Booking
 
     cruises: [Cruise]
@@ -144,7 +151,6 @@ const typeDefs = gql`
       email: String!
       password: String!
       phone: String
-      role: String
     ): AuthPayload
     login(email: String!, password: String!): AuthPayload
 

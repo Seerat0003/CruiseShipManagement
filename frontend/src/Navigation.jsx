@@ -4,20 +4,20 @@ import { FaShoppingCart } from 'react-icons/fa';
 import './Navigation.css';
 import ProfileMenu from './components/ProfileMenu';
 import { useCart } from './cart/CartContext';
+import { clearAuthSession, getStoredUser } from './auth/storage';
 
 const Navigation = ({ loggedIn, setLoggedIn }) => {
   const navigate = useNavigate();
   const { totalItems } = useCart();
 
   // Parse user for roles
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : null;
+  const user = getStoredUser();
   const isAdmin = user && user.role === 'admin';
+  const isManager = user && user.role === 'manager';
 
   const handleLogout = () => {
+    clearAuthSession();
     setLoggedIn(false);
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
     navigate('/');
   };
 
@@ -52,13 +52,13 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
             </div>
           ) : (
             <div className="nav-user-tools">
-              {!isAdmin && (
+              {!isAdmin && !isManager && (
                 <Link to="/voyager/cart" className="cart-icon-btn" aria-label="Open cart">
                   <FaShoppingCart size={19} />
                   {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
                 </Link>
               )}
-              <ProfileMenu firstName={firstName} onLogout={handleLogout} showOrderHistory={!isAdmin} />
+              <ProfileMenu firstName={firstName} onLogout={handleLogout} showOrderHistory={!isAdmin && !isManager} />
             </div>
           )}
         </div>
@@ -73,6 +73,15 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
                   <Link to="/admin/dashboard" className="sec-nav-link">Fleet Overview</Link>
                   <Link to="/admin/manage" className="sec-nav-link">Manage Inventory</Link>
                   <Link to="/admin/voyager" className="sec-nav-link">Voyager Registry</Link>
+               </>
+            ) : isManager ? (
+               <>
+                  <Link to="/manager/viewparty" className="sec-nav-link">Party Hall Bookings</Link>
+                  <Link to="/manager/viewsalon" className="sec-nav-link">Salon Bookings</Link>
+                  <Link to="/manager/viewresort" className="sec-nav-link">Entertainment Bookings</Link>
+                  <Link to="/manager/viewfitness" className="sec-nav-link">Fitness Bookings</Link>
+                  <Link to="/manager/viewcatering" className="sec-nav-link">Catering Requests</Link>
+                  <Link to="/manager/viewstationery" className="sec-nav-link">Stationery Requests</Link>
                </>
             ) : (
                <>

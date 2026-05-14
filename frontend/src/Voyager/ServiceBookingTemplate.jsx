@@ -7,6 +7,7 @@ import './ServiceBookingTemplate.css';
 import '../Home.css';
 import facilitiesImg from '../assets/facilities.png';
 import { CREATE_BOOKING_MUTATION, SERVICE_BOOKING_DATA_QUERY } from '../graphql/operations';
+import { hasAuthSession } from '../auth/storage';
 
 // Time slot constants (Pill shaped buttons)
 const TIME_SLOTS = [
@@ -58,7 +59,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
     if (data) {
       const matchingServices = data.services.filter((service) => categoryFilter.includes(service.category));
       setServices(matchingServices);
-      setAllBookings(data.bookings);
+      setAllBookings(data.bookingOccupancy ?? []);
 
       if (focusedServiceId && matchingServices.some((service) => String(service.id) === String(focusedServiceId))) {
         setSelectedServiceId(String(focusedServiceId));
@@ -84,8 +85,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
   };
 
   const handleConfirmReservation = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
+    if (!hasAuthSession()) {
       toast.info('Please sign in first to complete your reservation.');
       return navigate('/admin/login');
     }

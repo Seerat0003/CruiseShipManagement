@@ -3,9 +3,10 @@ const cors = require("cors");
 const http = require("http");
 const { ApolloServer } = require("@apollo/server");
 const { expressMiddleware } = require("@as-integrations/express5");
-const jwt = require("jsonwebtoken");
 const sequelize = require("./config/db");
 const { initSocket } = require("./socket");
+const authRoutes = require("./routes/auth");
+const { extractBearerToken, verifyAuthToken } = require("./utils/auth");
 
 // Import GraphQL
 const typeDefs = require("./graphql/typeDefs");
@@ -16,6 +17,7 @@ const server = http.createServer(app);
 
 app.use(cors());
 app.use(express.json());
+app.use("/api/auth", authRoutes);
 
 // Initialize Apollo Server
 const apolloServer = new ApolloServer({
@@ -32,11 +34,11 @@ const startServer = async () => {
     express.json(),
     expressMiddleware(apolloServer, {
       context: async ({ req }) => {
-        const token = req.headers.authorization?.replace("Bearer ", "") || "";
+        const token = extractBearerToken(req.headers.authorization || "");
         let user = null;
         if (token) {
           try {
-            user = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
+            user = verifyAuthToken(token);
           } catch (err) {
             console.error("GraphQL Auth dynamic error:", err.message);
           }

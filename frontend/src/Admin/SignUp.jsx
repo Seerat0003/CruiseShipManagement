@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
 import './SignUp.css';
 import { REGISTER_MUTATION } from '../graphql/operations';
+import { clearAuthSession } from '../auth/storage';
 
 function SignUpForm({ setLoggedIn }) {
   const [formData, setFormData] = useState({
@@ -43,11 +44,11 @@ function SignUpForm({ setLoggedIn }) {
           name: formData.name, 
           email: formData.email, 
           password: formData.password,
-          role: "voyager",
         },
       });
 
       if (data?.register?.user) {
+        clearAuthSession();
         setLoggedIn(false);
         setSuccessMsg(data.register.message || "Registration successful! Redirecting to login...");
         setTimeout(() => {

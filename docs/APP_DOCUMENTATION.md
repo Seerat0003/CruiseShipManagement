@@ -623,12 +623,23 @@ This is the approval action used by the dashboard.
 
 If the status becomes `Confirmed` and the booking has an associated user:
 
-1. the backend creates a temporary Nodemailer test account
-2. it creates a transporter
-3. it sends a confirmation email
-4. it logs a preview URL to the console
+1. the backend loads the configured SMTP transporter
+2. it builds a booking approval email
+3. it sends the email to the voyager's registered email address
+4. it logs the outgoing message ID for traceability
 
-This means the email flow is intended for development/test mail previews, not a production mail server.
+The mailer is configured through `backend/.env` using:
+
+- `SMTP_HOST`
+- `SMTP_PORT`
+- `SMTP_SECURE`
+- `SMTP_USER`
+- `SMTP_PASS`
+- `MAIL_FROM_NAME`
+- `MAIL_FROM_EMAIL`
+- optional `MAIL_REPLY_TO`
+
+If SMTP configuration is missing, the backend skips email delivery and logs a warning instead of failing the booking approval flow.
 
 ### `GET /api/admin/users`
 
