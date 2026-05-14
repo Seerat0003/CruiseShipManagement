@@ -1,16 +1,29 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useCart } from '../cart/CartContext';
 import './ProductCard.css';
 
 const ProductCard = ({ product }) => {
   const { addToCart } = useCart();
+  const [showPopup, setShowPopup] = useState(false);
 
   const stock = Number.parseInt(product.stock, 10) || 0;
   const outOfStock = stock <= 0;
   const lowStock = stock > 0 && stock <= 5;
 
+  const handleAddToCart = () => {
+    addToCart(product);
+    setShowPopup(true);
+    setTimeout(() => setShowPopup(false), 2000);
+  };
+
   return (
     <div className="product-card">
+      {showPopup && (
+        <div className="cart-popup">
+          ✓ Added to cart
+        </div>
+      )}
+
       <div className="product-card-top">
         <h3>{product.name}</h3>
         <span className="product-category">{product.category}</span>
@@ -26,7 +39,7 @@ const ProductCard = ({ product }) => {
       <button
         className="btn-luxury product-add-btn"
         disabled={outOfStock}
-        onClick={() => addToCart(product)}
+        onClick={handleAddToCart}
       >
         {outOfStock ? 'Unavailable' : 'Add to Cart'}
       </button>

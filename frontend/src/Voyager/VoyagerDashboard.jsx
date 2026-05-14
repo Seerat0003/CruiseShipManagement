@@ -7,6 +7,38 @@ import medImg from '../assets/med.png';
 import caribImg from '../assets/caribbean.png';
 import alaskaImg from '../assets/alaska.png';
 import { VOYAGER_DASHBOARD_QUERY } from '../graphql/operations';
+import { getStoredUser } from '../auth/storage';
+
+const getCruiseImage = (imageUrl) => {
+  const normalizedImageUrl = String(imageUrl || '').toLowerCase();
+
+  if (normalizedImageUrl.includes('med')) return medImg;
+  if (normalizedImageUrl.includes('carib')) return caribImg;
+  return alaskaImg;
+};
+
+const formatDate = (value) => {
+  if (!value) {
+    return 'TBA';
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? 'TBA' : parsed.toLocaleDateString();
+};
+
+const formatDateTime = (value) => {
+  if (!value) {
+    return 'TBA';
+  }
+
+  const parsed = new Date(value);
+  return Number.isNaN(parsed.getTime()) ? 'TBA' : parsed.toLocaleString();
+};
+
+const formatPrice = (value) => {
+  const amount = Number.parseFloat(value);
+  return Number.isFinite(amount) ? amount.toLocaleString() : '0';
+};
 
 const VoyagerDashboard = () => {
   const navigate = useNavigate();
@@ -40,8 +72,8 @@ const VoyagerDashboard = () => {
     });
   };
 
-  const userStr = localStorage.getItem('user');
-  const user = userStr ? JSON.parse(userStr) : { name: "Guest" };
+  const user = getStoredUser() || { name: "Guest" };
+  const firstName = user?.name?.split(' ')[0] || 'Guest';
   const cruises = data?.cruises ?? [];
   const services = data?.services ?? [];
   const myBookings = data?.me?.bookings ?? [];
@@ -58,7 +90,7 @@ const VoyagerDashboard = () => {
     <div className="voyager-dashboard">
       <div className="dashboard-hero">
         <div className="dashboard-hero-content">
-          <h1>Welcome back, <span>{user.name.split(' ')[0]}</span></h1>
+          <h1>Welcome back, <span>{firstName}</span></h1>
           <p className="subtitle" style={{ color: 'rgba(255,255,255,0.7)', maxWidth: '600px', margin: '0 auto', fontSize: '1.2rem'}}>
             Manage your personal reservations and discover new premier experiences exclusively available to you.
           </p>
@@ -80,7 +112,7 @@ const VoyagerDashboard = () => {
               {myBookings.map(b => (
                 <tr key={b.id}>
                   <td>VOY-{b.id}BOK</td>
-                  <td>{new Date(b.start_time || Date.now()).toLocaleString()}</td>
+                  <td>{formatDateTime(b.start_time)}</td>
                   <td><span style={{ color: '#51cf66', fontWeight: 600 }}>{b.status}</span></td>
                 </tr>
               ))}
@@ -97,9 +129,7 @@ const VoyagerDashboard = () => {
         
         <div className="card-grid">
           {cruises.map(cruise => {
-            let imgSource = alaskaImg;
-            if(cruise.image_url.includes('med')) imgSource = medImg;
-            if(cruise.image_url.includes('carib')) imgSource = caribImg;
+            const imgSource = getCruiseImage(cruise.image_url);
 
             return (
               <div className="luxury-card" key={cruise.id}>
@@ -111,15 +141,27 @@ const VoyagerDashboard = () => {
                   <span className="card-meta">{cruise.duration_days} Days Excursion</span>
                   <div className="card-details">
                     <span><strong>Voyage Map:</strong> {cruise.route}</span>
-                    <span><strong>Departure:</strong> {new Date(cruise.start_date).toLocaleDateString()}</span>
+                    <span><strong>Departure:</strong> {formatDate(cruise.start_date)}</span>
                     <span style={{color: cruise.available_seats < 100 ? '#ff6b6b' : '#51cf66'}}>
                       <strong>Seats Remaining:</strong> {cruise.available_seats} / {cruise.total_seats}
                     </span>
                   </div>
                 </div>
                 <div className="card-footer">
-                  <span className="price">${parseFloat(cruise.price).toLocaleString()} <span className="price-small">/ pp</span></span>
-                  <button className="btn-luxury" onClick={() => navigate('/voyager/resort')}>Reserve Cabin</button>
+                  <span className="price">${formatPrice(cruise.price)} <span className="price-small">/ pp</span></span>
+                  <button
+                    className="btn-luxury"
+                    onClick={() =>
+                      navigate('/voyager/cruises', {
+                        state: {
+                          selectedCruiseId: cruise.id,
+                          selectedCruiseName: cruise.name,
+                        },
+                      })
+                    }
+                  >
+                    Reserve Cabin
+                  </button>
                 </div>
               </div>
             )
@@ -142,7 +184,7 @@ const VoyagerDashboard = () => {
                 </div>
               </div>
               <div className="card-footer">
-                <span className="price">${parseFloat(service.price).toLocaleString()} <span className="price-small">/ session</span></span>
+                <span className="price">${formatPrice(service.price)} <span className="price-small">/ session</span></span>
                 <button className="btn-luxury" onClick={() => handleBookClick(service)}>Reserve Slot</button>
               </div>
             </div>

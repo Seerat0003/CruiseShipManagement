@@ -1,4 +1,5 @@
 .product-card {
+  position: relative;
   background: rgba(13, 34, 53, 0.45);
   border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
@@ -81,4 +82,35 @@
 .product-add-btn[disabled] {
   opacity: 0.45;
   cursor: not-allowed;
+}
+
+/* ── Added-to-cart popup toast ── */
+.cart-popup {
+  position: absolute;
+  top: 12px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(132, 242, 168, 0.15);
+  color: #84f2a8;
+  border: 1px solid rgba(132, 242, 168, 0.45);
+  padding: 0.5rem 1.2rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+  z-index: 10;
+  animation: popupFadeIn 0.3s ease;
+  pointer-events: none;
+}
+
+@keyframes popupFadeIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
 }

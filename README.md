@@ -49,6 +49,25 @@ npm start
 
 The backend requires a working PostgreSQL database and a valid `backend/.env` file.
 
+### Email Configuration
+
+Booking approval emails are sent through Nodemailer when a booking status changes to `Confirmed`.
+
+Add these variables to `backend/.env` to enable real email delivery:
+
+```env
+SMTP_HOST=smtp.example.com
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=your_smtp_username
+SMTP_PASS=your_smtp_password
+MAIL_FROM_NAME=Ocean Serenity Fleet
+MAIL_FROM_EMAIL=noreply@yourdomain.com
+MAIL_REPLY_TO=support@yourdomain.com
+```
+
+If SMTP settings are missing, the backend will continue running but will skip sending booking confirmation emails and log a warning.
+
 ## Root Helper Scripts
 
 From the repo root, you can use:

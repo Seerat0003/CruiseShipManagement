@@ -7,6 +7,7 @@ import facilitiesImg from './assets/facilities.png';
 import medImg from './assets/med.png';
 import caribbeanImg from './assets/caribbean.png';
 import alaskaImg from './assets/alaska.png';
+import { getDefaultRouteForRole, getStoredUser } from './auth/storage';
 
 // Cute little animation counter for stats
 const Counter = ({ end, duration, label }) => {
@@ -39,10 +40,8 @@ const Home = ({ loggedIn }) => {
 
   const handleCTA = () => {
     if (loggedIn) {
-      const userStr = localStorage.getItem('user');
-      const user = userStr ? JSON.parse(userStr) : null;
-      if(user && user.role === 'admin') navigate('/admin/dashboard');
-      else navigate('/voyager/dashboard');
+      const user = getStoredUser();
+      navigate(getDefaultRouteForRole(user?.role));
     } else {
       navigate('/admin/login');
     }

@@ -1,6 +1,4 @@
 const bcrypt = require("bcryptjs");
-const jwt = require("jsonwebtoken");
-const nodemailer = require("nodemailer");
 const { Op } = require("sequelize");
 const {
   User,
@@ -13,8 +11,8 @@ const {
   OrderItem,
 } = require("../models");
 const { getIO } = require("../socket");
-
-const JWT_SECRET = process.env.JWT_SECRET || "supersecretkey";
+const { signAuthToken } = require("../utils/auth");
+const { sendBookingApprovedEmail } = require("../utils/mailer");
 
 const getServiceCapacity = (category = "") => {
   const normalized = category.toLowerCase();
@@ -65,7 +63,7 @@ const fetchBookingWithRelations = (id) =>
     include: [User, Service, Cruise],
   });
 
-const sendBookingStatusNotification = async (booking) => {
+const sendBookingStatusNotification = async (booking, previousStatus = null) => {
   try {
     const io = getIO();
     io.to(`user-room-${booking.user_id}`).emit("booking_status_update", {
@@ -76,44 +74,12 @@ const sendBookingStatusNotification = async (booking) => {
     console.error("Socket emit error on booking update:", error);
   }
 
-  if (booking.status !== "Confirmed" || !booking.User) {
+  if (booking.status !== "Confirmed" || previousStatus === "Confirmed" || !booking.User) {
     return;
   }
 
   try {
-    const account = await nodemailer.createTestAccount();
-    const transporter = nodemailer.createTransport({
-      host: account.smtp.host,
-      port: account.smtp.port,
-      secure: account.smtp.secure,
-      auth: {
-        user: account.user,
-        pass: account.pass,
-      },
-    });
-
-    const serviceName = booking.Service ? booking.Service.name : "Premium Facility";
-    const info = await transporter.sendMail({
-      from: '"Ocean Serenity Fleet" <noreply@oceanserenity.com>',
-      to: booking.User.email,
-      subject: `Your Reservation is Confirmed: ${serviceName}`,
-      text: `Dear ${booking.User.name},\n\nYour reservation request has been officially approved.\n\nFacility: ${serviceName}\nTime: ${new Date(booking.start_time).toLocaleString()}\n\nWelcome aboard!`,
-      html: `
-        <div style="font-family: sans-serif; background: #07101a; padding: 40px; color: #fff; text-align: center;">
-          <h2 style="color: #f7d6a5;">Voyage Reservation Confirmed!</h2>
-          <p style="font-size: 16px;">Dear ${booking.User.name},</p>
-          <p style="font-size: 16px;">Your premium allocation request has been officially <strong>approved</strong> by the Administrator.</p>
-          <div style="background: rgba(255,255,255,0.05); border: 1px solid #f7d6a5; padding: 20px; border-radius: 8px; margin: 30px auto; max-width: 400px; text-align: left;">
-            <p><strong>Facility:</strong> ${serviceName}</p>
-            <p><strong>Scheduled Time:</strong> ${new Date(booking.start_time).toLocaleString()}</p>
-            <p><strong>Status:</strong> <span style="color: #51cf66;">Confirmed</span></p>
-          </div>
-          <p style="color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto;">Welcome aboard, and thank you for choosing Ocean Serenity.</p>
-        </div>
-      `,
-    });
-
-    console.log("Preview Live URL:", nodemailer.getTestMessageUrl(info));
+    await sendBookingApprovedEmail(booking);
   } catch (error) {
     console.error("Email dispatch failed", error.message);
   }
@@ -171,13 +137,13 @@ const resolvers = {
     productsByCategory: async (_, { category }) => Product.findAll({ where: { category } }),
 
     bookings: async (_, { category, mine }, { user }) => {
-      const where = {};
+      requireAuth(user);
 
-      if (mine) {
-        requireAuth(user);
+      const where = {};
+      if (mine || user.role === "voyager") {
         where.user_id = user.id;
-      } else if (user && user.role === "voyager") {
-        where.user_id = user.id;
+      } else if (!["admin", "manager"].includes(user.role)) {
+        throw new Error("Unauthorized");
       }
 
       const results = await Booking.findAll({
@@ -191,6 +157,34 @@ const resolvers = {
       }
 
       return results.filter((booking) => booking.Service?.category === category);
+    },
+    bookingOccupancy: async (_, { category }) => {
+      const where = {
+        service_id: {
+          [Op.ne]: null,
+        },
+        status: {
+          [Op.ne]: "Cancelled",
+        },
+      };
+
+      const include = category
+        ? [
+            {
+              model: Service,
+              where: { category },
+              attributes: [],
+              required: true,
+            },
+          ]
+        : [];
+
+      return Booking.findAll({
+        where,
+        include,
+        attributes: ["service_id", "start_time", "status"],
+        order: [["start_time", "ASC"]],
+      });
     },
     booking: async (_, { id }, { user }) => {
       const booking = await fetchBookingWithRelations(id);
@@ -298,7 +292,7 @@ const resolvers = {
   },
 
   Mutation: {
-    register: async (_, { name, email, password, phone, role }) => {
+    register: async (_, { name, email, password, phone }) => {
       const existingUser = await User.findOne({ where: { email } });
       if (existingUser) {
         throw new Error("Email already exists");
@@ -312,7 +306,7 @@ const resolvers = {
         email,
         phone,
         password: hashedPassword,
-        role: role || "voyager",
+        role: "voyager",
       });
 
       return {
@@ -331,11 +325,7 @@ const resolvers = {
         throw new Error("Invalid email or password");
       }
 
-      const token = jwt.sign(
-        { id: user.id, role: user.role },
-        JWT_SECRET,
-        { expiresIn: "1d" }
-      );
+      const token = signAuthToken(user);
 
       return {
         message: "Logged in successfully",
@@ -345,7 +335,7 @@ const resolvers = {
     },
 
     createBooking: async (_, { service_id, cruise_id, start_time, end_time }, { user }) => {
-      requireAuth(user);
+      requireRole(user, ["voyager"]);
 
       if (!service_id && !cruise_id) {
         throw new Error("A service or cruise must be selected");
@@ -414,13 +404,14 @@ const resolvers = {
         throw new Error("Booking not found");
       }
 
+      const previousStatus = booking.status;
       await booking.update({ status });
       const updatedBooking = await fetchBookingWithRelations(id);
-      await sendBookingStatusNotification(updatedBooking);
+      await sendBookingStatusNotification(updatedBooking, previousStatus);
       return updatedBooking;
     },
     cancelBooking: async (_, { id }, { user }) => {
-      requireAuth(user);
+      requireRole(user, ["voyager"]);
 
       const booking = await Booking.findByPk(id);
       if (!booking) {
@@ -436,7 +427,7 @@ const resolvers = {
     },
 
     placeOrder: async (_, { items }, { user }) => {
-      requireAuth(user);
+      requireRole(user, ["voyager"]);
 
       let total = 0;
       const orderItemsData = [];

@@ -6,13 +6,14 @@ import reportWebVitals from './reportWebVitals';
 import { ApolloClient, InMemoryCache, createHttpLink } from '@apollo/client';
 import { ApolloProvider } from '@apollo/client/react';
 import { setContext } from '@apollo/client/link/context';
+import { getStoredToken } from './auth/storage';
 
 const httpLink = createHttpLink({
   uri: 'http://localhost:5001/graphql',
 });
 
 const authLink = setContext((_, { headers }) => {
-  const token = localStorage.getItem('token');
+  const token = getStoredToken();
   return {
     headers: {
       ...headers,

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useMutation } from '@apollo/client/react';
 import './Login.css';
 import { LOGIN_MUTATION } from '../graphql/operations';
+import { getDefaultRouteForRole, setAuthSession } from '../auth/storage';
 
 function Login({ setLoggedIn }) {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -10,6 +11,7 @@ function Login({ setLoggedIn }) {
   const [successMsg, setSuccessMsg] = useState('');
   const [loginMutation] = useMutation(LOGIN_MUTATION);
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,18 +37,14 @@ function Login({ setLoggedIn }) {
 
       const payload = data?.login;
       if (payload?.token && payload?.user) {
-        localStorage.setItem("token", payload.token);
-        localStorage.setItem("user", JSON.stringify(payload.user));
+        setAuthSession(payload.token, payload.user);
         setSuccessMsg(`Welcome back, ${payload.user.name}! Authenticating...`);
         setLoggedIn(true);
+        const requestedPath = location.state?.from?.pathname;
+        const defaultRoute = getDefaultRouteForRole(payload.user.role);
+        const destination = requestedPath && requestedPath !== '/admin/login' ? requestedPath : defaultRoute;
         setTimeout(() => {
-          if (payload.user.role === 'admin') {
-            navigate('/admin/dashboard');
-          } else if (payload.user.role === 'manager') {
-            navigate('/manager/viewparty');
-          } else {
-            navigate('/voyager/dashboard');
-          }
+          navigate(destination, { replace: true });
         }, 1500);
       } else {
         setErrorMsg('Login failed. Please try again.');
