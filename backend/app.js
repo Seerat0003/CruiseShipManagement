@@ -6,6 +6,7 @@ const authRoutes = require("./routes/auth");
 const adminRoutes = require("./routes/admin");
 const voyagerRoutes = require("./routes/voyager");
 const publicRoutes = require("./routes/public");
+const managerRoutes = require("./routes/manager");
 
 const app = express();
 
@@ -14,9 +15,11 @@ app.use(express.json());
 
 // Register routes
 app.use("/api", authRoutes);
+app.use("/api/auth", authRoutes); // support both paths
 app.use("/api/public", publicRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/voyager", voyagerRoutes);
+app.use("/api/manager", managerRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running");

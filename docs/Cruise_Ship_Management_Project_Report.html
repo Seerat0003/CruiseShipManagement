@@ -1,0 +1,1027 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cruise Ship Management System Project Report</title>
+  <style>
+    @page {
+      size: A4;
+      margin: 3.5cm 2cm 2cm 3.5cm;
+    }
+
+    body {
+      font-family: "Times New Roman", Times, serif;
+      font-size: 12pt;
+      line-height: 1.5;
+      color: #000;
+      margin: 0;
+    }
+
+    .page-break {
+      page-break-after: always;
+    }
+
+    .front-page {
+      min-height: 24cm;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .front-page h1,
+    .front-page h2,
+    .front-page h3,
+    .front-page p {
+      margin: 0.35em 0;
+    }
+
+    .chapter-title {
+      page-break-before: always;
+      text-align: center;
+      font-size: 18pt;
+      font-weight: bold;
+      text-transform: uppercase;
+      margin-top: 0;
+      margin-bottom: 1.25em;
+    }
+
+    .section-title {
+      font-size: 14pt;
+      font-weight: bold;
+      margin-top: 1.5em;
+      margin-bottom: 0.5em;
+    }
+
+    .subsection-title {
+      font-size: 12pt;
+      font-weight: bold;
+      margin-top: 1.1em;
+      margin-bottom: 0.35em;
+    }
+
+    p {
+      margin: 0 0 0.9em 0;
+      text-align: justify;
+    }
+
+    ul,
+    ol {
+      margin-top: 0.35em;
+      margin-bottom: 0.9em;
+    }
+
+    li {
+      margin-bottom: 0.3em;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 1em 0 1.2em 0;
+      font-size: 12pt;
+    }
+
+    th,
+    td {
+      border: 1px solid #000;
+      padding: 6px 8px;
+      vertical-align: top;
+    }
+
+    th {
+      text-align: center;
+      font-weight: bold;
+    }
+
+    .center {
+      text-align: center;
+    }
+
+    .small {
+      font-size: 11pt;
+    }
+
+    .figure-box {
+      border: 1px solid #000;
+      padding: 18px;
+      margin: 1em 0 0.5em 0;
+      text-align: center;
+      font-style: italic;
+    }
+
+    .caption {
+      text-align: center;
+      font-size: 11pt;
+      margin-bottom: 1em;
+    }
+
+    .toc-entry,
+    .list-entry {
+      display: flex;
+      gap: 8px;
+      align-items: baseline;
+      margin-bottom: 0.2em;
+    }
+
+    .toc-entry .dots,
+    .list-entry .dots {
+      flex: 1;
+      border-bottom: 1px dotted #000;
+      transform: translateY(-3px);
+    }
+
+    .signature-row {
+      width: 100%;
+      margin-top: 2em;
+    }
+
+    .signature-row td {
+      width: 33.33%;
+      border: none;
+      text-align: center;
+      vertical-align: bottom;
+      padding-top: 2em;
+    }
+
+    .no-border td {
+      border: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="front-page page-break">
+    <h2>INTEGRATED PROJECT REPORT</h2>
+    <p>On</p>
+    <h1>CRUISE SHIP MANAGEMENT SYSTEM</h1>
+    <p>Submitted in partial fulfilment of the requirement for the Course</p>
+    <p><strong>Full Stack Engineering (22CS037)</strong></p>
+    <p>of</p>
+    <p><strong>Computer Science and Engineering</strong></p>
+    <p><strong>B.E. Batch-2023</strong></p>
+    <p>in</p>
+    <p><strong>May 2026</strong></p>
+    <br>
+    <p><strong>Under the Guidance of</strong></p>
+    <p>[Project Guide Name]</p>
+    <br>
+    <p><strong>Submitted By</strong></p>
+    <p>[Student Name 1] - [Roll No.]</p>
+    <p>[Student Name 2] - [Roll No.]</p>
+    <p>[Student Name 3] - [Roll No.]</p>
+    <br>
+    <p><strong>Department of Computer Science and Engineering</strong></p>
+    <p><strong>Chitkara University, Punjab</strong></p>
+  </div>
+
+  <div class="front-page page-break">
+    <h2>FULL STACK ENGINEERING PROJECT REPORT</h2>
+    <p>On</p>
+    <h1>CRUISE SHIP MANAGEMENT SYSTEM</h1>
+    <p>Submitted in partial fulfilment of the requirement for the Course</p>
+    <p><strong>Full Stack Engineering (22CS037)</strong></p>
+    <p>of</p>
+    <p><strong>Computer Science and Engineering</strong></p>
+    <p><strong>B.E. Batch-2023</strong></p>
+    <p>in</p>
+    <p><strong>May 2026</strong></p>
+    <br>
+    <p><strong>Under the Guidance of</strong></p>
+    <p>[Project Guide Name]</p>
+    <br>
+    <p><strong>Submitted By</strong></p>
+    <p>[Student Name 1] - [Roll No.]</p>
+    <p>[Student Name 2] - [Roll No.]</p>
+    <p>[Student Name 3] - [Roll No.]</p>
+    <br>
+    <p><strong>Department of Computer Science and Engineering</strong></p>
+    <p><strong>Chitkara University, Punjab</strong></p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">CERTIFICATE</h2>
+    <p>
+      This is to certify that the project entitled <strong>"Cruise Ship Management System"</strong> has been submitted for the
+      Bachelor of Engineering in Computer Science and Engineering at Chitkara University, Punjab during the academic semester
+      January 2026 to May 2026. The work presented in this report is a bonafide record of the project work carried out by
+      <strong>[Student Name 1], [Student Name 2], and [Student Name 3]</strong> towards the partial fulfilment of the requirements
+      of the course <strong>Full Stack Engineering (22CS037)</strong> under the guidance and supervision of
+      <strong>[Project Guide Name]</strong>.
+    </p>
+    <p>
+      To the best of my knowledge, this work has been completed with sincerity and demonstrates a meaningful application of full
+      stack development concepts including frontend engineering, backend service design, authentication, database integration, and
+      role-based operational workflows.
+    </p>
+    <br><br><br>
+    <p><strong>Sign. of Project Guide:</strong> ______________________________</p>
+    <p><strong>Name of Project Guide:</strong> [Project Guide Name]</p>
+    <p><strong>Designation and Department:</strong> [Designation], Department of Computer Science and Engineering</p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">CANDIDATE'S DECLARATION</h2>
+    <p>
+      We, <strong>[Student Name 1], [Student Name 2], and [Student Name 3]</strong>, students of B.E. Computer Science and
+      Engineering, Batch-2023, Chitkara University, Punjab, hereby declare that the Full Stack Engineering (22CS037) project
+      report entitled <strong>"Cruise Ship Management System"</strong> is an original piece of work carried out by us. The data,
+      implementation details, explanations, and observations included in this report are authentic to the best of our knowledge.
+    </p>
+    <p>
+      We further declare that this report has not been submitted, either wholly or in part, to any other institution or university
+      for the award of any degree, diploma, or course certification.
+    </p>
+    <table class="signature-row no-border">
+      <tr>
+        <td>_________________________<br>[Student Name 1]<br>ID No. __________</td>
+        <td>_________________________<br>[Student Name 2]<br>ID No. __________</td>
+        <td>_________________________<br>[Student Name 3]<br>ID No. __________</td>
+      </tr>
+    </table>
+    <p><strong>Place:</strong> Rajpura, Punjab</p>
+    <p><strong>Date:</strong> 14 May 2026</p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">ACKNOWLEDGEMENT</h2>
+    <p>
+      We would like to express our sincere gratitude to everyone who directly or indirectly contributed to the successful
+      completion of this project report on the <strong>Cruise Ship Management System</strong>. The opportunity to design and study a
+      full stack software system in a real-world problem setting has been an important learning experience for us.
+    </p>
+    <p>
+      We are especially thankful to <strong>[Project Guide Name]</strong> for the guidance, encouragement, constructive feedback,
+      and continuous support provided throughout the project lifecycle. Their direction helped us transform an initial idea into a
+      structured application that combines frontend design, backend development, authentication, database modeling, and operational
+      workflows.
+    </p>
+    <p>
+      We also acknowledge the Department of Computer Science and Engineering, Chitkara University, Punjab, for providing the
+      academic environment, infrastructure, and motivation necessary for carrying out this work. We remain grateful to our faculty
+      members, classmates, friends, and family for their suggestions, moral support, and encouragement during every phase of the
+      project.
+    </p>
+    <p>
+      Finally, we thank all those who inspired us to approach software engineering with discipline, creativity, and responsibility.
+      Their contribution, whether technical or moral, has played an essential role in the completion of this report.
+    </p>
+    <table class="signature-row no-border">
+      <tr>
+        <td>[Student Name 1]<br>ID No. __________</td>
+        <td>[Student Name 2]<br>ID No. __________</td>
+        <td>[Student Name 3]<br>ID No. __________</td>
+      </tr>
+    </table>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">ABSTRACT</h2>
+    <p>
+      The Cruise Ship Management System is a full stack web application developed to streamline customer-facing and administrative
+      operations in a cruise environment. The system addresses the inefficiencies of manual coordination in managing voyages,
+      onboard premium services, reservations, and user roles. It provides a unified digital workflow through which public users can
+      explore cruises and services, voyagers can register and request reservations, and administrators can monitor activity, approve
+      bookings, create new cruises, and observe facility-level statistics.
+    </p>
+    <p>
+      The application follows a role-based architecture built on a React frontend and an Express-based backend supported by
+      Sequelize ORM. The backend handles authentication, protected APIs, booking management, and administrative workflows. The data
+      layer models users, voyages, services, bookings, products, and order-related structures, thereby laying the foundation for a
+      broader cruise operations ecosystem. The system also incorporates JSON Web Token based authentication for secure access
+      control, automated booking approval email support, and Socket.IO integration for real-time communication capabilities.
+    </p>
+    <p>
+      The implemented system demonstrates a functional reservation pipeline in which a voyager can request a booking for an onboard
+      service and an administrator can later approve the request. Although some modules such as manager dashboards, product ordering,
+      and direct cruise reservation remain incomplete or partially wired, the project successfully establishes a working
+      reservation-oriented platform that can be extended into a larger enterprise-grade solution.
+    </p>
+    <p><strong>Keywords:</strong> Cruise management, full stack engineering, reservation system, React, Express, Sequelize, JWT, role-based access control, admin dashboard, service booking.</p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">EXECUTIVE SUMMARY</h2>
+    <p>
+      This report presents the analysis, design, implementation, and evaluation of the <strong>Cruise Ship Management System</strong>,
+      developed as part of the Full Stack Engineering course. The project is positioned as a role-based reservation and operations
+      management platform for a modern cruise environment. At a practical level, the system enables three main experiences: public
+      browsing of cruises and services, voyager account-based reservation requests, and administrator-controlled approval and
+      monitoring.
+    </p>
+    <p>
+      The report begins by introducing the background of digitally managed hospitality and transport ecosystems, then narrows the
+      discussion to the operational challenges of cruise service scheduling and reservation visibility. It documents functional and
+      non-functional requirements, explains the methodology adopted for development, and describes the working environment used to
+      build the system. Dedicated chapters explain the database model, code structure, user interface design, APIs, database
+      connectivity, and testing approach.
+    </p>
+    <p>
+      A realistic assessment of the application is also included. The strongest implemented workflow is the service booking
+      lifecycle where a voyager requests a booking and an administrator confirms it. The report also highlights known limitations:
+      partial manager functionality, simulated capacities, disconnected inventory pages, and incomplete direct cruise reservation.
+      The final chapters summarize the outcome, identify the future roadmap, and position this project as a strong base for a
+      scalable cruise operations suite.
+    </p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">TABLE OF CONTENTS</h2>
+    <div class="toc-entry"><span>Certificate</span><span class="dots"></span><span>iii</span></div>
+    <div class="toc-entry"><span>Candidate's Declaration</span><span class="dots"></span><span>iv</span></div>
+    <div class="toc-entry"><span>Acknowledgement</span><span class="dots"></span><span>v</span></div>
+    <div class="toc-entry"><span>Abstract</span><span class="dots"></span><span>vi</span></div>
+    <div class="toc-entry"><span>Executive Summary</span><span class="dots"></span><span>vii</span></div>
+    <div class="toc-entry"><span>List of Figures</span><span class="dots"></span><span>viii</span></div>
+    <div class="toc-entry"><span>List of Tables</span><span class="dots"></span><span>ix</span></div>
+    <div class="toc-entry"><span>Notations</span><span class="dots"></span><span>x</span></div>
+    <div class="toc-entry"><span>Chapter 1 Introduction to the Project</span><span class="dots"></span><span>1</span></div>
+    <div class="toc-entry"><span>Chapter 2 Software and Hardware Requirement Specification</span><span class="dots"></span><span>6</span></div>
+    <div class="toc-entry"><span>Chapter 3 Methods</span><span class="dots"></span><span>11</span></div>
+    <div class="toc-entry"><span>Chapter 4 Programming/Working Environment</span><span class="dots"></span><span>17</span></div>
+    <div class="toc-entry"><span>Chapter 5 Requirements to Run the Application</span><span class="dots"></span><span>20</span></div>
+    <div class="toc-entry"><span>Chapter 6 Database Analyzing, Design and Implementation</span><span class="dots"></span><span>23</span></div>
+    <div class="toc-entry"><span>Chapter 7 Program's Structure Analyzing and GUI Constructing</span><span class="dots"></span><span>30</span></div>
+    <div class="toc-entry"><span>Chapter 8 Code Implementation and Database Connections</span><span class="dots"></span><span>36</span></div>
+    <div class="toc-entry"><span>Chapter 9 System Testing</span><span class="dots"></span><span>43</span></div>
+    <div class="toc-entry"><span>Chapter 10 Limitations</span><span class="dots"></span><span>47</span></div>
+    <div class="toc-entry"><span>Chapter 11 Conclusion</span><span class="dots"></span><span>49</span></div>
+    <div class="toc-entry"><span>Chapter 12 Future Scope</span><span class="dots"></span><span>50</span></div>
+    <div class="toc-entry"><span>Chapter 13 Bibliography/References</span><span class="dots"></span><span>52</span></div>
+    <div class="toc-entry"><span>Appendix</span><span class="dots"></span><span>54</span></div>
+    <p class="small">
+      Note: Page numbers above are indicative and should be updated automatically in the final word processor after final review
+      and minor personalization.
+    </p>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">LIST OF FIGURES</h2>
+    <div class="list-entry"><span>Figure 1. High-Level Architecture of the Cruise Ship Management System</span><span class="dots"></span><span>13</span></div>
+    <div class="list-entry"><span>Figure 2. Role-Based User Interaction Model</span><span class="dots"></span><span>14</span></div>
+    <div class="list-entry"><span>Figure 3. Booking Request and Approval Workflow</span><span class="dots"></span><span>16</span></div>
+    <div class="list-entry"><span>Figure 4. Database Entity Relationship Overview</span><span class="dots"></span><span>24</span></div>
+    <div class="list-entry"><span>Figure 5. Folder Structure and Module Distribution</span><span class="dots"></span><span>31</span></div>
+    <div class="list-entry"><span>Figure 6. Voyager Dashboard Snapshot Placeholder</span><span class="dots"></span><span>33</span></div>
+    <div class="list-entry"><span>Figure 7. Admin Dashboard Snapshot Placeholder</span><span class="dots"></span><span>34</span></div>
+    <div class="list-entry"><span>Figure 8. Application Startup and Data Flow</span><span class="dots"></span><span>38</span></div>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">LIST OF TABLES</h2>
+    <div class="list-entry"><span>Table 1. Functional Requirements</span><span class="dots"></span><span>7</span></div>
+    <div class="list-entry"><span>Table 2. Non-Functional Requirements</span><span class="dots"></span><span>8</span></div>
+    <div class="list-entry"><span>Table 3. Software Requirements</span><span class="dots"></span><span>9</span></div>
+    <div class="list-entry"><span>Table 4. Hardware Requirements</span><span class="dots"></span><span>10</span></div>
+    <div class="list-entry"><span>Table 5. Core Database Entities</span><span class="dots"></span><span>26</span></div>
+    <div class="list-entry"><span>Table 6. API Endpoint Summary</span><span class="dots"></span><span>40</span></div>
+    <div class="list-entry"><span>Table 7. Representative System Test Cases</span><span class="dots"></span><span>44</span></div>
+    <div class="list-entry"><span>Table 8. Major Limitations and Their Impact</span><span class="dots"></span><span>47</span></div>
+  </div>
+
+  <div class="page-break">
+    <h2 class="center">NOTATIONS</h2>
+    <table>
+      <tr><th>Abbreviation</th><th>Meaning</th></tr>
+      <tr><td>API</td><td>Application Programming Interface</td></tr>
+      <tr><td>CRUD</td><td>Create, Read, Update, Delete</td></tr>
+      <tr><td>CTA</td><td>Call To Action</td></tr>
+      <tr><td>ER</td><td>Entity Relationship</td></tr>
+      <tr><td>JWT</td><td>JSON Web Token</td></tr>
+      <tr><td>ORM</td><td>Object Relational Mapping</td></tr>
+      <tr><td>RBAC</td><td>Role-Based Access Control</td></tr>
+      <tr><td>REST</td><td>Representational State Transfer</td></tr>
+      <tr><td>SMTP</td><td>Simple Mail Transfer Protocol</td></tr>
+      <tr><td>UI</td><td>User Interface</td></tr>
+      <tr><td>UX</td><td>User Experience</td></tr>
+    </table>
+  </div>
+
+  <h1 class="chapter-title">CHAPTER 1<br>INTRODUCTION TO THE PROJECT</h1>
+  <h2 class="section-title">1.1 Background</h2>
+  <p>
+    Cruise operations combine elements of travel management, hospitality, booking coordination, onboard service scheduling, and
+    customer relationship management. In a traditional or partially digitized setup, these activities are often fragmented across
+    spreadsheets, desk-based coordination, manual approval chains, and disconnected communication channels. Such fragmentation slows
+    down decision-making, creates booking ambiguity, and reduces visibility for both passengers and operational staff.
+  </p>
+  <p>
+    The Cruise Ship Management System was conceptualized as a digital foundation for handling these concerns in a structured and
+    role-aware manner. Instead of treating voyages, services, users, and reservations as isolated processes, the system unifies them
+    into a single web-based platform. This improves discoverability of available cruises, simplifies service reservation requests,
+    and enables administrators to monitor demand and approve requests from a central dashboard.
+  </p>
+
+  <h2 class="section-title">1.2 Project Overview</h2>
+  <p>
+    The project is a full stack application with a React frontend and an Express backend. The frontend offers separate experiences
+    for public visitors, voyagers, administrators, and future manager users. The backend provides the operational APIs, handles
+    access control with JWT, maintains persistent data through Sequelize-based models, and supports service-side workflows such as
+    booking confirmation and email notifications.
+  </p>
+  <p>
+    The implemented system is centered around a realistic service reservation pipeline. A voyager can sign up, log in, browse
+    cruises and services, request a booking for a selected slot, and view their personal itinerary. An administrator can then review
+    bookings, approve them, monitor user counts and service usage, and add new cruise trips.
+  </p>
+
+  <h2 class="section-title">1.3 Problem Statement</h2>
+  <p>
+    Cruise environments require coordinated management of customer accounts, cruise itineraries, premium facilities, capacity
+    awareness, and reservation approvals. When these processes are managed manually or through disconnected tools, the following
+    problems commonly arise:
+  </p>
+  <ul>
+    <li>Passengers do not have a unified view of available cruises and onboard services.</li>
+    <li>Reservation requests are difficult to track across users, time slots, and service categories.</li>
+    <li>Administrators lack a central dashboard for monitoring bookings, voyagers, and trip capacity.</li>
+    <li>Approval flows are delayed because communication and operational data are not integrated.</li>
+    <li>System extensibility suffers when booking, product, and reporting modules are built separately.</li>
+  </ul>
+  <p>
+    Therefore, the core problem addressed by this project is the absence of a centralized, role-based digital platform for managing
+    cruise-related user journeys and administrative reservation operations.
+  </p>
+
+  <h2 class="section-title">1.4 Objectives</h2>
+  <p>The major objectives of the Cruise Ship Management System are as follows:</p>
+  <ul>
+    <li>To provide a user-friendly platform for browsing cruises and premium onboard services.</li>
+    <li>To allow voyagers to create accounts, authenticate securely, and request reservations digitally.</li>
+    <li>To enable administrators to review bookings, approve requests, create cruises, and view operational statistics.</li>
+    <li>To design a clean database model connecting users, cruises, services, bookings, and order-related entities.</li>
+    <li>To establish a scalable base for future extensions such as live manager dashboards, product ordering, and direct cruise reservations.</li>
+  </ul>
+
+  <h2 class="section-title">1.5 Scope of the Project</h2>
+  <p>
+    The present scope of the project focuses on reservation-centric cruise operations rather than a full enterprise shipping suite.
+    Public users can explore information, voyagers can request service bookings, and administrators can manage the main operational
+    approval workflow. Product ordering, manager supervision views, and direct cruise reservation logic remain part of the intended
+    wider scope but are not yet fully realized in the current implementation.
+  </p>
+
+  <h2 class="section-title">1.6 Key Outcomes</h2>
+  <p>The project successfully demonstrates the following outcomes:</p>
+  <ul>
+    <li>A working role-based login and signup flow using JWT.</li>
+    <li>A public-facing browsing experience for cruises and onboard facilities.</li>
+    <li>A voyager booking request mechanism for service reservations.</li>
+    <li>An admin dashboard with booking approval and operational summary metrics.</li>
+    <li>A data model that can evolve into a broader cruise commerce and management platform.</li>
+  </ul>
+
+  <h1 class="chapter-title">CHAPTER 2<br>SOFTWARE AND HARDWARE REQUIREMENT SPECIFICATION</h1>
+  <h2 class="section-title">2.1 Functional Requirements</h2>
+  <table>
+    <tr><th>Requirement ID</th><th>Functional Requirement</th><th>Description</th></tr>
+    <tr><td>FR-01</td><td>User Registration</td><td>The system shall allow a new voyager to register using name, email, password, and phone number.</td></tr>
+    <tr><td>FR-02</td><td>User Authentication</td><td>The system shall authenticate users and issue a JWT token after successful login.</td></tr>
+    <tr><td>FR-03</td><td>Public Browsing</td><td>The system shall expose cruise, service, and occupancy information for non-authenticated users.</td></tr>
+    <tr><td>FR-04</td><td>Voyager Booking Request</td><td>The system shall allow a voyager to request a booking for a service on a selected date and time slot.</td></tr>
+    <tr><td>FR-05</td><td>Personal Itinerary View</td><td>The system shall allow a voyager to view their own bookings and current approval status.</td></tr>
+    <tr><td>FR-06</td><td>Admin Dashboard</td><td>The system shall provide an admin dashboard for reservations, user metrics, trip details, and facility usage.</td></tr>
+    <tr><td>FR-07</td><td>Booking Approval</td><td>The system shall allow the admin to approve pending voyager bookings.</td></tr>
+    <tr><td>FR-08</td><td>Cruise Creation</td><td>The system shall allow the admin to create new cruises with route, date, duration, seats, and price.</td></tr>
+    <tr><td>FR-09</td><td>Email Notification</td><td>The system shall attempt to send an email when a booking is confirmed.</td></tr>
+    <tr><td>FR-10</td><td>Role-Based Access Control</td><td>The system shall restrict protected routes according to the user role embedded in the token.</td></tr>
+  </table>
+
+  <h2 class="section-title">2.2 Non-Functional Requirements</h2>
+  <table>
+    <tr><th>Category</th><th>Requirement</th><th>Explanation</th></tr>
+    <tr><td>Usability</td><td>Simple navigation and readable interfaces</td><td>The UI should support first-time users with clear calls to action and role-sensitive menus.</td></tr>
+    <tr><td>Security</td><td>Protected administrative and voyager routes</td><td>JWT-based authentication and middleware checks should prevent unauthorized access.</td></tr>
+    <tr><td>Maintainability</td><td>Modular frontend and backend structure</td><td>Files should be separated by route, component, and model responsibility to support future extension.</td></tr>
+    <tr><td>Scalability</td><td>Extensible data model and API layer</td><td>The architecture should support additional roles, booking rules, product ordering, and analytics.</td></tr>
+    <tr><td>Performance</td><td>Responsive dashboard loading for core data</td><td>Operational pages should fetch and display business data without excessive page transitions.</td></tr>
+    <tr><td>Reliability</td><td>Graceful handling of missing email configuration</td><td>The booking approval flow should continue even when SMTP settings are unavailable.</td></tr>
+  </table>
+
+  <h2 class="section-title">2.3 Software Requirements</h2>
+  <table>
+    <tr><th>Component</th><th>Requirement</th><th>Purpose</th></tr>
+    <tr><td>Operating System</td><td>Windows 10/11, macOS, or Linux</td><td>Development and execution environment</td></tr>
+    <tr><td>Frontend Runtime</td><td>Node.js with npm</td><td>To run the React frontend and manage packages</td></tr>
+    <tr><td>Frontend Framework</td><td>React with React Router</td><td>To build the component-based single page interface</td></tr>
+    <tr><td>Backend Runtime</td><td>Node.js</td><td>To run the Express server and API layer</td></tr>
+    <tr><td>Backend Framework</td><td>Express.js</td><td>To expose REST routes and backend middleware</td></tr>
+    <tr><td>ORM</td><td>Sequelize</td><td>To define models, associations, and database interaction</td></tr>
+    <tr><td>Database</td><td>PostgreSQL (documented target setup)</td><td>To store application entities and reservations</td></tr>
+    <tr><td>Security Libraries</td><td>bcryptjs, jsonwebtoken</td><td>To hash passwords and sign/verify tokens</td></tr>
+    <tr><td>Communication Libraries</td><td>Socket.IO, Nodemailer/SMTP stack</td><td>To support real-time events and email notifications</td></tr>
+    <tr><td>Browser</td><td>Modern Chromium, Firefox, or Safari</td><td>To access the web application</td></tr>
+  </table>
+
+  <h2 class="section-title">2.4 Hardware Requirements</h2>
+  <table>
+    <tr><th>Hardware Item</th><th>Minimum Requirement</th><th>Recommended</th></tr>
+    <tr><td>Processor</td><td>Dual Core CPU</td><td>Intel i5 / Ryzen 5 or above</td></tr>
+    <tr><td>RAM</td><td>4 GB</td><td>8 GB or above</td></tr>
+    <tr><td>Storage</td><td>2 GB free disk space</td><td>5 GB or above for tools and database</td></tr>
+    <tr><td>Display</td><td>1366 x 768</td><td>1920 x 1080</td></tr>
+    <tr><td>Network</td><td>Stable local/internet connectivity</td><td>Broadband connection for package installation and testing</td></tr>
+  </table>
+
+  <h1 class="chapter-title">CHAPTER 3<br>METHODS</h1>
+  <h2 class="section-title">3.1 Development Methodology</h2>
+  <p>
+    The project follows a modular incremental development approach. Instead of attempting to build a complete cruise operations suite
+    in one phase, the system was developed around a core business workflow and extended module by module. The first priority was
+    authentication and role separation, followed by service discovery, booking creation, and administrative approval. This method
+    allowed the application to achieve a useful working baseline while leaving space for future modules such as inventory, product
+    orders, and manager-specific views.
+  </p>
+
+  <h2 class="section-title">3.2 Requirement Analysis Method</h2>
+  <p>
+    The requirement analysis for the project focused on identifying the responsibilities of each user group. Public visitors require
+    visibility into what the platform offers. Voyagers require secure identity, the ability to explore services, and a transparent
+    reservation request process. Administrators require a control surface to manage requests, trips, and high-level usage metrics.
+    Manager roles were identified as a future operational layer responsible for department-specific oversight.
+  </p>
+
+  <h2 class="section-title">3.3 System Design Strategy</h2>
+  <p>
+    The design strategy used a three-layer separation:
+  </p>
+  <ul>
+    <li><strong>Presentation Layer:</strong> React components, routing, forms, dashboards, and booking pages.</li>
+    <li><strong>Application Layer:</strong> Express routes, middleware, business workflows, token validation, and booking approval logic.</li>
+    <li><strong>Data Layer:</strong> Sequelize models, associations, and persistent storage for operational entities.</li>
+  </ul>
+  <div class="figure-box">[Insert Figure 1 here: High-Level Architecture of the Cruise Ship Management System]</div>
+  <div class="caption">Figure 1. High-Level Architecture of the Cruise Ship Management System</div>
+
+  <h2 class="section-title">3.4 Role-Based Interaction Method</h2>
+  <p>
+    A central design decision in the application is role-based behavior. The frontend adjusts visible menus based on login state and
+    role, while the backend independently protects endpoints through middleware. This dual-layer role model strengthens security and
+    supports differentiated user journeys without requiring multiple independent applications.
+  </p>
+  <div class="figure-box">[Insert Figure 2 here: Role-Based User Interaction Model showing Public Visitor, Voyager, Admin, and Future Manager]</div>
+  <div class="caption">Figure 2. Role-Based User Interaction Model</div>
+
+  <h2 class="section-title">3.5 Booking Workflow Method</h2>
+  <p>
+    The reservation method is request-based rather than instant-confirmation based. A voyager selects a facility, date, and slot;
+    the system creates a booking in <strong>Pending</strong> state; the administrator later approves it. This mirrors realistic
+    operational control where premium facilities may require oversight before confirmation.
+  </p>
+  <ol>
+    <li>User authenticates into the system.</li>
+    <li>User selects a suitable service category and preferred time slot.</li>
+    <li>Frontend checks existing public occupancy information and estimated capacity.</li>
+    <li>Backend stores the request against the authenticated voyager.</li>
+    <li>Admin reviews bookings from a central dashboard.</li>
+    <li>Approved requests change status and can trigger notification flows.</li>
+  </ol>
+  <div class="figure-box">[Insert Figure 3 here: Booking Request and Approval Workflow]</div>
+  <div class="caption">Figure 3. Booking Request and Approval Workflow</div>
+
+  <h2 class="section-title">3.6 Security Method</h2>
+  <p>
+    Security is implemented using password hashing through bcrypt and session-free stateless authentication using JWT. Role
+    authorization is enforced on the backend using middleware helpers such as <em>authenticate</em>, <em>authorizeAdmin</em>, and
+    <em>authorizeVoyager</em>. This ensures that even if a user attempts direct API access through a client or browser tool, the
+    operation is denied unless the token and role are valid.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 4<br>PROGRAMMING/WORKING ENVIRONMENT</h1>
+  <h2 class="section-title">4.1 Frontend Environment</h2>
+  <p>
+    The frontend is developed in React and organized around route-based pages and reusable components. The root package scripts
+    forward common commands for frontend startup, build, and test tasks. Routing is handled through React Router, while UI styling
+    combines CSS and React Bootstrap-based patterns. The component structure includes public pages, voyager pages, admin pages,
+    shared navigation, and support chat related functionality.
+  </p>
+
+  <h2 class="section-title">4.2 Backend Environment</h2>
+  <p>
+    The backend is built using Express and runs as a Node.js server. It exposes RESTful operational routes and also includes Apollo
+    Server setup for GraphQL extensibility. The backend initializes middleware such as CORS and JSON body parsing, authenticates to
+    the configured database, synchronizes models, and starts listening on the application port. It also integrates Socket.IO for
+    real-time event support.
+  </p>
+
+  <h2 class="section-title">4.3 Data Environment</h2>
+  <p>
+    Sequelize is used as the ORM to define models for users, voyagers, cruises, services, bookings, products, orders, and order
+    items. The documented deployment target uses PostgreSQL with environment-driven configuration. A local SQLite artifact in the
+    repository indicates that development experimentation has also occurred outside the documented target setup, which is common
+    during iterative academic projects.
+  </p>
+
+  <h2 class="section-title">4.4 Supporting Libraries</h2>
+  <p>The working environment is strengthened by several support libraries:</p>
+  <ul>
+    <li><strong>bcryptjs</strong> for password hashing.</li>
+    <li><strong>jsonwebtoken</strong> for authentication token generation and verification.</li>
+    <li><strong>Socket.IO</strong> for real-time communication channels.</li>
+    <li><strong>SMTP mail support</strong> for sending booking approval notifications.</li>
+    <li><strong>React Bootstrap</strong> for UI composition and layout convenience.</li>
+    <li><strong>Apollo Client/Server</strong> for GraphQL support and future extensibility.</li>
+  </ul>
+
+  <h2 class="section-title">4.5 Development Characteristics</h2>
+  <p>
+    The project reflects a pragmatic academic full stack environment: it combines user interface development, route protection,
+    operational workflows, data modeling, and integration tasks in a single repository. This makes it useful not only as an end
+    product but also as a learning artifact demonstrating cross-layer software engineering.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 5<br>REQUIREMENTS TO RUN THE APPLICATION</h1>
+  <h2 class="section-title">5.1 Prerequisites</h2>
+  <p>To run the application successfully, the following prerequisites are required:</p>
+  <ul>
+    <li>Node.js and npm installed on the local machine.</li>
+    <li>Database service configured according to backend environment variables.</li>
+    <li>SMTP credentials if booking approval emails are to be tested.</li>
+    <li>Modern web browser for frontend access.</li>
+  </ul>
+
+  <h2 class="section-title">5.2 Suggested Setup Procedure</h2>
+  <ol>
+    <li>Install root and module dependencies using npm.</li>
+    <li>Configure backend environment variables for database and token management.</li>
+    <li>Start the backend server from the backend directory.</li>
+    <li>Start the frontend through the root or frontend package scripts.</li>
+    <li>Open the frontend in a browser and begin with public browsing, signup, or admin login.</li>
+  </ol>
+
+  <h2 class="section-title">5.3 Important Environment Variables</h2>
+  <table>
+    <tr><th>Variable</th><th>Purpose</th></tr>
+    <tr><td>DB_NAME</td><td>Name of the configured relational database</td></tr>
+    <tr><td>DB_USER</td><td>Database username</td></tr>
+    <tr><td>DB_PASSWORD</td><td>Database password</td></tr>
+    <tr><td>DB_HOST</td><td>Database host address</td></tr>
+    <tr><td>DB_PORT</td><td>Database port number</td></tr>
+    <tr><td>JWT_SECRET</td><td>Secret key used to sign and verify JWT tokens</td></tr>
+    <tr><td>PORT</td><td>Optional backend server port</td></tr>
+    <tr><td>SMTP_HOST</td><td>SMTP host for notification emails</td></tr>
+    <tr><td>SMTP_PORT</td><td>SMTP service port</td></tr>
+    <tr><td>SMTP_USER</td><td>SMTP username</td></tr>
+    <tr><td>SMTP_PASS</td><td>SMTP password</td></tr>
+    <tr><td>MAIL_FROM_NAME</td><td>Sender display name for booking approval mail</td></tr>
+    <tr><td>MAIL_FROM_EMAIL</td><td>Sender email address</td></tr>
+  </table>
+
+  <h2 class="section-title">5.4 Execution Flow</h2>
+  <p>
+    On startup, the backend creates the Express application, enables cross-origin access, parses incoming JSON requests, mounts
+    routes, initializes Socket.IO, authenticates the database connection, synchronizes models, and begins listening on the configured
+    port. The frontend starts separately, renders the React application, and communicates with the backend through defined API
+    endpoints. Once both services are active, the full application can be exercised through browser-based interactions.
+  </p>
+
+  <h2 class="section-title">5.5 Seed Data</h2>
+  <p>
+    The project includes a seed script that can populate sample cruises, onboard services, and a default admin user. This is useful
+    for demonstrations and early-stage testing because it allows the dashboards to display realistic data without requiring manual
+    entry of every entity.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 6<br>DATABASE ANALYZING, DESIGN AND IMPLEMENTATION</h1>
+  <h2 class="section-title">6.1 Database Analysis</h2>
+  <p>
+    The data layer was designed to support the reservation-oriented objectives of the project while remaining open to future
+    extensions. Instead of limiting the schema to users and bookings, the project introduces supporting entities for voyages,
+    services, products, and order items. This reveals an intentional effort to move toward a broader cruise operations platform.
+  </p>
+
+  <h2 class="section-title">6.2 Core Entities</h2>
+  <table>
+    <tr><th>Entity</th><th>Main Attributes</th><th>Purpose</th></tr>
+    <tr><td>User</td><td>id, name, email, password, role</td><td>Stores authentication and role identity for all platform users.</td></tr>
+    <tr><td>Voyager</td><td>id, passport_number, room_number, user_id</td><td>Stores voyager-specific profile details linked to a user account.</td></tr>
+    <tr><td>Cruise</td><td>id, name, route, start_date, duration_days, total_seats, available_seats, price, image_url</td><td>Represents active cruise trips visible in the system.</td></tr>
+    <tr><td>Service</td><td>id, name, category, price</td><td>Represents onboard facilities or experiences that can be reserved.</td></tr>
+    <tr><td>Booking</td><td>id, start_time, end_time, status, user_id, service_id, cruise_id</td><td>Represents a reservation request placed by a voyager.</td></tr>
+    <tr><td>Product</td><td>id, name, category, price, stock</td><td>Represents inventory items intended for ordering or management.</td></tr>
+    <tr><td>Order</td><td>id, user_id and related order metadata</td><td>Represents a future order aggregation model for product commerce.</td></tr>
+    <tr><td>OrderItem</td><td>id, order_id, product_id and quantity data</td><td>Represents line-item level detail within an order.</td></tr>
+  </table>
+
+  <h2 class="section-title">6.3 Relationship Design</h2>
+  <p>
+    The associations implemented in the model layer establish clear relationships between entities:
+  </p>
+  <ul>
+    <li>A user has one voyager profile.</li>
+    <li>A user can have many bookings.</li>
+    <li>A service can have many bookings.</li>
+    <li>A cruise can have many bookings.</li>
+    <li>A user can have many orders.</li>
+    <li>An order can contain many order items.</li>
+    <li>A product can participate in many order items.</li>
+  </ul>
+  <div class="figure-box">[Insert Figure 4 here: Entity Relationship Overview for User, Voyager, Cruise, Service, Booking, Product, Order, and OrderItem]</div>
+  <div class="caption">Figure 4. Database Entity Relationship Overview</div>
+
+  <h2 class="section-title">6.4 Design Interpretation</h2>
+  <p>
+    The presence of both <em>service booking</em> and <em>product ordering</em> entities shows that the application was planned as a
+    multi-domain platform. However, the most mature live workflow currently uses the booking side of the schema. The order-related
+    models are strategically important because they show how the system can evolve beyond reservations into a richer onboard commerce
+    experience.
+  </p>
+
+  <h2 class="section-title">6.5 Database Implementation Notes</h2>
+  <p>
+    Sequelize is responsible for mapping model definitions into database tables and synchronizing schema changes. On backend startup,
+    the application authenticates the database connection and runs model synchronization, which simplifies iteration during
+    development. This approach is particularly useful in academic projects because it reduces the effort needed to keep models and
+    storage aligned while features are evolving.
+  </p>
+
+  <h2 class="section-title">6.6 Data Integrity Considerations</h2>
+  <p>
+    The booking design links a reservation to both the requesting user and the chosen service, and optionally to a cruise. This is a
+    flexible approach, but it also increases the importance of validation. The current system estimates occupancy at the frontend
+    layer using public booking data and category-based capacities. For enterprise-level robustness, future iterations should enforce
+    concurrency checks, uniqueness rules, and stronger slot validation directly in the backend.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 7<br>PROGRAM'S STRUCTURE ANALYZING AND GUI CONSTRUCTING</h1>
+  <h2 class="section-title">7.1 Repository Structure</h2>
+  <p>
+    The repository is organized into clear top-level modules: <strong>frontend</strong>, <strong>backend</strong>,
+    <strong>database</strong>, and <strong>docs</strong>. This structure helps separate user interface logic, server-side behavior,
+    schema-related assets, and supporting project documentation.
+  </p>
+  <div class="figure-box">[Insert Figure 5 here: Folder Structure and Module Distribution]</div>
+  <div class="caption">Figure 5. Folder Structure and Module Distribution</div>
+
+  <h2 class="section-title">7.2 Frontend Structural Analysis</h2>
+  <p>
+    The frontend uses route-oriented organization with shared components for navigation and service booking. The home page acts as
+    the public landing interface and leads users into signup, login, or dashboard experiences depending on their state. A notable
+    design decision is the reuse of a shared booking template across multiple category-specific pages such as beauty, fitness, resort,
+    party, catering, and stationery. This reduces duplication and provides a consistent booking experience.
+  </p>
+  <p>
+    The navigation system adapts to login state and role. Public users see simple home and authentication options. Voyagers receive
+    facility-oriented links and dashboard access. Administrators receive management-focused options such as fleet overview, inventory
+    management, and voyager registry. This role-responsive navigation improves usability and keeps each user focused on relevant
+    tasks.
+  </p>
+
+  <h2 class="section-title">7.3 Voyager Interface Design</h2>
+  <p>
+    The voyager dashboard is the main personalized workspace. It displays personal itinerary information, available cruises, and
+    premium facilities. The dashboard acts as a catalog and navigation hub. Dedicated booking pages then narrow the catalog to
+    service categories and guide the user through date selection, slot selection, and booking confirmation.
+  </p>
+  <div class="figure-box">[Insert Screenshot Placeholder: Voyager Dashboard, Facility Cards, and Booking Template]</div>
+  <div class="caption">Figure 6. Voyager Dashboard Snapshot Placeholder</div>
+
+  <h2 class="section-title">7.4 Admin Interface Design</h2>
+  <p>
+    The admin dashboard is the most operationally complete screen in the application. It loads statistics, all bookings, voyager
+    records, facility metrics, and active trips. Its tabbed structure separates strategic overview, facility-level insights, trip
+    creation/listing, and user registry information. This design offers a coherent control panel for the administrator while still
+    keeping different task groups visually distinct.
+  </p>
+  <div class="figure-box">[Insert Screenshot Placeholder: Admin Dashboard Overview, Facilities, Active Trips, and Voyager Registry]</div>
+  <div class="caption">Figure 7. Admin Dashboard Snapshot Placeholder</div>
+
+  <h2 class="section-title">7.5 Manager Screen Analysis</h2>
+  <p>
+    Manager pages exist in the interface but currently behave as placeholder shells. Their presence shows the intended future design
+    direction: department-specific operational monitoring for facilities such as party halls, salons, fitness centers, and catering.
+    Even though they do not yet load live backend data, their separation into distinct views suggests an expansion strategy where
+    operational ownership can be delegated below the admin layer.
+  </p>
+
+  <h2 class="section-title">7.6 GUI Construction Principles</h2>
+  <p>
+    The GUI follows a practical application style rather than a purely decorative one. Cards, forms, dashboards, tables, and guided
+    buttons are used to keep users task-focused. The landing page is more promotional and hospitality-themed, while the voyager and
+    admin areas move toward operational clarity. This difference is appropriate because the public area is marketing-oriented whereas
+    the authenticated area is transaction-oriented.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 8<br>CODE IMPLEMENTATION AND DATABASE CONNECTIONS</h1>
+  <h2 class="section-title">8.1 Backend Bootstrapping</h2>
+  <p>
+    The backend server initializes Express, configures CORS, enables JSON parsing, mounts authentication endpoints, and starts an
+    Apollo GraphQL server alongside RESTful operational routes. It then creates an HTTP server for Socket.IO integration, verifies
+    database connectivity, synchronizes models, and begins listening on the configured port. This startup flow is clean and modular,
+    making it easy to extend the application with additional routes or event channels.
+  </p>
+  <div class="figure-box">[Insert Figure 8 here: Application Startup and Data Flow]</div>
+  <div class="caption">Figure 8. Application Startup and Data Flow</div>
+
+  <h2 class="section-title">8.2 Authentication Implementation</h2>
+  <p>
+    Registration is implemented through a backend route that validates the uniqueness of email addresses, hashes the incoming
+    password using bcrypt, creates a new voyager-role user, and returns a success response. Login verifies the credentials and
+    produces a JWT token containing the user identifier and role. The token is stored on the client side and attached to protected
+    requests through the Authorization header.
+  </p>
+  <p>
+    On the server side, authentication middleware extracts the bearer token, verifies it, and attaches the decoded identity to the
+    request object. Additional authorization middleware limits route access based on role. This design ensures that protected
+    operations are defended both in the user interface and at the backend service layer.
+  </p>
+
+  <h2 class="section-title">8.3 Public, Voyager, and Admin APIs</h2>
+  <p>
+    The API surface is divided into public routes, voyager routes, and admin routes. Public routes return visible cruises, services,
+    and booking occupancy data required for reservation slot estimation. Voyager routes support service retrieval, product retrieval,
+    booking creation, and personal booking lookup. Admin routes provide item creation and maintenance, booking management, statistics,
+    user listings, facility metrics, and cruise creation.
+  </p>
+  <table>
+    <tr><th>API Group</th><th>Representative Endpoint</th><th>Purpose</th></tr>
+    <tr><td>Auth</td><td>POST /api/auth/register, POST /api/auth/login</td><td>User signup and login</td></tr>
+    <tr><td>Public</td><td>GET /api/public/cruises</td><td>Expose cruise catalog to all users</td></tr>
+    <tr><td>Public</td><td>GET /api/public/services</td><td>Expose onboard services to all users</td></tr>
+    <tr><td>Voyager</td><td>POST /api/voyager/bookings</td><td>Create a pending booking request</td></tr>
+    <tr><td>Voyager</td><td>GET /api/voyager/bookings</td><td>Return a voyager's own bookings</td></tr>
+    <tr><td>Admin</td><td>GET /api/admin/stats</td><td>Return admin dashboard metrics</td></tr>
+    <tr><td>Admin</td><td>PUT /api/admin/bookings/:id</td><td>Approve or update booking status</td></tr>
+    <tr><td>Admin</td><td>POST /api/admin/cruises</td><td>Create a new cruise trip</td></tr>
+  </table>
+
+  <h2 class="section-title">8.4 Booking Engine Implementation</h2>
+  <p>
+    The booking template on the frontend is a particularly meaningful piece of implementation. It loads services, evaluates public
+    booking occupancy, restricts selection to future dates, presents fixed slots, maps service categories to estimated capacities,
+    and finally posts the chosen reservation details to the voyager booking API. This shows a complete interaction path from user
+    intent to database persistence.
+  </p>
+
+  <h2 class="section-title">8.5 Database Connection Implementation</h2>
+  <p>
+    Database access is abstracted through Sequelize models and associations. The backend connects at startup, authenticates the
+    connection, and synchronizes schema definitions. Individual routes then use model methods such as <em>findAll</em>,
+    <em>findByPk</em>, <em>create</em>, <em>update</em>, and <em>destroy</em> to execute CRUD behavior. Association-aware queries
+    allow the admin dashboard to retrieve linked booking, user, service, and cruise information in a single business view.
+  </p>
+
+  <h2 class="section-title">8.6 Email and Real-Time Features</h2>
+  <p>
+    When an admin approves a booking, the system attempts to send an email to the associated voyager. This adds a practical
+    communication layer to the reservation workflow. In addition, the backend contains Socket.IO integration and emits booking status
+    updates toward user-specific rooms, demonstrating readiness for richer real-time notification behavior in future iterations.
+  </p>
+
+  <h2 class="section-title">8.7 Observations on Implementation Quality</h2>
+  <p>
+    The codebase demonstrates a useful balance between immediate functionality and future ambition. Several modules are fully wired,
+    such as authentication, booking creation, and admin approval. Others are intentionally scaffolded but not yet connected, such as
+    inventory administration, manager pages, and full order management. From a report perspective, this is important because it shows
+    genuine engineering progress rather than superficial page creation.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 9<br>SYSTEM TESTING</h1>
+  <h2 class="section-title">9.1 Testing Approach</h2>
+  <p>
+    System testing for this project is best understood as functional verification of the major user flows. Because the application is
+    composed of frontend forms, protected APIs, database persistence, and admin-driven approval, the most relevant tests validate
+    cross-layer behavior rather than isolated visual rendering alone. The following table presents representative test cases aligned
+    with the implemented business workflows.
+  </p>
+
+  <h2 class="section-title">9.2 Representative Test Cases</h2>
+  <table>
+    <tr><th>Test ID</th><th>Scenario</th><th>Input/Action</th><th>Expected Result</th></tr>
+    <tr><td>TC-01</td><td>Voyager registration</td><td>Submit valid name, email, phone, and password</td><td>A new voyager account is created and success response is returned.</td></tr>
+    <tr><td>TC-02</td><td>Duplicate email check</td><td>Register with an existing email</td><td>System rejects the request and informs that the email already exists.</td></tr>
+    <tr><td>TC-03</td><td>Login validation</td><td>Login with correct credentials</td><td>JWT token and user details are returned; frontend stores them and redirects by role.</td></tr>
+    <tr><td>TC-04</td><td>Protected route rejection</td><td>Call admin endpoint without valid admin token</td><td>System denies access with authorization failure.</td></tr>
+    <tr><td>TC-05</td><td>Public cruise browsing</td><td>Open public cruise list</td><td>Available cruises are displayed to the user.</td></tr>
+    <tr><td>TC-06</td><td>Service booking request</td><td>Voyager selects service, date, and slot then confirms reservation</td><td>A booking record is created with Pending status.</td></tr>
+    <tr><td>TC-07</td><td>Voyager itinerary check</td><td>Open voyager dashboard after creating a booking</td><td>The booking appears in the personal itinerary table.</td></tr>
+    <tr><td>TC-08</td><td>Admin booking approval</td><td>Approve a pending booking from admin dashboard</td><td>Booking status changes to Confirmed and notification flow is attempted.</td></tr>
+    <tr><td>TC-09</td><td>Admin cruise creation</td><td>Submit new cruise details from Active Trips tab</td><td>A new cruise is stored and appears in the trip listing.</td></tr>
+    <tr><td>TC-10</td><td>Facility metrics rendering</td><td>Load Facilities and Locations tab</td><td>Cards display total, confirmed, and pending booking counts per service.</td></tr>
+  </table>
+
+  <h2 class="section-title">9.3 Testing Discussion</h2>
+  <p>
+    The most important verified business behavior in the current project is the <strong>request to approve</strong> reservation
+    sequence. This is the core pathway that binds together the voyager interface, booking API, database persistence, admin dashboard,
+    and approval logic. The seed data strategy further improves testing by providing ready-made cruises and services, thereby reducing
+    setup time during demonstrations or manual validation.
+  </p>
+  <p>
+    At the same time, the testing perspective also reveals some gaps. Capacity enforcement is largely estimated in the frontend,
+    manager pages are placeholders, and direct cruise booking is not fully implemented. Therefore, the current test coverage is
+    strongest around service booking and administrative oversight rather than all intended future modules.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 10<br>LIMITATIONS</h1>
+  <h2 class="section-title">10.1 Major Limitations</h2>
+  <table>
+    <tr><th>Limitation</th><th>Description</th><th>Impact</th></tr>
+    <tr><td>Non-persistent top-level login state</td><td>Frontend login state resets on refresh even if token remains in local storage.</td><td>User experience inconsistency after reload.</td></tr>
+    <tr><td>Direct cruise reservation incomplete</td><td>Cruise cards exist, but the reserve action routes into service-style booking behavior.</td><td>Cruise browsing is stronger than cruise booking execution.</td></tr>
+    <tr><td>Inventory frontend disconnected</td><td>Admin item management pages are not fully wired to working CRUD APIs.</td><td>Operational inventory management remains incomplete in the UI.</td></tr>
+    <tr><td>Manager pages are placeholders</td><td>Manager screens load no live data and mainly display empty states.</td><td>Department-specific supervision is not yet available.</td></tr>
+    <tr><td>Capacity logic is simulated</td><td>Frontend uses hardcoded category capacities for slot availability.</td><td>High-concurrency accuracy cannot be guaranteed.</td></tr>
+    <tr><td>Duplicate public route definition</td><td>The public bookings endpoint is declared twice.</td><td>Introduces unnecessary redundancy and maintenance noise.</td></tr>
+    <tr><td>Order-related workflow unfinished</td><td>Products, orders, and order items are present structurally but not fully integrated into the voyager UI.</td><td>The commerce dimension of the platform is not yet realized.</td></tr>
+  </table>
+
+  <h2 class="section-title">10.2 Interpretation of Limitations</h2>
+  <p>
+    These limitations do not reduce the value of the project as a learning or foundation system. Instead, they clearly identify the
+    boundary between the platform's working core and its next growth stage. From an academic engineering perspective, this is useful
+    because it shows both implemented capability and a transparent understanding of unfinished areas.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 11<br>CONCLUSION</h1>
+  <p>
+    The Cruise Ship Management System successfully demonstrates the development of a role-based full stack web application for
+    managing cruise-related reservations and administrative workflows. The project converts a traditionally fragmented operational
+    problem into a centralized digital experience where public browsing, voyager account management, service booking requests, and
+    administrative approval can occur within one integrated platform.
+  </p>
+  <p>
+    Technically, the system reflects sound full stack engineering principles. The frontend provides route-based interaction and
+    reusable booking logic, the backend enforces access control and business rules, and the database model supports both present and
+    future operational domains. The project also demonstrates practical integration features such as email support, real-time event
+    readiness, and an extensible admin dashboard.
+  </p>
+  <p>
+    Even though some modules remain partial, the completed workflows are meaningful and realistic. The voyager-to-admin booking
+    lifecycle is functional, the dashboard provides measurable insight into platform usage, and the repository structure supports
+    long-term extension. The project therefore meets its primary objective of delivering a usable cruise reservation management
+    foundation while providing clear opportunities for future enhancement.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 12<br>FUTURE SCOPE</h1>
+  <p>The future scope of the project is broad and technically promising. The most valuable next enhancements include:</p>
+  <ul>
+    <li>Implementing a complete direct cruise reservation and cabin allocation workflow.</li>
+    <li>Restoring authentication state from local storage on page reload for smoother session continuity.</li>
+    <li>Connecting admin inventory screens to the already existing backend CRUD APIs.</li>
+    <li>Building a real cart, checkout, and order-history flow using the Product, Order, and OrderItem models.</li>
+    <li>Completing manager dashboards with facility-specific live booking and approval data.</li>
+    <li>Moving slot capacity and conflict validation from frontend estimation to authoritative backend enforcement.</li>
+    <li>Adding audit logs, cancellation workflows, refund handling, and notification history.</li>
+    <li>Introducing richer analytics such as service demand forecasting and voyage occupancy trends.</li>
+    <li>Deploying the system to a cloud environment with CI/CD, monitoring, and scalable database infrastructure.</li>
+  </ul>
+  <p>
+    With these improvements, the project can evolve from a reservation-oriented academic application into a comprehensive cruise
+    operations platform serving passengers, administrators, and functional managers in a more production-like setting.
+  </p>
+
+  <h1 class="chapter-title">CHAPTER 13<br>BIBLIOGRAPHY/REFERENCES</h1>
+  <ol>
+    <li>Cruise Ship Management repository source files, including backend routes, models, frontend structure, and project documentation.</li>
+    <li><strong>docs/APP_DOCUMENTATION.md</strong>, internal application documentation contained in the project repository.</li>
+    <li><strong>backend/index.js</strong>, backend bootstrap and server initialization source.</li>
+    <li><strong>backend/routes/auth.js</strong>, authentication flow implementation.</li>
+    <li><strong>backend/routes/admin.js</strong>, administrator workflows and metrics routes.</li>
+    <li><strong>backend/routes/public.js</strong>, public data access routes.</li>
+    <li><strong>backend/models/index.js</strong>, Sequelize associations and entity relationships.</li>
+    <li><strong>database/schema.sql</strong>, relational schema reference for stored entities and planned commerce structures.</li>
+    <li>React Documentation, component-driven frontend application development concepts.</li>
+    <li>Express.js Documentation, routing and middleware concepts for Node.js web servers.</li>
+    <li>Sequelize Documentation, ORM modeling and relational association patterns.</li>
+    <li>JSON Web Token documentation and standard references for stateless token-based authentication.</li>
+    <li>Socket.IO documentation for real-time communication design concepts.</li>
+  </ol>
+
+  <h1 class="chapter-title">APPENDIX</h1>
+  <h2 class="section-title">Appendix A: Suggested Personalization Before Submission</h2>
+  <ul>
+    <li>Replace all placeholder student names, roll numbers, and ID numbers.</li>
+    <li>Replace the guide name and designation with actual details.</li>
+    <li>Insert real project screenshots in the marked figure placeholders.</li>
+    <li>Update the Table of Contents, List of Figures, and List of Tables page numbers in the final word processor.</li>
+    <li>Confirm whether your final backend demonstration environment uses PostgreSQL, SQLite, or another configured database setup and update wording if needed.</li>
+  </ul>
+
+  <h2 class="section-title">Appendix B: Core Working User Flow Summary</h2>
+  <p><strong>Flow 1: Voyager Service Booking</strong></p>
+  <ol>
+    <li>User signs up and logs in.</li>
+    <li>User visits voyager dashboard.</li>
+    <li>User chooses a facility category page.</li>
+    <li>User selects date, service, and slot.</li>
+    <li>System creates a pending booking request.</li>
+  </ol>
+
+  <p><strong>Flow 2: Admin Approval</strong></p>
+  <ol>
+    <li>Admin logs in to the dashboard.</li>
+    <li>Admin reviews pending reservations.</li>
+    <li>Admin approves a selected booking.</li>
+    <li>System updates status and attempts notification.</li>
+  </ol>
+
+  <h2 class="section-title">Appendix C: Notes on Document Formatting</h2>
+  <p>
+    This report has been prepared to align with the format guidance provided in the supplied project report document: Times New
+    Roman-style academic layout, A4 sizing, approximately 1.5 spacing, and the prescribed order of front matter and chapter flow.
+    Final polishing in a word processor may still be required for exact pagination, signature alignment, and insertion of institutional
+    assets such as logos if your department expects them.
+  </p>
+</body>
+</html>

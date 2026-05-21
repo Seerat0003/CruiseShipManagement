@@ -1,11 +1,12 @@
-const jwt = require("jsonwebtoken");
+const { extractBearerToken, verifyAuthToken } = require("../utils/auth");
 
 const authenticate = (req, res, next) => {
-  const token = req.header("Authorization")?.replace("Bearer ", "");
+  const authorizationHeader = req.header("Authorization") || req.headers.authorization || "";
+  const token = extractBearerToken(authorizationHeader);
   if (!token) return res.status(401).json({ message: "Access Denied. No token provided." });
 
   try {
-    const verified = jwt.verify(token, process.env.JWT_SECRET || "supersecretkey");
+    const verified = verifyAuthToken(token);
     req.user = verified;
     next();
   } catch (err) {

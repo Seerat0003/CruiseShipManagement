@@ -1,7 +1,7 @@
 const express = require("express");
-const nodemailer = require("nodemailer");
 const { Product, Service, Booking, Cruise, User } = require("../models");
 const { authenticate, authorizeAdmin } = require("../middleware/auth");
+const { sendBookingApprovedEmail } = require("../utils/mailer");
 
 const router = express.Router();
 
@@ -86,9 +86,12 @@ router.delete("/services/:id", async (req, res) => {
 
 // View all bookings
 router.get("/bookings", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/bookings called");
   try {
     // Include user and service references in bookings
     const bookings = await Booking.findAll({ include: [User, Service, Cruise] });
+    console.log(`DEBUG: Found ${bookings.length} bookings`);
+    res.json(bookings);
     res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -96,11 +99,13 @@ router.get("/bookings", async (req, res) => {
 });
 
 router.get("/stats", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/stats called");
   try {
     const userCount = await User.count();
     const cruiseCount = await Cruise.count();
     const servicesCount = await Service.count();
     const bookingCount = await Booking.count();
+    console.log(`DEBUG: Stats - Users: ${userCount}, Cruises: ${cruiseCount}, Services: ${servicesCount}, Bookings: ${bookingCount}`);
     
     // Total seats
     const allCruises = await Cruise.findAll();
@@ -131,50 +136,30 @@ router.put("/bookings/:id", async (req, res) => {
     const booking = await Booking.findByPk(req.params.id, {
         include: [User, Service]
     });
-    if (!booking) return res.status(404).json({ message: "Booking not found" });
-
+    const previousStatus = booking.status;
     booking.status = req.body.status;
     await booking.save();
 
-    // DISPATCH AUTOMATIC NOTIFICATION EMAIL ON APPROVAL
-    if (booking.status === "Confirmed" && booking.User) {
-        nodemailer.createTestAccount((err, account) => {
-            if (err) return console.error('Failed to create a testing Mail account', err);
-            
-            const transporter = nodemailer.createTransport({
-                host: account.smtp.host,
-                port: account.smtp.port,
-                secure: account.smtp.secure,
-                auth: { user: account.user, pass: account.pass }
-            });
-            
-            const serviceName = booking.Service ? booking.Service.name : 'Premium Facility';
-            const message = {
-                from: '"Ocean Serenity Fleet" <noreply@oceanserenity.com>',
-                to: booking.User.email,
-                subject: `Your Reservation is Confirmed: ${serviceName}`,
-                text: `Dear ${booking.User.name},\n\nYour reservation request has been officially approved. \n\nFacility: ${serviceName}\nTime: ${new Date(booking.start_time).toLocaleString()}\n\nWelcome aboard!`,
-                html: `
-                  <div style="font-family: sans-serif; background: #07101a; padding: 40px; color: #fff; text-align: center;">
-                    <h2 style="color: #f7d6a5;">Voyage Reservation Confirmed!</h2>
-                    <p style="font-size: 16px;">Dear ${booking.User.name},</p>
-                    <p style="font-size: 16px;">Your premium allocation request has been officially <strong>approved</strong> by the Administrator.</p>
-                    <div style="background: rgba(255,255,255,0.05); border: 1px solid #f7d6a5; padding: 20px; border-radius: 8px; margin: 30px auto; max-width: 400px; text-align: left;">
-                      <p><strong>Facility:</strong> ${serviceName}</p>
-                      <p><strong>Scheduled Time:</strong> ${new Date(booking.start_time).toLocaleString()}</p>
-                      <p><strong>Status:</strong> <span style="color: #51cf66;">Confirmed</span></p>
-                    </div>
-                    <p style="color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto;">Welcome aboard, and thank you for choosing Ocean Serenity.</p>
-                  </div>
-                `
-            };
-            
-            transporter.sendMail(message, (err, info) => {
-                if (err) return console.error('Email dispatch failed', err.message);
-                console.log('--- NOTIFICATION EMAIL DISPATCHED TO VOYAGER ---');
-                console.log('Preview Live URL: %s', nodemailer.getTestMessageUrl(info));
-            });
+    // --- REAL-TIME SOCKET NOTIFICATION ---
+    try {
+      const { getIO } = require("../socket");
+      const io = getIO();
+      if (io) {
+        io.to(`user-room-${booking.user_id}`).emit("booking_status_update", {
+          message: `Your booking for ${booking.Service?.name || 'Service'} has been ${booking.status}!`,
+          status: booking.status
         });
+      }
+    } catch (err) {
+      console.error("Socket emit error on booking update:", err);
+    }
+
+    if (booking.status === "Confirmed" && previousStatus !== "Confirmed" && booking.User) {
+      try {
+        await sendBookingApprovedEmail(booking);
+      } catch (emailError) {
+        console.error("Email dispatch failed", emailError.message);
+      }
     }
 
     res.json(booking);
@@ -185,8 +170,10 @@ router.put("/bookings/:id", async (req, res) => {
 
 // View registered voyagers
 router.get("/users", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/users called");
   try {
     const users = await User.findAll({ where: { role: 'voyager' } });
+    console.log(`DEBUG: Found ${users.length} voyagers`);
     res.json(users);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -215,9 +202,11 @@ router.post("/cruises", async (req, res) => {
 
 // View Facility & Location booking stats
 router.get("/facility-stats", async (req, res) => {
+  console.log("DEBUG: GET /api/admin/facility-stats called");
   try {
     const services = await Service.findAll();
     const bookings = await Booking.findAll();
+    console.log(`DEBUG: Processing stats for ${services.length} services and ${bookings.length} total bookings`);
     
     const stats = services.map(srv => {
       const srvBookings = bookings.filter(b => b.service_id === srv.id);

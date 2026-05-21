@@ -40,11 +40,26 @@ router.post("/bookings", async (req, res) => {
       status: "Pending", // Admin must approve
     });
 
+    // --- REAL-TIME SOCKET NOTIFICATION ---
+    try {
+      const { getIO } = require("../socket");
+      const io = getIO();
+      if (io) {
+        io.to("manager-room").emit("new_booking", {
+          message: "A new booking has been requested!",
+          booking,
+        });
+      }
+    } catch (socketErr) {
+      console.error("Socket emit error on voyager booking:", socketErr);
+    }
+
     res.status(201).json({ message: "Booking requested", booking });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
 
 // Get voyager's own bookings
 router.get("/bookings", async (req, res) => {

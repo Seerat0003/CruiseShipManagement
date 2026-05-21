@@ -1,0 +1,90 @@
+.view-bookings-container {
+  padding: calc(var(--app-nav-offset) + 1.2rem) 2rem 2rem;
+  background-color: #f0f8ff; /* light blue background */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.view-bookings-container h1 {
+  text-align: center;
+  color: #003366;
+  margin-bottom: 2rem;
+}
+
+.bookings-table {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: #ffffff;
+  border: 1px solid #d0e2ff;
+  box-shadow: 0 2px 8px rgba(0, 51, 102, 0.1);
+}
+
+.bookings-table thead {
+  background-color: #007acc;
+  color: white;
+}
+
+.bookings-table th,
+.bookings-table td {
+  padding: 0.75rem;
+  text-align: center;
+  border: 1px solid #d0e2ff;
+  font-size: 0.95rem;
+}
+
+.bookings-table tbody tr:nth-child(even) {
+  background-color: #e6f2ff;
+}
+
+.bookings-table tbody tr:hover {
+  background-color: #d0e7ff;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 768px) {
+  .bookings-table thead {
+    display: none;
+  }
+
+  .bookings-table, 
+  .bookings-table tbody, 
+  .bookings-table tr, 
+  .bookings-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .bookings-table tr {
+    margin-bottom: 1rem;
+    background-color: #ffffff;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 5px rgba(0, 51, 102, 0.15);
+  }
+
+  .bookings-table td {
+    text-align: left;
+    padding: 1rem;
+    position: relative;
+    padding-left: 50%;
+    border: none;
+    border-bottom: 1px solid #cce0ff;
+  }
+
+  .bookings-table td::before {
+    position: absolute;
+    left: 1rem;
+    top: 1rem;
+    white-space: nowrap;
+    font-weight: bold;
+    color: #003366;
+  }
+
+  .bookings-table td:nth-of-type(1)::before { content: "Hall Name"; }
+  .bookings-table td:nth-of-type(2)::before { content: "Date"; }
+  .bookings-table td:nth-of-type(3)::before { content: "Start Time"; }
+  .bookings-table td:nth-of-type(4)::before { content: "End Time"; }
+  .bookings-table td:nth-of-type(5)::before { content: "Quantity"; }
+  .bookings-table td:nth-of-type(6)::before { content: "Booked At"; }
+}
