@@ -68,7 +68,7 @@ const VoyagerDashboard = () => {
 
   // Find active cruise booking for facility lock check
   const activeCruiseBooking = myBookings.find(b => b.cruise_id && (b.status === 'Confirmed' || b.status === 'Pending'));
-  const facilitiesUnlocked = myBookings.some(b => b.cruise_id && b.status === 'Confirmed');
+  const facilitiesUnlocked = myBookings.some(b => b.cruise_id && (b.status === 'Confirmed' || b.status === 'Pending'));
   const hasPendingCruise = myBookings.some(b => b.cruise_id && b.status === 'Pending');
 
   // Separate cruise and service bookings for the itinerary table
@@ -153,6 +153,7 @@ const VoyagerDashboard = () => {
               <thead>
                 <tr>
                   <th>Booking Ref #</th>
+                  <th>Ship / Voyage</th>
                   <th>Facility</th>
                   <th>Time / Date</th>
                   <th>Status</th>
@@ -162,6 +163,7 @@ const VoyagerDashboard = () => {
                 {serviceBookings.map(b => (
                   <tr key={b.id}>
                     <td>VOY-{b.id}BOK</td>
+                    <td style={{ color: '#f7d6a5' }}>{b.cruise?.ship_name || b.cruise?.name || '—'}</td>
                     <td>{b.service?.name || '—'}</td>
                     <td>{formatDateTime(b.start_time)}</td>
                     <td>

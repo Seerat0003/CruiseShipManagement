@@ -37,6 +37,8 @@ const isPastDate = (value, minDate) => {
 };
 
 const ServiceBookingTemplate = ({ title, categoryFilter }) => {
+  const todayStr = getLocalDateString();
+
   const { data, loading, error, refetch } = useQuery(SERVICE_BOOKING_DATA_QUERY, {
     fetchPolicy: 'cache-and-network',
   });
@@ -46,6 +48,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
   const [allBookings, setAllBookings] = useState([]);
   
   // Selection State
+  const [selectedCruiseId, setSelectedCruiseId] = useState('');
   const [date, setDate] = useState('');
   const [selectedServiceId, setSelectedServiceId] = useState(null);
   const [selectedTime, setSelectedTime] = useState('');
@@ -64,12 +67,58 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       if (focusedServiceId && matchingServices.some((service) => String(service.id) === String(focusedServiceId))) {
         setSelectedServiceId(String(focusedServiceId));
       }
+
+      // Voyage auto-selection and date auto-selection
+      const bookingsList = data.me?.bookings ?? [];
+      const activeCruiseBookings = bookingsList.filter(b => b.cruise_id && b.cruise && (b.status === 'Confirmed' || b.status === 'Pending'));
+      
+      if (activeCruiseBookings.length > 0) {
+        const defaultCruiseId = String(activeCruiseBookings[0].cruise.id);
+        if (!selectedCruiseId) {
+          setSelectedCruiseId(defaultCruiseId);
+        }
+        
+        const activeId = selectedCruiseId || defaultCruiseId;
+        const currentB = activeCruiseBookings.find(b => String(b.cruise.id) === activeId);
+        if (currentB && !date) {
+          const c = currentB.cruise;
+          const start = new Date(c.start_date);
+          const startStr = getLocalDateString(start);
+          setDate(startStr > todayStr ? startStr : todayStr);
+        }
+      }
     }
-  }, [data, categoryFilter, focusedServiceId]);
+  }, [data, categoryFilter, focusedServiceId, selectedCruiseId, date, todayStr]);
 
   const displayedServices = focusedServiceId
     ? services.filter((service) => String(service.id) === String(focusedServiceId))
     : services;
+
+  const myBookings = data?.me?.bookings ?? [];
+  const activeCruises = myBookings
+    .filter(b => b.cruise_id && b.cruise && (b.status === 'Confirmed' || b.status === 'Pending'))
+    .map(b => {
+      const start = new Date(b.cruise.start_date);
+      const end = new Date(start.getTime() + b.cruise.duration_days * 24 * 60 * 60 * 1000);
+      return {
+        id: b.cruise.id,
+        name: b.cruise.ship_name || b.cruise.name,
+        status: b.status,
+        start,
+        end,
+        startStr: getLocalDateString(start),
+        endStr: getLocalDateString(end)
+      };
+    });
+
+  const selectedCruise = activeCruises.find(c => String(c.id) === String(selectedCruiseId));
+  let minDateStr = todayStr;
+  let maxDateStr = '';
+
+  if (selectedCruise) {
+    minDateStr = selectedCruise.startStr > todayStr ? selectedCruise.startStr : todayStr;
+    maxDateStr = selectedCruise.endStr;
+  }
 
   // Count how many bookings exist for a specific slot on the selected Date and Service
   const getBookingsCount = (serviceId, timeStr) => {
@@ -98,6 +147,16 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       toast.error('Please choose today or a future date. Past dates are not allowed.');
       return;
     }
+
+    if (selectedCruise) {
+      if (date < selectedCruise.startStr || date > selectedCruise.endStr) {
+        toast.error(`Please select a date during your cruise voyage on ${selectedCruise.name} (${selectedCruise.startStr} to ${selectedCruise.endStr})`);
+        return;
+      }
+    } else {
+      toast.error('Please select an active cruise booking for this facility.');
+      return;
+    }
     
     // Calculate start/end objects
     let startTimeObj = new Date(`${date}T${selectedTime}:00`);
@@ -107,6 +166,7 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       const { data: mutationData } = await createBooking({
         variables: {
           service_id: selectedServiceId,
+          cruise_id: selectedCruiseId,
           start_time: startTimeObj.toISOString(),
           end_time: endTimeObj.toISOString()
         }
@@ -125,8 +185,6 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       toast.error(errorMessage);
     }
   };
-
-  const todayStr = getLocalDateString();
 
   const openNativeDatePicker = (event) => {
     if (typeof event?.target?.showPicker === 'function') {
@@ -153,30 +211,82 @@ const ServiceBookingTemplate = ({ title, categoryFilter }) => {
       </div>
 
       {/* 1. MINIMAL DATE SELECTOR */}
-      <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'fadeInData 1s ease forwards' }}>
-        <span style={{ color: 'var(--secondary-color)', fontSize: '1.5rem', marginRight: '1rem', fontStyle: 'italic', fontFamily: 'serif' }}>on</span>
-        <input 
-          type="date" 
-          value={date} 
-          onChange={e => { setDate(e.target.value); setSelectedTime(''); }} 
-          onClick={openNativeDatePicker}
-          onFocus={openNativeDatePicker}
-          min={todayStr}
-          className="booking-date-input"
-          style={{
-            padding: '12px 24px',
-            background: 'rgba(0,0,0,0.4)',
-            border: '1px solid var(--secondary-color)',
-            color: 'var(--secondary-color)',
-            borderRadius: '50px',
-            fontSize: '1.2rem',
-            fontFamily: 'var(--font-heading)',
-            cursor: 'pointer',
-            backdropFilter: 'blur(10px)',
-            outline: 'none',
-            boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
-          }}
-        />
+      <div style={{ textAlign: 'center', marginBottom: '3rem', animation: 'fadeInData 1s ease forwards', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+        {activeCruises.length > 0 && (
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.5rem' }}>
+            <span style={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', letterSpacing: '2px', textTransform: 'uppercase' }}>
+              Select Active Cruise / Ship Booking:
+            </span>
+            <select
+              value={selectedCruiseId}
+              onChange={(e) => {
+                const cid = e.target.value;
+                setSelectedCruiseId(cid);
+                const chosen = activeCruises.find(c => String(c.id) === String(cid));
+                if (chosen) {
+                  setDate(chosen.startStr > todayStr ? chosen.startStr : todayStr);
+                  setSelectedTime('');
+                }
+              }}
+              style={{
+                padding: '12px 24px',
+                background: 'rgba(0,0,0,0.6)',
+                border: '1px solid var(--secondary-color)',
+                color: 'var(--secondary-color)',
+                borderRadius: '50px',
+                fontSize: '1rem',
+                fontFamily: 'var(--font-heading)',
+                cursor: 'pointer',
+                backdropFilter: 'blur(10px)',
+                outline: 'none',
+                boxShadow: '0 10px 30px rgba(0,0,0,0.5)',
+                minWidth: '340px',
+                textAlign: 'center'
+              }}
+            >
+              {activeCruises.map(c => (
+                <option key={c.id} value={c.id} style={{ background: '#111', color: '#fff' }}>
+                  🚢 {c.name} ({c.startStr} to {c.endStr}) [{c.status}]
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: 'var(--secondary-color)', fontSize: '1.5rem', marginRight: '1rem', fontStyle: 'italic', fontFamily: 'serif' }}>on</span>
+          <input 
+            type="date" 
+            value={date} 
+            onChange={e => { setDate(e.target.value); setSelectedTime(''); }} 
+            onClick={openNativeDatePicker}
+            onFocus={openNativeDatePicker}
+            min={minDateStr}
+            max={maxDateStr}
+            className="booking-date-input"
+            style={{
+              padding: '12px 24px',
+              background: 'rgba(0,0,0,0.4)',
+              border: '1px solid var(--secondary-color)',
+              color: 'var(--secondary-color)',
+              borderRadius: '50px',
+              fontSize: '1.2rem',
+              fontFamily: 'var(--font-heading)',
+              cursor: 'pointer',
+              backdropFilter: 'blur(10px)',
+              outline: 'none',
+              boxShadow: '0 10px 30px rgba(0,0,0,0.5)'
+            }}
+          />
+        </div>
+
+        {selectedCruise && (
+          <div style={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.95rem' }}>
+            <div style={{ display: 'inline-block', padding: '6px 16px', background: 'rgba(247, 214, 165, 0.08)', borderRadius: '20px', border: '1px dashed rgba(247, 214, 165, 0.3)' }}>
+              📅 Permissible Slots: <strong style={{ color: '#f7d6a5' }}>{minDateStr}</strong> to <strong style={{ color: '#f7d6a5' }}>{maxDateStr}</strong>
+            </div>
+          </div>
+        )}
       </div>
 
       <div style={{ maxWidth: '1000px', margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '3rem' }}>

@@ -208,7 +208,14 @@ const AdminDashboard = () => {
                   <tr key={booking.id}>
                     <td>#{booking.id}</td>
                     <td>{booking.cruise ? 'Cruise Trip' : booking.service ? 'Facility' : 'Other'}</td>
-                    <td>{booking.service?.name || booking.cruise?.name || 'Unknown'}</td>
+                    <td>
+                      {booking.service?.name || booking.cruise?.name || 'Unknown'}
+                      {booking.service && booking.cruise && (
+                        <div style={{ fontSize: '0.78rem', color: '#f7d6a5', marginTop: '4px' }}>
+                          🚢 {booking.cruise.ship_name || booking.cruise.name}
+                        </div>
+                      )}
+                    </td>
                     <td>{booking.user?.name || 'System User'}</td>
                     <td>{formatDateTime(booking.start_time)}</td>
                     <td><span style={{ color: booking.status === 'Confirmed' ? '#51cf66' : '#fcc419' }}>{booking.status}</span></td>

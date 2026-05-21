@@ -100,6 +100,23 @@ export const SERVICE_BOOKING_DATA_QUERY = gql`
       start_time
       status
     }
+    me {
+      id
+      bookings {
+        id
+        cruise_id
+        status
+        start_time
+        end_time
+        cruise {
+          id
+          name
+          ship_name
+          start_date
+          duration_days
+        }
+      }
+    }
   }
 `;
 
