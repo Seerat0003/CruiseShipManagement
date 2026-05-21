@@ -1,0 +1,77 @@
+name: 🚢 Cruise Ship Management CI
+
+on:
+  push:
+    branches: [ main, Keerti ]
+  pull_request:
+    branches: [ main, Keerti ]
+
+jobs:
+  backend-ci:
+    name: 🛡️ Backend Integration Tests
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: cruisemanagement_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: user123
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'backend/package-lock.json'
+
+      - name: 📦 Install Backend Dependencies
+        run: |
+          cd backend
+          npm ci || npm install
+
+      - name: 🧪 Run Backend Automated Tests
+        env:
+          DB_HOST: localhost
+          DB_PORT: 5432
+          DB_USER: postgres
+          DB_PASSWORD: user123
+          DB_NAME: cruisemanagement_test
+          JWT_SECRET: supersecretkey
+          NODE_ENV: test
+        run: |
+          cd backend
+          npm run test
+
+  frontend-ci:
+    name: 🎨 Frontend Compilation Check
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🟢 Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: 'npm'
+          cache-dependency-path: 'package-lock.json'
+
+      - name: 📦 Install Frontend Dependencies
+        run: npm ci || npm install
+
+      - name: 🏗️ Verify Frontend Compilation
+        run: npm run build

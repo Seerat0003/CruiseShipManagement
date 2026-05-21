@@ -32,15 +32,4 @@ router.get("/bookings", async (req, res) => {
   }
 });
 
-router.get("/bookings", async (req, res) => {
-  try {
-    const bookings = await Booking.findAll({
-      attributes: ['service_id', 'start_time', 'status']
-    });
-    res.json(bookings);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
 module.exports = router;

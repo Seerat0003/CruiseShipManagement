@@ -1,0 +1,24 @@
+$kind: http-request
+name: Create Booking
+method: POST
+url: '{{baseUrl}}/api/voyager/bookings'
+order: 3000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "service_id": 1,
+      "start_time": "2025-06-01T10:00:00Z",
+      "end_time": "2025-06-01T11:00:00Z"
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201", () => pm.response.to.have.status(201));
+      pm.test("Booking created", () => pm.expect(pm.response.json().message).to.eql("Booking requested"));
+      const json = pm.response.json();
+      if (json.booking) pm.collectionVariables.set("bookingId", json.booking.id);

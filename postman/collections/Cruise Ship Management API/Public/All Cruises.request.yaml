@@ -1,0 +1,13 @@
+$kind: http-request
+name: All Cruises
+method: GET
+url: '{{baseUrl}}/api/public/cruises'
+order: 1000
+auth:
+  type: noauth
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Response is array", () => pm.expect(pm.response.json()).to.be.an('array'));

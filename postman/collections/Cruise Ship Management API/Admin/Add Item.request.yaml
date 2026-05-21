@@ -1,0 +1,23 @@
+$kind: http-request
+name: Add Item (Product/Service)
+method: POST
+url: '{{baseUrl}}/api/admin/items'
+order: 2000
+headers:
+  - key: Content-Type
+    value: application/json
+body:
+  type: json
+  content: |-
+    {
+      "type": "product",
+      "name": "Mineral Water",
+      "category": "Catering",
+      "price": 5,
+      "stock": 100
+    }
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 201", () => pm.response.to.have.status(201));

@@ -9,6 +9,7 @@ const Voyager = sequelize.define(
       primaryKey: true,
       autoIncrement: true,
     },
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
     passport_number: DataTypes.STRING,
     room_number: DataTypes.STRING,
   },

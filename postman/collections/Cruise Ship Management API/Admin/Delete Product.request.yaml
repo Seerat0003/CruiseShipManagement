@@ -1,0 +1,11 @@
+$kind: http-request
+name: Delete Product
+method: DELETE
+url: '{{baseUrl}}/api/admin/products/{{productId}}'
+order: 4000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Product deleted", () => pm.expect(pm.response.json().message).to.eql("Product deleted"));

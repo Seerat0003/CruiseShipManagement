@@ -1,0 +1,23 @@
+$kind: collection
+name: Cruise Ship Management API
+variables:
+  - key: baseUrl
+    value: 'http://localhost:5001'
+    type: default
+    enabled: true
+  - key: authToken
+    value: ''
+    type: default
+    enabled: true
+  - key: bookingId
+    value: '1'
+    type: default
+    enabled: true
+  - key: productId
+    value: '1'
+    type: default
+    enabled: true
+  - key: serviceId
+    value: '1'
+    type: default
+    enabled: true

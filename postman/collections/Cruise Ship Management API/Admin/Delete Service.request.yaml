@@ -1,0 +1,11 @@
+$kind: http-request
+name: Delete Service
+method: DELETE
+url: '{{baseUrl}}/api/admin/services/{{serviceId}}'
+order: 6000
+scripts:
+  - type: afterResponse
+    language: text/javascript
+    code: |-
+      pm.test("Status is 200", () => pm.response.to.have.status(200));
+      pm.test("Service deleted", () => pm.expect(pm.response.json().message).to.eql("Service deleted"));

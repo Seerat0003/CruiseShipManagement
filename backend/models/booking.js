@@ -5,6 +5,9 @@ const Booking = sequelize.define(
   "Booking",
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
+    user_id: { type: DataTypes.INTEGER, allowNull: false },
+    service_id: { type: DataTypes.INTEGER, allowNull: true },
+    cruise_id: { type: DataTypes.INTEGER, allowNull: true },
     start_time: DataTypes.DATE,
     end_time: DataTypes.DATE,
     status: DataTypes.STRING,
