@@ -92,7 +92,6 @@ router.get("/bookings", async (req, res) => {
     const bookings = await Booking.findAll({ include: [User, Service, Cruise] });
     console.log(`DEBUG: Found ${bookings.length} bookings`);
     res.json(bookings);
-    res.json(bookings);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

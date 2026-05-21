@@ -1,0 +1,142 @@
+.ssb-container {
+  border-radius: 16px;
+  border: 1px solid rgba(255,255,255,0.1);
+  padding: 1.4rem 1.8rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  margin-bottom: 2.5rem;
+  backdrop-filter: blur(10px);
+  animation: ssb-in 0.4s ease;
+}
+
+@keyframes ssb-in {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.ssb-empty {
+  background: rgba(255,255,255,0.03) !important;
+  border-color: rgba(255,255,255,0.08) !important;
+  flex-direction: row;
+  gap: 1.5rem;
+}
+
+.ssb-empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.4;
+}
+
+.ssb-empty-text {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.ssb-empty-text strong {
+  color: rgba(255,255,255,0.7);
+  font-size: 1rem;
+}
+
+.ssb-empty-text span {
+  color: rgba(255,255,255,0.4);
+  font-size: 0.85rem;
+}
+
+.ssb-book-btn {
+  background: rgba(247, 214, 165, 0.1);
+  border: 1px solid rgba(247, 214, 165, 0.25);
+  color: #f7d6a5;
+  padding: 0.6rem 1.4rem;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s;
+  white-space: nowrap;
+}
+
+.ssb-book-btn:hover { background: rgba(247, 214, 165, 0.2); }
+
+/* Active booking */
+.ssb-left { flex: 1; }
+
+.ssb-ship-header {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.ssb-icon { font-size: 1.8rem; }
+
+.ssb-ship-name {
+  margin: 0;
+  font-size: 1.3rem;
+  color: #f7d6a5;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.ssb-trip-name {
+  display: block;
+  font-size: 0.8rem;
+  color: rgba(255,255,255,0.45);
+  font-weight: 400;
+}
+
+.ssb-status-badge {
+  padding: 5px 14px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  border: 1px solid;
+  letter-spacing: 0.02em;
+  margin-left: auto;
+}
+
+.ssb-details {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ssb-detail-item {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.65);
+}
+
+.ssb-detail-icon { font-size: 0.95rem; }
+.ssb-detail-item strong { color: rgba(255,255,255,0.9); }
+
+/* Countdown */
+.ssb-countdown {
+  text-align: center;
+  flex-shrink: 0;
+  padding: 0.8rem 1.4rem;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+.ssb-countdown-val {
+  font-size: 2rem;
+  font-weight: 800;
+  color: #f7d6a5;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.ssb-countdown-lbl {
+  font-size: 0.72rem;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-top: 4px;
+}

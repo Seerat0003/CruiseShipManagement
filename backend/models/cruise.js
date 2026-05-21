@@ -6,6 +6,9 @@ const Cruise = sequelize.define(
   {
     id: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
     name: DataTypes.STRING,
+    ship_name: DataTypes.STRING,
+    departure_port: DataTypes.STRING,
+    destination: DataTypes.STRING,
     route: DataTypes.STRING,
     start_date: DataTypes.DATE,
     duration_days: DataTypes.INTEGER,

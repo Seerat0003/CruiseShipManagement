@@ -1,27 +1,25 @@
 import React, { useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
-import { useMutation, useQuery } from '@apollo/client/react';
-import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
+import { useQuery } from '@apollo/client/react';
 import medImg from '../assets/med.png';
 import caribImg from '../assets/caribbean.png';
 import alaskaImg from '../assets/alaska.png';
 import { hasAuthSession } from '../auth/storage';
-import { CREATE_BOOKING_MUTATION, CRUISE_BOOKING_QUERY } from '../graphql/operations';
+import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
+import { CRUISE_BOOKING_QUERY } from '../graphql/operations';
+import CruiseRegistrationForm from './CruiseRegistrationForm';
 import './CruiseBookingPage.css';
 
 const getCruiseImage = (imageUrl) => {
   const normalizedImageUrl = String(imageUrl || '').toLowerCase();
-
   if (normalizedImageUrl.includes('med')) return medImg;
   if (normalizedImageUrl.includes('carib')) return caribImg;
   return alaskaImg;
 };
 
 const formatDate = (value) => {
-  if (!value) {
-    return 'TBA';
-  }
-
+  if (!value) return 'TBA';
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? 'TBA' : parsed.toLocaleDateString();
 };
@@ -31,83 +29,39 @@ const formatPrice = (value) => {
   return Number.isFinite(amount) ? amount.toLocaleString() : '0';
 };
 
-const buildCruiseWindow = (cruise) => {
-  const startDate = cruise?.start_date ? new Date(cruise.start_date) : new Date();
-  if (Number.isNaN(startDate.getTime())) {
-    const fallbackStart = new Date();
-    const fallbackEnd = new Date(fallbackStart.getTime() + 3 * 60 * 60 * 1000);
-    return { start: fallbackStart.toISOString(), end: fallbackEnd.toISOString() };
-  }
-
-  const durationDays = Number.parseInt(cruise?.duration_days, 10);
-  const endDate = new Date(startDate.getTime());
-  if (Number.isFinite(durationDays) && durationDays > 0) {
-    endDate.setDate(endDate.getDate() + durationDays);
-  } else {
-    endDate.setHours(endDate.getHours() + 3);
-  }
-
-  return {
-    start: startDate.toISOString(),
-    end: endDate.toISOString(),
-  };
-};
-
 const CruiseBookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [selectedCruiseId, setSelectedCruiseId] = useState(location.state?.selectedCruiseId ? String(location.state.selectedCruiseId) : null);
+  const [selectedCruiseId, setSelectedCruiseId] = useState(
+    location.state?.selectedCruiseId ? String(location.state.selectedCruiseId) : null
+  );
+  const [formCruise, setFormCruise] = useState(null);
+
   const { data, loading, error } = useQuery(CRUISE_BOOKING_QUERY, {
     fetchPolicy: 'cache-and-network',
   });
-  const [createBooking, { loading: isSubmitting }] = useMutation(CREATE_BOOKING_MUTATION);
 
   const cruises = data?.cruises ?? [];
+  const services = data?.services ?? [];
 
   const displayedCruises = useMemo(() => {
-    if (!selectedCruiseId) {
-      return cruises;
-    }
-
+    if (!selectedCruiseId) return cruises;
     const selectedCruise = cruises.find((cruise) => String(cruise.id) === String(selectedCruiseId));
     return selectedCruise ? [selectedCruise] : cruises;
   }, [cruises, selectedCruiseId]);
 
-  const handleReserveCruise = async (cruise) => {
+  const handleOpenForm = (cruise) => {
     if (!hasAuthSession()) {
-      toast.info('Please sign in first to reserve an excursion.');
+      toast.info('Please sign in first to reserve a cabin.');
       navigate('/admin/login');
       return;
     }
-
-    if (!cruise) {
-      toast.error('Please select an excursion first.');
-      return;
-    }
-
     const availableSeats = Number.parseInt(cruise.available_seats, 10);
     if (Number.isFinite(availableSeats) && availableSeats <= 0) {
-      toast.error('This excursion is fully booked.');
+      toast.error('This cruise is fully booked.');
       return;
     }
-
-    const bookingWindow = buildCruiseWindow(cruise);
-
-    try {
-      await createBooking({
-        variables: {
-          cruise_id: cruise.id,
-          start_time: bookingWindow.start,
-          end_time: bookingWindow.end,
-        },
-      });
-
-      toast.success('Excursion reservation request submitted successfully.');
-      navigate('/voyager/dashboard');
-    } catch (mutationError) {
-      console.error(mutationError);
-      toast.error(mutationError?.message || 'Failed to reserve excursion.');
-    }
+    setFormCruise(cruise);
   };
 
   if (loading && !data) {
@@ -122,26 +76,27 @@ const CruiseBookingPage = () => {
     <div className="cruise-booking-page">
       <div className="cruise-booking-shell">
         <div className="cruise-booking-header">
-          <h1>Select Your Excursion</h1>
+          <h1>Select Your Ship & Voyage</h1>
           <p>
-            Choose the cruise itinerary you want to reserve. When you confirm, your cabin reservation request will be
-            submitted for approval with the selected departure schedule.
+            Choose a cruise itinerary, then complete your passenger registration.
+            Cabin pricing varies by suite type — Standard, Deluxe, or Grand Suite.
           </p>
           {selectedCruiseId && cruises.length > 1 && (
             <button type="button" className="cruise-booking-link" onClick={() => setSelectedCruiseId(null)}>
-              View All Excursions
+              ← View All Ships
             </button>
           )}
         </div>
 
         {displayedCruises.length === 0 ? (
-          <div className="cruise-booking-empty">No excursions are available right now.</div>
+          <div className="cruise-booking-empty">No ships are available right now. Check back soon!</div>
         ) : (
           <div className="cruise-booking-grid">
             {displayedCruises.map((cruise) => {
               const isSelected = String(cruise.id) === String(selectedCruiseId);
               const availableSeats = Number.parseInt(cruise.available_seats, 10);
               const isLowAvailability = Number.isFinite(availableSeats) && availableSeats < 100;
+              const isFullyBooked = Number.isFinite(availableSeats) && availableSeats <= 0;
 
               return (
                 <article key={cruise.id} className={`cruise-option-card ${isSelected ? 'selected' : ''}`}>
@@ -149,23 +104,51 @@ const CruiseBookingPage = () => {
 
                   <div className="cruise-option-body">
                     <div className="cruise-option-top">
-                      <h2>{cruise.name}</h2>
-                      <p className="cruise-option-meta">{cruise.duration_days} Days Excursion</p>
+                      {/* Ship & trip name */}
+                      <div className="cruise-name-block">
+                        <h2>{cruise.ship_name || cruise.name}</h2>
+                        {cruise.ship_name && <span className="cruise-trip-subtitle">{cruise.name}</span>}
+                      </div>
+                      <p className="cruise-option-meta">{cruise.duration_days} Day Voyage</p>
+
+                      {/* Route visual */}
+                      {(cruise.departure_port || cruise.destination) && (
+                        <div className="cruise-route-visual">
+                          <span className="cruise-port-from">{cruise.departure_port || '—'}</span>
+                          <span className="cruise-route-line">──────▶</span>
+                          <span className="cruise-port-to">{cruise.destination || '—'}</span>
+                        </div>
+                      )}
 
                       <div className="cruise-option-details">
-                        <span><strong>Voyage Map:</strong> {cruise.route || 'TBA'}</span>
+                        {cruise.route && <span><strong>Via:</strong> {cruise.route}</span>}
                         <span><strong>Departure:</strong> {formatDate(cruise.start_date)}</span>
                         <span className={isLowAvailability ? 'cruise-seat-low' : 'cruise-seat-good'}>
                           <strong>Seats Remaining:</strong> {cruise.available_seats} / {cruise.total_seats}
                         </span>
                       </div>
+
+                      {/* Cabin pricing preview */}
+                      <div className="cruise-pricing-grid">
+                        <div className="cruise-price-tier">
+                          <span className="cruise-tier-label">🛏️ Standard</span>
+                          <span className="cruise-tier-price">${formatPrice(cruise.price)}/pp</span>
+                        </div>
+                        <div className="cruise-price-tier">
+                          <span className="cruise-tier-label">🛋️ Deluxe</span>
+                          <span className="cruise-tier-price">${formatPrice(Number.parseFloat(cruise.price) * 1.5)}/pp</span>
+                        </div>
+                        <div className="cruise-price-tier">
+                          <span className="cruise-tier-label">👑 Suite</span>
+                          <span className="cruise-tier-price">${formatPrice(Number.parseFloat(cruise.price) * 2.5)}/pp</span>
+                        </div>
+                      </div>
                     </div>
 
                     <div className="cruise-option-footer">
                       <div className="cruise-option-price">
-                        ${formatPrice(cruise.price)} <small>/ pp</small>
+                        From ${formatPrice(cruise.price)} <small>/ person</small>
                       </div>
-
                       <div className="cruise-option-actions">
                         {!isSelected && (
                           <button
@@ -173,17 +156,16 @@ const CruiseBookingPage = () => {
                             className="cruise-booking-button"
                             onClick={() => setSelectedCruiseId(String(cruise.id))}
                           >
-                            Select Excursion
+                            Select
                           </button>
                         )}
-
                         <button
                           type="button"
                           className="cruise-booking-button primary"
-                          onClick={() => handleReserveCruise(cruise)}
-                          disabled={isSubmitting}
+                          onClick={() => handleOpenForm(cruise)}
+                          disabled={isFullyBooked}
                         >
-                          {isSubmitting && isSelected ? 'Submitting...' : 'Reserve Cabin'}
+                          {isFullyBooked ? 'Fully Booked' : '🚢 Reserve Cabin'}
                         </button>
                       </div>
                     </div>
@@ -194,6 +176,16 @@ const CruiseBookingPage = () => {
           </div>
         )}
       </div>
+
+      {/* Registration Modal */}
+      {formCruise && (
+        <CruiseRegistrationForm
+          cruise={formCruise}
+          services={services}
+          onClose={() => setFormCruise(null)}
+          onSuccess={() => navigate('/voyager/dashboard')}
+        />
+      )}
     </div>
   );
 };

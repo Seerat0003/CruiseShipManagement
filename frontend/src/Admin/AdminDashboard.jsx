@@ -44,6 +44,9 @@ const AdminDashboard = () => {
   const [onlineCount, setOnlineCount] = useState(0);
   const [newTrip, setNewTrip] = useState({
     name: '',
+    ship_name: '',
+    departure_port: '',
+    destination: '',
     route: '',
     start_date: '',
     duration_days: '',
@@ -98,6 +101,9 @@ const AdminDashboard = () => {
       await createCruise({
         variables: {
           name: newTrip.name,
+          ship_name: newTrip.ship_name || null,
+          departure_port: newTrip.departure_port || null,
+          destination: newTrip.destination || null,
           route: newTrip.route,
           start_date: newTrip.start_date,
           duration_days: Number.parseInt(newTrip.duration_days, 10),
@@ -110,6 +116,9 @@ const AdminDashboard = () => {
       alert('Trip successfully created!');
       setNewTrip({
         name: '',
+        ship_name: '',
+        departure_port: '',
+        destination: '',
         route: '',
         start_date: '',
         duration_days: '',
@@ -148,7 +157,7 @@ const AdminDashboard = () => {
       </div>
 
       <div className="admin-tabs">
-        {['Overview', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers', 'Product Orders'].map((tab) => (
+        {['Overview', 'Cruise Bookings', 'Facilities & Locations', 'Active Trips', 'Registered Voyagers', 'Product Orders'].map((tab) => (
           <button
             key={tab}
             className={`admin-tab-btn ${activeTab === tab ? 'active' : ''}`}
@@ -219,6 +228,85 @@ const AdminDashboard = () => {
               ) : (
                 <tr>
                   <td colSpan="7" style={{ textAlign: 'center', padding: '2rem' }}>No reservations found.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </>
+      )}
+
+      {/* ── CRUISE BOOKINGS TAB ── */}
+      {activeTab === 'Cruise Bookings' && (
+        <>
+          <h3 className="page-title" style={{ fontSize: '1.8rem', border: 'none', marginBottom: '1rem' }}>🚢 Cruise Booking Registrations</h3>
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Voyager</th>
+                <th>Ship</th>
+                <th>Route</th>
+                <th>Cabin</th>
+                <th>Passengers</th>
+                <th>Rooms</th>
+                <th>Total Price</th>
+                <th>Status</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {bookings.filter(b => b.cruise).length > 0 ? (
+                bookings.filter(b => b.cruise).map((booking) => (
+                  <tr key={booking.id}>
+                    <td>#{booking.id}</td>
+                    <td>{booking.user?.name || '—'}<br /><small style={{ color: 'rgba(255,255,255,0.4)' }}>{booking.user?.email}</small></td>
+                    <td>{booking.cruise?.ship_name || booking.cruise?.name || '—'}</td>
+                    <td style={{ fontSize: '0.8rem' }}>
+                      {booking.cruise?.departure_port || '—'} → {booking.cruise?.destination || booking.cruise?.route || '—'}
+                    </td>
+                    <td><span style={{ color: '#f7d6a5' }}>{booking.cabin_type || '—'}</span></td>
+                    <td>{booking.passengers || '—'}</td>
+                    <td>{booking.rooms || '—'}</td>
+                    <td style={{ color: '#51cf66', fontWeight: 700 }}>
+                      {booking.total_price ? `$${Number.parseFloat(booking.total_price).toLocaleString()}` : '—'}
+                    </td>
+                    <td>
+                      <span style={{
+                        color: booking.status === 'Confirmed' ? '#51cf66' : booking.status === 'Rejected' ? '#ff6b6b' : '#fcc419',
+                        fontWeight: 600
+                      }}>
+                        {booking.status}
+                      </span>
+                    </td>
+                    <td>
+                      <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                        {booking.status !== 'Confirmed' && (
+                          <button
+                            className="btn-luxury"
+                            id={`confirm-booking-${booking.id}`}
+                            style={{ padding: '5px 12px', fontSize: '0.78rem', background: 'rgba(81,207,102,0.15)', color: '#51cf66', border: '1px solid rgba(81,207,102,0.3)' }}
+                            onClick={() => handleUpdateStatus(booking.id, 'Confirmed')}
+                          >
+                            ✅ Confirm
+                          </button>
+                        )}
+                        {booking.status !== 'Rejected' && (
+                          <button
+                            className="btn-luxury"
+                            id={`reject-booking-${booking.id}`}
+                            style={{ padding: '5px 12px', fontSize: '0.78rem', background: 'rgba(255,107,107,0.12)', color: '#ff6b6b', border: '1px solid rgba(255,107,107,0.25)' }}
+                            onClick={() => handleUpdateStatus(booking.id, 'Rejected')}
+                          >
+                            ❌ Reject
+                          </button>
+                        )}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="10" style={{ textAlign: 'center', padding: '2rem', color: 'rgba(255,255,255,0.4)' }}>No cruise booking registrations yet.</td>
                 </tr>
               )}
             </tbody>
@@ -309,19 +397,24 @@ const AdminDashboard = () => {
             <h3 style={{ marginTop: 0, marginBottom: '20px', color: '#f7d6a5' }}>Launch New Cruise Trip</h3>
             <form onSubmit={handleCreateTrip}>
               <div className="form-row">
-                <input type="text" placeholder="Cruise Name (e.g. Sapphire Seas Tour)" value={newTrip.name} onChange={(event) => setNewTrip({ ...newTrip, name: event.target.value })} required />
-                <input type="text" placeholder="Route (e.g. Miami -> Bahamas)" value={newTrip.route} onChange={(event) => setNewTrip({ ...newTrip, route: event.target.value })} required />
+                <input type="text" placeholder="Trip Name (e.g. Sapphire Seas Tour)" value={newTrip.name} onChange={(event) => setNewTrip({ ...newTrip, name: event.target.value })} required />
+                <input type="text" placeholder="Ship Name (e.g. Ocean Serenity I)" value={newTrip.ship_name} onChange={(event) => setNewTrip({ ...newTrip, ship_name: event.target.value })} />
               </div>
               <div className="form-row">
+                <input type="text" placeholder="Departure Port (e.g. Mumbai Port, India)" value={newTrip.departure_port} onChange={(event) => setNewTrip({ ...newTrip, departure_port: event.target.value })} />
+                <input type="text" placeholder="Destination (e.g. Maldives)" value={newTrip.destination} onChange={(event) => setNewTrip({ ...newTrip, destination: event.target.value })} />
+              </div>
+              <div className="form-row">
+                <input type="text" placeholder="Route (e.g. Miami → Bahamas → Nassau)" value={newTrip.route} onChange={(event) => setNewTrip({ ...newTrip, route: event.target.value })} required />
                 <input type="date" min={todayStr} value={newTrip.start_date} onChange={(event) => setNewTrip({ ...newTrip, start_date: event.target.value })} required title="Start Date" />
-                <input type="number" placeholder="Duration (Days)" value={newTrip.duration_days} onChange={(event) => setNewTrip({ ...newTrip, duration_days: event.target.value })} required />
               </div>
               <div className="form-row">
+                <input type="number" placeholder="Duration (Days)" value={newTrip.duration_days} onChange={(event) => setNewTrip({ ...newTrip, duration_days: event.target.value })} required />
                 <input type="number" placeholder="Total Seats" value={newTrip.total_seats} onChange={(event) => setNewTrip({ ...newTrip, total_seats: event.target.value })} required />
-                <input type="number" placeholder="Base Price ($)" value={newTrip.price} onChange={(event) => setNewTrip({ ...newTrip, price: event.target.value })} required />
-                <input type="text" placeholder="Image Name (e.g. cruise1.png)" value={newTrip.image_url} onChange={(event) => setNewTrip({ ...newTrip, image_url: event.target.value })} />
+                <input type="number" placeholder="Base Price / Person ($)" value={newTrip.price} onChange={(event) => setNewTrip({ ...newTrip, price: event.target.value })} required />
+                <input type="text" placeholder="Image key (med / carib / alaska)" value={newTrip.image_url} onChange={(event) => setNewTrip({ ...newTrip, image_url: event.target.value })} />
               </div>
-              <button type="submit" className="create-btn">Deploy Cruise</button>
+              <button type="submit" className="create-btn">🚀 Deploy Cruise</button>
             </form>
           </div>
 

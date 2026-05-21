@@ -334,7 +334,7 @@ const resolvers = {
       };
     },
 
-    createBooking: async (_, { service_id, cruise_id, start_time, end_time }, { user }) => {
+    createBooking: async (_, { service_id, cruise_id, start_time, end_time, group_type, passengers, cabin_type, rooms, special_requests }, { user }) => {
       requireRole(user, ["voyager"]);
 
       if (!service_id && !cruise_id) {
@@ -363,10 +363,19 @@ const resolvers = {
         }
       }
 
+      // Compute total_price for cruise bookings
+      let total_price = null;
       if (cruise_id) {
         const cruise = await Cruise.findByPk(cruise_id);
         if (!cruise) {
           throw new Error("Cruise not found");
+        }
+
+        if (passengers && cabin_type) {
+          const cabinMultipliers = { Standard: 1.0, Deluxe: 1.5, Suite: 2.5 };
+          const multiplier = cabinMultipliers[cabin_type] || 1.0;
+          const basePrice = Number.parseFloat(cruise.price) || 0;
+          total_price = basePrice * multiplier * Number.parseInt(passengers, 10);
         }
       }
 
@@ -377,19 +386,27 @@ const resolvers = {
         start_time,
         end_time,
         status: "Pending",
+        group_type: group_type || null,
+        passengers: passengers ? Number.parseInt(passengers, 10) : null,
+        cabin_type: cabin_type || null,
+        rooms: rooms ? Number.parseInt(rooms, 10) : null,
+        special_requests: special_requests || null,
+        total_price,
       });
 
       try {
         const io = getIO();
-        io.to("manager-room").emit("new_booking", {
-          message: "A new booking has been requested!",
-          booking,
-        });
-        io.to(`user-room-${booking.user_id}`).emit("booking_requested", {
-          message: "Your reservation request has been submitted and is awaiting approval.",
-          bookingId: booking.id,
-          status: booking.status,
-        });
+        if (io) {
+          io.to("manager-room").emit("new_booking", {
+            message: "A new booking has been requested!",
+            booking,
+          });
+          io.to(`user-room-${booking.user_id}`).emit("booking_requested", {
+            message: "Your reservation request has been submitted and is awaiting approval.",
+            bookingId: booking.id,
+            status: booking.status,
+          });
+        }
       } catch (error) {
         console.error("Socket emit error on booking create:", error);
       }
@@ -620,6 +637,7 @@ const resolvers = {
   Booking: {
     start_time: (booking) => normalizeDate(booking.start_time),
     end_time: (booking) => normalizeDate(booking.end_time),
+    total_price: (booking) => normalizeFloat(booking.total_price),
     user: async (booking) => User.findByPk(booking.user_id),
     service: async (booking) => {
       if (!booking.service_id) {

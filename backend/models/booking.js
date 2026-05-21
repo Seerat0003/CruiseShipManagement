@@ -11,6 +11,13 @@ const Booking = sequelize.define(
     start_time: DataTypes.DATE,
     end_time: DataTypes.DATE,
     status: DataTypes.STRING,
+    // Cruise registration fields
+    group_type: { type: DataTypes.STRING, allowNull: true },   // solo | couple | family
+    passengers: { type: DataTypes.INTEGER, allowNull: true },
+    cabin_type: { type: DataTypes.STRING, allowNull: true },   // Standard | Deluxe | Suite
+    rooms: { type: DataTypes.INTEGER, allowNull: true },
+    special_requests: { type: DataTypes.TEXT, allowNull: true },
+    total_price: { type: DataTypes.DECIMAL(10, 2), allowNull: true },
   },
   {
     tableName: "bookings",

@@ -41,6 +41,9 @@ const typeDefs = gql`
   type Cruise {
     id: ID!
     name: String!
+    ship_name: String
+    departure_port: String
+    destination: String
     route: String
     start_date: String
     duration_days: Int
@@ -59,6 +62,12 @@ const typeDefs = gql`
     start_time: String
     end_time: String
     status: String
+    group_type: String
+    passengers: Int
+    cabin_type: String
+    rooms: Int
+    special_requests: String
+    total_price: Float
     user: User
     service: Service
     cruise: Cruise
@@ -159,6 +168,11 @@ const typeDefs = gql`
       cruise_id: ID
       start_time: String!
       end_time: String!
+      group_type: String
+      passengers: Int
+      cabin_type: String
+      rooms: Int
+      special_requests: String
     ): Booking
     updateBookingStatus(id: ID!, status: String!): Booking
     cancelBooking(id: ID!): Booking
@@ -167,6 +181,9 @@ const typeDefs = gql`
 
     createCruise(
       name: String!
+      ship_name: String
+      departure_port: String
+      destination: String
       route: String
       start_date: String
       duration_days: Int
@@ -177,6 +194,9 @@ const typeDefs = gql`
     updateCruise(
       id: ID!
       name: String
+      ship_name: String
+      departure_port: String
+      destination: String
       price: Float
       route: String
       start_date: String

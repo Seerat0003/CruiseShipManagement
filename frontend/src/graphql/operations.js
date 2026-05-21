@@ -35,6 +35,9 @@ export const VOYAGER_DASHBOARD_QUERY = gql`
     cruises {
       id
       name
+      ship_name
+      departure_port
+      destination
       route
       start_date
       duration_days
@@ -53,8 +56,31 @@ export const VOYAGER_DASHBOARD_QUERY = gql`
       id
       bookings {
         id
+        cruise_id
+        service_id
         start_time
+        end_time
         status
+        group_type
+        passengers
+        cabin_type
+        rooms
+        total_price
+        cruise {
+          id
+          name
+          ship_name
+          departure_port
+          destination
+          route
+          start_date
+          duration_days
+        }
+        service {
+          id
+          name
+          category
+        }
       }
     }
   }
@@ -78,11 +104,36 @@ export const SERVICE_BOOKING_DATA_QUERY = gql`
 `;
 
 export const CREATE_BOOKING_MUTATION = gql`
-  mutation CreateBooking($service_id: ID, $cruise_id: ID, $start_time: String!, $end_time: String!) {
-    createBooking(service_id: $service_id, cruise_id: $cruise_id, start_time: $start_time, end_time: $end_time) {
+  mutation CreateBooking(
+    $service_id: ID
+    $cruise_id: ID
+    $start_time: String!
+    $end_time: String!
+    $group_type: String
+    $passengers: Int
+    $cabin_type: String
+    $rooms: Int
+    $special_requests: String
+  ) {
+    createBooking(
+      service_id: $service_id
+      cruise_id: $cruise_id
+      start_time: $start_time
+      end_time: $end_time
+      group_type: $group_type
+      passengers: $passengers
+      cabin_type: $cabin_type
+      rooms: $rooms
+      special_requests: $special_requests
+    ) {
       id
       start_time
       status
+      group_type
+      passengers
+      cabin_type
+      rooms
+      total_price
     }
   }
 `;
@@ -92,6 +143,9 @@ export const CRUISE_BOOKING_QUERY = gql`
     cruises {
       id
       name
+      ship_name
+      departure_port
+      destination
       route
       start_date
       duration_days
@@ -99,6 +153,12 @@ export const CRUISE_BOOKING_QUERY = gql`
       available_seats
       price
       image_url
+    }
+    services {
+      id
+      name
+      category
+      price
     }
   }
 `;
@@ -129,9 +189,15 @@ export const ADMIN_DASHBOARD_QUERY = gql`
       id
       start_time
       status
+      group_type
+      passengers
+      cabin_type
+      rooms
+      total_price
       user {
         id
         name
+        email
       }
       service {
         id
@@ -141,6 +207,11 @@ export const ADMIN_DASHBOARD_QUERY = gql`
       cruise {
         id
         name
+        ship_name
+        departure_port
+        destination
+        route
+        start_date
       }
     }
     voyagers {
@@ -161,6 +232,9 @@ export const ADMIN_DASHBOARD_QUERY = gql`
     cruises {
       id
       name
+      ship_name
+      departure_port
+      destination
       route
       start_date
       duration_days
@@ -315,6 +389,9 @@ export const DELETE_PRODUCT_MUTATION = gql`
 export const CREATE_CRUISE_MUTATION = gql`
   mutation CreateCruise(
     $name: String!
+    $ship_name: String
+    $departure_port: String
+    $destination: String
     $route: String
     $start_date: String
     $duration_days: Int
@@ -324,6 +401,9 @@ export const CREATE_CRUISE_MUTATION = gql`
   ) {
     createCruise(
       name: $name
+      ship_name: $ship_name
+      departure_port: $departure_port
+      destination: $destination
       route: $route
       start_date: $start_date
       duration_days: $duration_days
@@ -333,6 +413,9 @@ export const CREATE_CRUISE_MUTATION = gql`
     ) {
       id
       name
+      ship_name
+      departure_port
+      destination
     }
   }
 `;

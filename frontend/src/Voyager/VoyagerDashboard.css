@@ -53,3 +53,46 @@
 .res-table {
   width: 100%;
 }
+
+/* Facilities padlock overlay */
+.facilities-locked-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+}
+
+.facilities-lock-card {
+  pointer-events: all;
+  background: rgba(10, 20, 35, 0.92);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px;
+  padding: 2rem 2.5rem;
+  text-align: center;
+  max-width: 400px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+}
+
+.facilities-lock-icon {
+  font-size: 2.8rem;
+  display: block;
+  margin-bottom: 0.8rem;
+}
+
+.facilities-lock-card h3 {
+  color: #f7d6a5;
+  font-size: 1.3rem;
+  margin: 0 0 0.6rem;
+}
+
+.facilities-lock-card p {
+  color: rgba(255,255,255,0.55);
+  font-size: 0.9rem;
+  line-height: 1.6;
+  margin: 0 0 1.2rem;
+}
+
