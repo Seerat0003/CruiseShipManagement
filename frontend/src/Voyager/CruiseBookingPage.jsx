@@ -29,6 +29,8 @@ const formatPrice = (value) => {
   return Number.isFinite(amount) ? amount.toLocaleString() : '0';
 };
 
+const EMPTY_ARRAY = [];
+
 const CruiseBookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -41,8 +43,8 @@ const CruiseBookingPage = () => {
     fetchPolicy: 'cache-and-network',
   });
 
-  const cruises = data?.cruises ?? [];
-  const services = data?.services ?? [];
+  const cruises = data?.cruises ?? EMPTY_ARRAY;
+  const services = data?.services ?? EMPTY_ARRAY;
 
   const displayedCruises = useMemo(() => {
     if (!selectedCruiseId) return cruises;
