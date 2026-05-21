@@ -45,7 +45,9 @@ function preseedInMemoryStore() {
   inMemoryStore.cruises = [
     { id: 1, name: "Mediterranean Voyage", route: "Rome -> Athens -> Istanbul", start_date: "2026-06-15", duration_days: 7, total_seats: 500, available_seats: 420, price: 1200, image_url: "med_cruise.png" },
     { id: 2, name: "Caribbean Sunset", route: "Miami -> Bahamas -> Jamaica", start_date: "2026-07-02", duration_days: 5, total_seats: 800, available_seats: 150, price: 950, image_url: "carib_cruise.png" },
-    { id: 3, name: "Alaskan Glacier Explore", route: "Seattle -> Juneau -> Glacier Bay", start_date: "2026-08-10", duration_days: 10, total_seats: 300, available_seats: 50, price: 2100, image_url: "alaska_cruise.png" }
+    { id: 3, name: "Alaskan Glacier Explore", route: "Seattle -> Juneau -> Glacier Bay", start_date: "2026-08-10", duration_days: 10, total_seats: 300, available_seats: 50, price: 2100, image_url: "alaska_cruise.png" },
+    { id: 4, name: "Antarctic Expedition & Penguin Haven", route: "Ushuaia -> Falklands -> South Shetland Islands", start_date: "2026-12-05", duration_days: 14, total_seats: 120, available_seats: 98, price: 4800, image_url: "antarctic_cruise.png" },
+    { id: 5, name: "Scandinavian Fjords Explorer", route: "Bergen -> Geirangerfjord -> Lofoten Islands", start_date: "2026-09-01", duration_days: 8, total_seats: 250, available_seats: 195, price: 2600, image_url: "fjords_cruise.png" }
   ];
 
   // Services
@@ -59,7 +61,9 @@ function preseedInMemoryStore() {
     { id: 7, name: "Elite Gift Boutique", category: "Gifts", price: 100 },
     { id: 8, name: "Premium Gear Rental Package", category: "Retail", price: 75 },
     { id: 9, name: "Luxury Brand Retail", category: "Retail", price: 300 },
-    { id: 10, name: "In-Cabin Catering Service", category: "Catering", price: 50 }
+    { id: 10, name: "In-Cabin Catering Service", category: "Catering", price: 50 },
+    { id: 11, name: "Scenic Helicopter Flight", category: "Entertainment", price: 650 },
+    { id: 12, name: "Submarine Undersea Excursion", category: "Entertainment", price: 1200 }
   ];
 
   // Products
@@ -78,15 +82,50 @@ function preseedInMemoryStore() {
     { id: 12, name: "Dual-Zone Thermoelectric Wine Cellar Cooler", category: "Galley Gear", price: 650.00, stock: 12 },
     { id: 13, name: "High-Precision Maritime Deck Binoculars", category: "Recreation Gear", price: 180.00, stock: 25 },
     { id: 14, name: "Hydro-Premium Snorkeling Fin & Mask Kit", category: "Recreation Gear", price: 95.00, stock: 60 },
-    { id: 15, name: "Ocean Serenity Heavy Yacht Canvas Tote Bag", category: "Boutique Merchandise", price: 55.00, stock: 120 }
+    { id: 15, name: "Ocean Serenity Heavy Yacht Canvas Tote Bag", category: "Boutique Merchandise", price: 55.00, stock: 120 },
+    { id: 16, name: "Pure Cashmere Cabin Blanket", category: "Boutique Merchandise", price: 350.00, stock: 45 },
+    { id: 17, name: "Premium Yachting Chronometer Watch", category: "Recreation Gear", price: 890.00, stock: 10 }
   ];
 
-  // Default Admin User
+  // Cryptographic Hashes for Passwords
   const bcrypt = require('bcryptjs');
   const salt = bcrypt.genSaltSync(10);
-  const hashedPassword = bcrypt.hashSync("admin123", salt);
+  const adminPassword = bcrypt.hashSync("admin123", salt);
+  const voyagerPassword = bcrypt.hashSync("keerti123", salt);
+  const johnPassword = bcrypt.hashSync("john123", salt);
+
+  // Users
   inMemoryStore.users = [
-    { id: 1, name: "Super Admin", email: "admin@cruise.com", password: hashedPassword, role: "admin" }
+    { id: 1, name: "Super Admin", email: "admin@cruise.com", password: adminPassword, role: "admin" },
+    { id: 2, name: "Keerti", email: "keerti123@gmail.com", password: voyagerPassword, role: "voyager" },
+    { id: 3, name: "John Doe", email: "john@voyage.com", password: johnPassword, role: "voyager" }
+  ];
+
+  // Voyagers Info
+  inMemoryStore.voyagers = [
+    { id: 1, user_id: 2, passport_number: "US1234567", room_number: "Deluxe Suite 702" },
+    { id: 2, user_id: 3, passport_number: "UK9876543", room_number: "Standard Cabin 305" }
+  ];
+
+  // Bookings
+  inMemoryStore.bookings = [
+    { id: 1, user_id: 2, cruise_id: 1, service_id: null, start_time: "2026-06-15", end_time: "2026-06-22", status: "Confirmed", group_type: "family", passengers: 4, cabin_type: "Suite", rooms: 2, special_requests: "Close to deck lounge, dietary request for vegan options.", total_price: 4800.00 },
+    { id: 2, user_id: 3, cruise_id: null, service_id: 1, start_time: "2026-06-16T10:00:00.000Z", end_time: "2026-06-16T12:00:00.000Z", status: "Pending", group_type: null, passengers: null, cabin_type: null, rooms: null, special_requests: "Prefer window seat view.", total_price: 150.00 },
+    { id: 3, user_id: 2, cruise_id: null, service_id: 3, start_time: "2026-06-18T18:00:00.000Z", end_time: "2026-06-18T22:00:00.000Z", status: "Confirmed", group_type: null, passengers: null, cabin_type: null, rooms: null, special_requests: "Vip guest list setup.", total_price: 500.00 },
+    { id: 4, user_id: 3, cruise_id: 2, service_id: null, start_time: "2026-07-02", end_time: "2026-07-07", status: "Confirmed", group_type: "couple", passengers: 2, cabin_type: "Deluxe", rooms: 1, special_requests: "Anniversary setup.", total_price: 1900.00 }
+  ];
+
+  // Orders
+  inMemoryStore.orders = [
+    { id: 1, user_id: 2, total: 295.00, created_at: "2026-05-20T14:32:00.000Z" },
+    { id: 2, user_id: 3, total: 190.00, created_at: "2026-05-21T09:15:00.000Z" }
+  ];
+
+  // Order Items
+  inMemoryStore.order_items = [
+    { id: 1, order_id: 1, product_id: 1, quantity: 2 }, // Wagyu Steak - 240
+    { id: 2, order_id: 1, product_id: 15, quantity: 1 }, // Tote Bag - 55
+    { id: 3, order_id: 2, product_id: 14, quantity: 2 }  // Snorkeling Kit - 190
   ];
 }
 
