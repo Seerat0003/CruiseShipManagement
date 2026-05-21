@@ -1,136 +1,337 @@
-.voyager-container.voyager-page-shell {
+.voyager-registry-container.voyager-page-shell {
   min-height: 100vh;
-  padding: calc(var(--app-nav-offset) + 1.5rem) 1.2rem 2rem;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
+  padding: calc(var(--app-nav-offset) + 1.5rem) 2rem 3rem;
   background:
-    radial-gradient(circle at 8% 12%, rgba(247, 214, 165, 0.16), transparent 35%),
-    radial-gradient(circle at 92% 14%, rgba(220, 179, 116, 0.12), transparent 35%),
+    radial-gradient(circle at 8% 12%, rgba(247, 214, 165, 0.12), transparent 35%),
+    radial-gradient(circle at 92% 14%, rgba(220, 179, 116, 0.08), transparent 35%),
     linear-gradient(160deg, #081828 0%, #0d2235 48%, #0a1b2c 100%);
+  display: flex;
+  flex-direction: column;
+  color: #fff;
 }
 
-.voyager-card {
-  width: min(560px, 100%);
-  padding: 1.6rem;
-  border-radius: 16px;
-  border: 1px solid rgba(247, 214, 165, 0.26);
-  background: rgba(13, 34, 53, 0.6);
-  backdrop-filter: blur(12px);
-  box-shadow: 0 20px 36px rgba(0, 0, 0, 0.28);
+.registry-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+}
+
+.registry-title-block {
+  flex: 1;
+  min-width: 280px;
 }
 
 .voyager-title {
   margin: 0;
   color: var(--secondary-color);
   font-family: var(--font-heading);
-  font-size: clamp(1.55rem, 2vw, 2rem);
+  font-size: clamp(1.8rem, 2.5vw, 2.4rem);
   letter-spacing: 0.02em;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
 }
 
 .voyager-subtitle {
-  margin: 0.65rem 0 1.2rem;
-  color: rgba(255, 255, 255, 0.8);
+  margin: 0.5rem 0 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+.register-toggle-btn {
+  padding: 10px 24px;
   font-size: 0.95rem;
-  line-height: 1.55;
+  background: linear-gradient(125deg, var(--secondary-color) 0%, #dcb374 100%);
+  color: var(--primary-color);
+  border: 1px solid transparent;
+  border-radius: 30px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 15px rgba(247, 214, 165, 0.25);
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.register-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(247, 214, 165, 0.35);
+  filter: brightness(1.05);
+}
+
+.registry-body-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+  transition: grid-template-columns 0.4s ease;
+}
+
+@media (min-width: 1024px) {
+  .registry-body-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .registry-body-grid:has(.registry-form-panel) {
+    grid-template-columns: 1fr 420px;
+  }
+}
+
+.registry-main-panel {
+  background: rgba(13, 34, 53, 0.5);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(247, 214, 165, 0.15);
+  border-radius: 16px;
+  padding: 1.8rem;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s ease;
+}
+
+.search-bar-wrap {
+  position: relative;
+  margin-bottom: 1.5rem;
+  display: flex;
+  align-items: center;
+}
+
+.search-input {
+  width: 100%;
+  padding: 0.85rem 2.8rem 0.85rem 1.2rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 10px;
+  color: #fff;
+  font-size: 0.98rem;
+  transition: all 0.25s ease;
+}
+
+.search-input:focus {
+  outline: none;
+  border-color: var(--secondary-color);
+  background: rgba(0, 0, 0, 0.45);
+  box-shadow: 0 0 0 3px rgba(247, 214, 165, 0.15);
+}
+
+.clear-search-btn {
+  position: absolute;
+  right: 12px;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+  font-size: 1.1rem;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s;
+}
+
+.clear-search-btn:hover {
+  color: #fff;
+}
+
+.registry-loading-state {
+  padding: 4rem 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+}
+
+.spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(247, 214, 165, 0.2);
+  border-radius: 50%;
+  border-top-color: var(--secondary-color);
+  animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.registry-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.95rem;
+}
+
+.registry-table th {
+  background: rgba(0, 0, 0, 0.4);
+  padding: 1rem 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--secondary-color);
+  border-bottom: 1px solid rgba(247, 214, 165, 0.15);
+}
+
+.registry-table td {
+  padding: 1rem 1.2rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  color: rgba(255, 255, 255, 0.85);
+  vertical-align: middle;
+}
+
+.registry-data-row {
+  transition: background-color 0.2s ease;
+}
+
+.registry-data-row:hover {
+  background-color: rgba(255, 255, 255, 0.03);
+}
+
+.id-cell {
+  font-weight: 700;
+  color: var(--secondary-color);
+  font-family: monospace;
+  letter-spacing: 0.05em;
+}
+
+.name-cell {
+  color: #fff;
+  font-weight: 600;
+}
+
+.email-cell {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+.empty-cell {
+  padding: 3rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.4);
+  font-style: italic;
+}
+
+.registry-form-panel {
+  animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.voyager-card {
+  background: rgba(13, 34, 53, 0.7);
+  backdrop-filter: blur(16px);
+  border: 1px solid var(--secondary-color);
+  padding: 1.8rem;
+  border-radius: 16px;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
+.form-card-title {
+  margin: 0;
+  color: var(--secondary-color);
+  font-family: var(--font-heading);
+  font-size: 1.4rem;
+}
+
+.form-card-subtitle {
+  margin: 0.4rem 0 1.2rem;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.88rem;
+  line-height: 1.4;
 }
 
 .voyager-form {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.95rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .voyager-field {
   display: flex;
   flex-direction: column;
-  gap: 0.45rem;
-}
-
-.voyager-field:nth-child(1),
-.voyager-field:nth-child(2),
-.voyager-field:nth-child(3),
-.voyager-field:nth-child(4),
-.voyager-field:nth-child(5) {
-  grid-column: 1 / -1;
+  gap: 0.4rem;
 }
 
 .voyager-label {
-  font-size: 0.82rem;
+  font-size: 0.78rem;
   font-weight: 700;
-  letter-spacing: 0.07em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  color: rgba(255, 255, 255, 0.78);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 .voyager-input {
   width: 100%;
-  padding: 0.72rem 0.82rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 9px;
-  background: rgba(255, 255, 255, 0.06);
+  padding: 0.75rem 0.85rem;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
   color: #fff;
-  font-size: 0.96rem;
-  transition: border-color 0.25s ease, box-shadow 0.25s ease, background-color 0.25s ease;
+  font-size: 0.95rem;
+  transition: all 0.25s ease;
 }
 
 .voyager-input:focus {
   outline: none;
-  border-color: rgba(247, 214, 165, 0.75);
-  box-shadow: 0 0 0 2px rgba(247, 214, 165, 0.25);
-  background: rgba(255, 255, 255, 0.1);
-}
-
-.voyager-input:disabled {
-  opacity: 0.65;
-  cursor: not-allowed;
+  border-color: var(--secondary-color);
+  background: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 2px rgba(247, 214, 165, 0.15);
 }
 
 .voyager-button {
-  grid-column: 1 / -1;
-  margin-top: 0.4rem;
+  margin-top: 0.8rem;
   width: 100%;
   padding: 0.8rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 10px;
+  border: none;
+  border-radius: 8px;
   background: linear-gradient(120deg, var(--secondary-color) 0%, #dcb374 100%);
   color: var(--primary-color);
   font-weight: 700;
   font-size: 0.98rem;
   cursor: pointer;
-  transition: transform 0.2s ease, filter 0.2s ease;
+  transition: all 0.25s ease;
 }
 
 .voyager-button:hover:not(:disabled) {
   transform: translateY(-1px);
-  filter: brightness(1.03);
+  box-shadow: 0 4px 12px rgba(247, 214, 165, 0.2);
 }
 
 .voyager-button:disabled {
-  opacity: 0.7;
+  opacity: 0.55;
   cursor: not-allowed;
-  transform: none;
 }
 
-@media (max-width: 700px) {
-  .voyager-container.voyager-page-shell {
-    padding: calc(var(--app-nav-offset) + 1.1rem) 0.9rem 1.4rem;
+@media (max-width: 768px) {
+  .voyager-registry-container.voyager-page-shell {
+    padding: calc(var(--app-nav-offset) + 1.1rem) 1.2rem 2rem;
   }
 
-  .voyager-card {
-    padding: 1rem;
+  .registry-header-row {
+    margin-bottom: 1.5rem;
   }
 
-  .voyager-form {
-    grid-template-columns: 1fr;
-    gap: 0.82rem;
+  .registry-main-panel {
+    padding: 1.2rem;
   }
 
-  .voyager-field:nth-child(1),
-  .voyager-field:nth-child(2),
-  .voyager-field:nth-child(3),
-  .voyager-field:nth-child(4),
-  .voyager-field:nth-child(5) {
-    grid-column: auto;
+  .registry-table th, .registry-table td {
+    padding: 0.8rem;
   }
 }

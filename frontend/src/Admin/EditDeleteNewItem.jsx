@@ -134,10 +134,12 @@ const EditDeleteNewItem = ({ items = [], refreshItems }) => {
                           className="edit-delete-select"
                         >
                           <option value="catering">Catering</option>
-                          <option value="stationery">Stationery</option>
+                          <option value="stationery">Gear & Equipment</option>
                         </select>
                       ) : (
-                        <span className="edit-delete-pill">{item.type}</span>
+                        <span className="edit-delete-pill">
+                          {item.type === "stationery" ? "Gear & Equipment" : "Catering"}
+                        </span>
                       )}
                     </td>
                     <td className="edit-delete-cell">

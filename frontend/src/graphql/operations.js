@@ -235,6 +235,7 @@ export const ADMIN_DASHBOARD_QUERY = gql`
       id
       name
       email
+      phone
       role
       createdAt
     }

@@ -79,7 +79,7 @@ const AddNewItem = ({ onItemAdded }) => {
             disabled={loading}
           >
             <option value="catering">Catering</option>
-            <option value="stationery">Stationery</option>
+            <option value="stationery">Gear & Equipment</option>
           </select>
         </div>
 

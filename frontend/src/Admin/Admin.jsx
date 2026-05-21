@@ -25,7 +25,7 @@ const Admin = () => {
       <div className="inventory-page-header">
         <h2 className="admin-title">Manage Inventory</h2>
         <p className="inventory-page-subtitle">
-          Curate catering and stationery products for voyagers with real-time stock visibility.
+          Curate premium catering and onboard gear/equipment for voyagers with real-time stock visibility.
         </p>
       </div>
 

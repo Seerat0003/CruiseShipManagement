@@ -81,13 +81,13 @@ const Navigation = ({ loggedIn, setLoggedIn }) => {
                   <Link to="/manager/viewresort" className="sec-nav-link">Entertainment Bookings</Link>
                   <Link to="/manager/viewfitness" className="sec-nav-link">Fitness Bookings</Link>
                   <Link to="/manager/viewcatering" className="sec-nav-link">Catering Requests</Link>
-                  <Link to="/manager/viewstationery" className="sec-nav-link">Stationery Requests</Link>
+                  <Link to="/manager/viewstationery" className="sec-nav-link">Gear Requests</Link>
                </>
             ) : (
                <>
                   <Link to="/voyager/dashboard" className="sec-nav-link">My Dashboard</Link>
                 <Link to="/voyager/catering" className="sec-nav-link">Shop Catering</Link>
-                <Link to="/voyager/stationery" className="sec-nav-link">Shop Stationery</Link>
+                <Link to="/voyager/stationery" className="sec-nav-link">Shop Boutique & Gear</Link>
                   <Link to="/voyager/party" className="sec-nav-link">Book Party Hall</Link>
                   <Link to="/voyager/resort" className="sec-nav-link">Book Resort/Movie</Link>
                   <Link to="/voyager/fitness" className="sec-nav-link">Book Fitness Center</Link>

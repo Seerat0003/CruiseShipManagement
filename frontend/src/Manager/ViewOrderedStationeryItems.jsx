@@ -5,18 +5,18 @@ import ManagerBookingsTable from './ManagerBookingsTable';
 const ViewOrderedStationeryItems = () => (
   <ManagerBookingsTable
     category="Stationery"
-    title="Booked Stationery Orders"
+    title="Booked Gear & Equipment Orders"
     titleClassName="view-stationery-title"
     containerClassName="view-stationery-container"
     tableClassName="bookings-table"
     loadingMessage="Loading orders..."
-    emptyMessage="No stationery orders found."
+    emptyMessage="No gear or equipment orders found."
     useMain
     columns={['Req ID', 'Voyager', 'Item Name', 'Scheduled Time', 'Status']}
     mapBookingToRow={(booking) => [
       `#${booking.id}`,
       booking.user?.name || 'Member',
-      booking.service?.name || 'Stationery Item',
+      booking.service?.name || 'Onboard Gear',
       new Date(booking.start_time).toLocaleString(),
       booking.status,
     ]}

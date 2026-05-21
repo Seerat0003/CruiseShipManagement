@@ -11,13 +11,13 @@ export const categoryGroups = {
     'Japanese',
   ],
   stationery: [
+    'Safety Equipment',
+    'Cabin Furniture',
+    'Galley Gear',
+    'Boutique Merchandise',
+    'Recreation Gear',
     'Gifts',
-    'Stationery',
     'Retail',
-    'Writing Tools',
-    'Notes & Pads',
-    'Measuring Tools',
-    'Accessories',
   ],
 };
 

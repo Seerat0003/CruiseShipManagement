@@ -2,20 +2,20 @@ import React from 'react';
 import ProductCatalogPage from './ProductCatalogPage';
 
 const stationeryCategories = [
+   'Safety Equipment',
+   'Cabin Furniture',
+   'Galley Gear',
+   'Boutique Merchandise',
+   'Recreation Gear',
    'Gifts',
-   'Stationery',
    'Retail',
-   'Writing Tools',
-   'Notes & Pads',
-   'Measuring Tools',
-   'Accessories',
 ];
 
 const OrderStationeryItems = () => {
    return (
       <ProductCatalogPage
-         title="Stationery & Boutique"
-         subtitle="Browse writing and retail essentials available for your voyage."
+         title="Boutique & Onboard Gear"
+         subtitle="Browse premium cabin furniture, safety equipment, recreation gear, and boutique items for your voyage."
          categories={stationeryCategories}
       />
    );

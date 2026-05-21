@@ -76,18 +76,18 @@ describe("💼 Admin Command Center Tests", () => {
         .set("Authorization", `Bearer ${adminToken}`)
         .send({
           type: "product",
-          name: "Luxury Stationery Set",
-          category: "Stationery",
-          price: 25.0,
+          name: "Premium Marine Binoculars",
+          category: "Recreation Gear",
+          price: 180.0,
           stock: 100
         });
 
       expect(res.statusCode).toBe(201);
       expect(res.body).toHaveProperty("message", "Product created");
-      expect(res.body.product).toHaveProperty("name", "Luxury Stationery Set");
+      expect(res.body.product).toHaveProperty("name", "Premium Marine Binoculars");
 
       // Verify in DB
-      const dbProduct = await Product.findOne({ where: { name: "Luxury Stationery Set" } });
+      const dbProduct = await Product.findOne({ where: { name: "Premium Marine Binoculars" } });
       expect(dbProduct).not.toBeNull();
     });
   });
